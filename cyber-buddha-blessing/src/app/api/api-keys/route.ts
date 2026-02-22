@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getSession } from '../../../lib/auth';
+import { getApiSession } from '../../../lib/auth';
 import { supabase } from '../../../lib/supabase';
 
 export async function GET() {
   // 检查管理员是否已登录
-  const session = await getSession();
+  const session = await getApiSession();
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -29,7 +29,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   // 检查管理员是否已登录
-  const session = await getSession();
+  const session = await getApiSession();
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   // 检查管理员是否已登录
-  const session = await getSession();
+  const session = await getApiSession();
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -68,7 +68,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   // 检查管理员是否已登录
-  const session = await getSession();
+  const session = await getApiSession();
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

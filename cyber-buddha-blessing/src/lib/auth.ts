@@ -67,7 +67,7 @@ export const authOptions: NextAuthOptions = {
   secret: NEXTAUTH_SECRET,
 };
 
-// 为App Router专门创建的getSession函数
+// 为App Router专门创建的getSession函数，使用dynamic配置确保兼容性
 export const getAppSession = async () => {
   try {
     return await getServerSession(authOptions);
@@ -80,10 +80,10 @@ export const getAppSession = async () => {
 // 导出原始getSession函数，供其他组件使用
 export const getSession = getAppSession;
 
-// 确保在App Router中正确获取会话
-export async function getServerSideSession() {
+// 为API路由提供的getSession函数
+export async function getApiSession() {
   return await getServerSession(authOptions);
-};
+}
 
 export async function getCurrentUser() {
   const session = await getAppSession();
