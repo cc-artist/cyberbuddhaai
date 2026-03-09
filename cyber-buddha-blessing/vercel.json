@@ -3,15 +3,5 @@
   "scope": "cyber-buddha",
   "framework": "nextjs",
   "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/admin/login",
-      "destination": "/admin/login"
-    },
-    {
-      "source": "/admin/:path*",
-      "destination": "/admin/:path*"
-    }
-  ]
+  "trailingSlash": false
 }

@@ -203,5 +203,73 @@ export const temples: Temple[] = [
       "Birthplace of Master Tsongkhapa",
       "Famous 'Three Wonders of Ta'er Monastery' art"
     ]
+  },
+  {
+    id: 7,
+    name: "Lingshan Grand Buddha",
+    location: "Mashan, Wuxi City, Jiangsu Province",
+    title: "World's Tallest Bronze Sakyamuni Statue, Buddhist Cultural Theme Park",
+    description: "Lingshan Grand Buddha is located in the beautiful Wuxi Mashan, north of Lingshan, south of Taihu Lake. It perfectly combines the long-standing Buddhist culture with the beautiful natural landscape. It is the most complete and the only Buddhist cultural theme park in China that focuses on displaying the achievements of Sakyamuni. The Lingshan Grand Buddha is the iconic landscape of Lingshan Scenic Area. The Lingshan Grand Buddha is 88 meters high and uses a total of 725 tons of copper. Together with the Tian Tan Buddha in Hong Kong in the south, the Leshan Giant Buddha in Sichuan in the west, the Yungang Giant Buddha in Shanxi in the north, and the Longmen Giant Buddha in Luoyang in Henan in the Central Plains, they are collectively known as the \"Five Buddhas in Five Directions of China\".",
+    image: "/temple-images/灵山大佛.webp",
+    features: [
+      "World's tallest bronze Sakyamuni statue",
+      "Complete Buddhist cultural theme park",
+      "Beautiful natural landscape combined with Buddhist culture",
+      "Multiple iconic attractions including Lingshan Grand Buddha, Nine Dragons Bathing, and Brahma Palace",
+      "Rich cultural performances and activities"
+    ],
+    route: {
+      transport: "High-speed train to Wuxi Station, then transfer to bus or private car",
+      itinerary: "Day 1: Arrive in Wuxi, check in hotel, evening visit to nearby attractions; Day 2: Visit Lingshan Scenic Area (Lingshan Grand Buddha, Xiangfu Temple, Nine Dragons Bathing, Brahma Palace, Five Seal Altar City); Day 3: Visit surrounding attractions, return.",
+      combination: "Can be combined with Taihu Lake, Wuxi Ancient Canal and other attractions"
+    },
+    culture: [
+      "Buddhist culture experience",
+      "Visit to Lingshan Grand Buddha and Brahma Palace",
+      "Watching cultural performances like 'Lingshan Auspicious Song'",
+      "Experiencing vegetarian food culture",
+      "Understanding Chinese Buddhist history and art"
+    ],
+    highlights: [
+      "World's tallest bronze Sakyamuni statue",
+      "Spectacular Nine Dragons Bathing performance",
+      "Brahma Palace known as 'Oriental Louvre'",
+      "Five Seal Altar City with Tibetan architecture",
+      "Millennium-old Xiangfu Temple"
+    ]
+  },
+  {
+    id: 8,
+    name: "Foding Palace",
+    location: "Niushou Mountain Cultural Tourism Zone, Jiangning District, Nanjing City, Jiangsu Province",
+    title: "World Heritage Site, Home to Buddha's Topknot Relic",
+    description: "Foding Palace is located in the Niushou Mountain Cultural Tourism Zone, Jiangning District, Nanjing City, Jiangsu Province. It is a pit building built on the basis of abandoned mine pits. It has long enshrined the Buddha's topknot relic of Sakyamuni. It integrates architectural wonders, Buddhist art and cultural experience. It is an important cultural landmark in Nanjing and a world-class tourist destination, known as 'China's New Peak of Contemporary Buddhist Art'.",
+    image: "/temple-images/佛顶宫.webp",
+    features: [
+      "Home to Buddha's topknot relic",
+      "Unique pit building architecture",
+      "World-class Buddhist art collection",
+      "Integrating architectural wonders, Buddhist art and cultural experience",
+      "Important cultural landmark in Nanjing"
+    ],
+    route: {
+      transport: "High-speed train to Nanjing South Station, then transfer to bus or private car",
+      itinerary: "Day 1: Arrive in Nanjing, check in hotel, visit city attractions; Day 2: Visit Foding Palace in Niushou Mountain Cultural Tourism Zone, experience Buddhist culture; Day 3: Visit surrounding attractions, return.",
+      combination: "Can be combined with Nanjing Confucius Temple, Ming Xiaoling Mausoleum and other attractions"
+    },
+    culture: [
+      "Buddhist culture experience",
+      "Visit to Foding Palace and Buddha's topknot relic",
+      "Appreciation of Buddhist art and architecture",
+      "Understanding the history of Buddha's relics",
+      "Experiencing traditional Chinese Buddhist culture"
+    ],
+    highlights: [
+      "Home to Buddha's topknot relic",
+      "Unique pit building architecture",
+      "World-class Buddhist art collection",
+      "Spectacular Zen Grand View lighting show",
+      "Five-story underground palace with stunning design"
+    ]
   }
 ];

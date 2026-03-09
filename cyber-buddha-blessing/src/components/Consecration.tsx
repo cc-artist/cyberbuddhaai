@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import NextImage from 'next/image';
+import SocialShare from './SocialShare';
 
 
 const Consecration: React.FC = () => {
@@ -218,12 +219,12 @@ const Consecration: React.FC = () => {
       }
       
       // 8. 生成下载链接
-      setDownloadStatus('正在生成下载链接...');
+      setDownloadStatus('Generating download link...');
       const mimeType = downloadFormat === 'png' ? 'image/png' : 'image/jpeg';
       
       // 生成Data URL
       const dataUrl = canvas.toDataURL(mimeType, downloadQuality);
-      console.log('成功生成开光合成图Data URL');
+      console.log('Successfully generated consecration synthesis image Data URL');
       
       // 创建下载链接
       const link = document.createElement('a');
@@ -232,23 +233,23 @@ const Consecration: React.FC = () => {
       document.body.appendChild(link);
       
       // 触发下载
-      setDownloadStatus('正在下载...');
+      setDownloadStatus('Downloading...');
       
       // 添加点击延迟确保浏览器有足够时间处理
       setTimeout(() => {
         try {
           link.click();
-          console.log('下载链接点击成功');
-          setDownloadStatus('下载完成！');
+          console.log('Download link clicked successfully');
+          setDownloadStatus('Download completed!');
           
           // 重置状态
           setTimeout(() => {
             setDownloadStatus(null);
           }, 2000);
         } catch (clickError) {
-          console.error('点击下载链接失败:', clickError);
+          console.error('Failed to click download link:', clickError);
           // 显示手动保存提示
-          setDownloadStatus('请右键点击图像并选择"保存图片"');
+          setDownloadStatus('Please right-click the image and select "Save Image"');
           
           // 重置状态
           setTimeout(() => {
@@ -260,8 +261,8 @@ const Consecration: React.FC = () => {
       }, 100);
       
     } catch (error) {
-      console.error('下载失败:', error);
-      setDownloadStatus(`下载失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      console.error('Download failed:', error);
+      setDownloadStatus(`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       
       // 重置状态
       setTimeout(() => {
@@ -522,9 +523,19 @@ const Consecration: React.FC = () => {
                         'Download Result'
                       )}
                     </button>
-                    <button className="flex-1 bg-[#1D1D1F]/50 backdrop-blur-sm border border-[#8676B6]/30 hover:border-[#8676B6] text-[#8676B6] py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300" disabled={isDownloading}>
-                      Share to Social Media
-                    </button>
+                  </div>
+                  
+                  {/* Social Share Section */}
+                  <div className="border border-[#8676B6]/30 rounded-xl p-4 bg-[#1D1D1F]/50 backdrop-blur-sm">
+                    <h3 className="text-lg font-medium mb-3 text-[#F5F5F7]">Share to Social Media</h3>
+                    {resultUrl && (
+                      <SocialShare 
+                        imageUrl={resultUrl} 
+                        title="Cyber Buddha Consecration Result" 
+                        description="Check out my Cyber Buddha Consecration result!" 
+                        pageUrl="https://your-vercel-domain" 
+                      />
+                    )}
                   </div>
                   
                   {/* Offer Oil Button */}
@@ -539,7 +550,7 @@ const Consecration: React.FC = () => {
                       <form action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" method="post" target="_blank" style={{display:'inline-grid',justifyItems:'center',alignContent:'start',gap:'0.5rem'}}>
                         <input className="pp-KWCN3QN74N4X4" type="submit" value="Click to Pay" />
                         <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
-                        <section style={{fontSize: '0.75rem'}}> •// <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style={{height:'0.875rem',verticalAlign:'middle'}}/></section>
+                        <section style={{fontSize: '0.75rem', color: '#1a56db', fontWeight: 'bold'}}>PayPal</section>
                       </form>
                     </div>
                   </div>

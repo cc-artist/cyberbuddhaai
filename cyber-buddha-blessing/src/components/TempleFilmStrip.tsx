@@ -16,27 +16,67 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples }) => {
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [mouseX, setMouseX] = useState(0);
+  const [isMouseOver, setIsMouseOver] = useState(false);
 
-  // Auto-scroll functionality
+  // Handle mouse movement for direction-based scrolling
+  const handleMouseMoveGlobal = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!scrollContainerRef.current) return;
+    setMouseX(e.clientX);
+  };
+
+  // Handle mouse enter/leave for stopping scrolling
+  const handleMouseEnter = () => {
+    setIsMouseOver(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsMouseOver(false);
+    setIsDragging(false);
+  };
+
+  // Direction-based scroll functionality
   useEffect(() => {
-    if (!autoScroll || !scrollContainerRef.current) return;
+    if (!scrollContainerRef.current || isMouseOver || isDragging) return;
 
     const scrollContainer = scrollContainerRef.current;
-    const scrollSpeed = 0.5;
     const interval = 30;
+    
+    // Calculate scroll direction and speed based on mouse position
+    const calculateScrollSpeed = () => {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+      const mouseDistanceFromCenter = mouseX - containerCenter;
+      
+      // Mouse is on the left side - scroll right (positive direction)
+      // Mouse is on the right side - scroll left (negative direction)
+      // Speed increases as mouse moves further from center
+      const maxSpeed = 1.5;
+      const speed = (mouseDistanceFromCenter / containerCenter) * maxSpeed;
+      
+      return speed;
+    };
 
     const scroll = () => {
-      if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+      const speed = calculateScrollSpeed();
+      
+      // Reverse the direction as requested
+      const reversedSpeed = -speed;
+      
+      scrollContainer.scrollLeft += reversedSpeed;
+      
+      // Loop the scroll
+      if (scrollContainer.scrollLeft <= 0) {
+        scrollContainer.scrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+      } else if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
         scrollContainer.scrollLeft = 0;
-      } else {
-        scrollContainer.scrollLeft += scrollSpeed;
       }
     };
 
     const scrollInterval = setInterval(scroll, interval);
 
     return () => clearInterval(scrollInterval);
-  }, [autoScroll]);
+  }, [mouseX, isMouseOver, isDragging]);
 
   // Mouse/touch drag functionality
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -44,7 +84,6 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples }) => {
     setIsDragging(true);
     setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
     setScrollLeft(scrollContainerRef.current.scrollLeft);
-    setAutoScroll(false);
   };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -52,7 +91,6 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples }) => {
     setIsDragging(true);
     setStartX(e.touches[0].pageX - scrollContainerRef.current.offsetLeft);
     setScrollLeft(scrollContainerRef.current.scrollLeft);
-    setAutoScroll(false);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -71,7 +109,7 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples }) => {
   };
 
   const handleMouseUp = () => setIsDragging(false);
-  const handleMouseLeave = () => setIsDragging(false);
+
   const handleTouchEnd = () => setIsDragging(false);
 
   return (
@@ -87,8 +125,12 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples }) => {
           msOverflowStyle: 'none'
         }}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
+        onMouseMove={(e) => {
+          handleMouseMove(e);
+          handleMouseMoveGlobal(e);
+        }}
         onMouseUp={handleMouseUp}
+        onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}

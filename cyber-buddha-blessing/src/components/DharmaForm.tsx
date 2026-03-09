@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
+import SocialShare from './SocialShare';
 
 
 
@@ -795,6 +796,19 @@ const DharmaForm: React.FC = () => {
               </button>
             </div>
             
+            {/* Social Share Section */}
+            <div className="border border-[#8676B6]/30 rounded-xl p-4 bg-[#1D1D1F]/50 backdrop-blur-sm">
+              <h3 className="text-lg font-medium mb-3 text-[#F5F5F7]">Share to Social Media</h3>
+              {resultData && (
+                <SocialShare 
+                  imageUrl={resultData.imageUrl} 
+                  title="Cyber Buddha Dharma Form" 
+                  description="Check out my exclusive Cyber Buddha Dharma Form!" 
+                  pageUrl="https://your-vercel-domain" 
+                />
+              )}
+            </div>
+            
             {/* Offer Oil Button with PayPal */}
             <div className="w-full mt-4">
               <div className="text-center mb-2">
@@ -807,7 +821,7 @@ const DharmaForm: React.FC = () => {
                 <form action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" method="post" target="_blank" style={{display:'inline-grid',justifyItems:'center',alignContent:'start',gap:'0.5rem'}}>
                   <input className="pp-KWCN3QN74N4X4" type="submit" value="Click to Pay" />
                   <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
-                  <section style={{fontSize: '0.75rem'}}> •// <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style={{height:'0.875rem',verticalAlign:'middle'}}/></section>
+                  <section style={{fontSize: '0.75rem', color: '#1a56db', fontWeight: 'bold'}}>PayPal</section>
                 </form>
               </div>
             </div>

@@ -9,6 +9,9 @@ import DharmaForm from '../components/DharmaForm';
 import LampBlessing from '../components/LampBlessing';
 import { Temple, temples as staticTemples } from '../data/TempleData';
 
+// Static generation for homepage for better performance
+export const dynamic = 'force-static';
+
 export default function Home() {
   const [temples, setTemples] = useState<Temple[]>(staticTemples);
   
@@ -164,25 +167,25 @@ export default function Home() {
             <div className="flex flex-wrap justify-center gap-4">
               <button
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'blessing' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-                onClick={() => setActiveTab('blessing')}
+                onMouseEnter={() => setActiveTab('blessing')}
               >
                 Cyber Buddha Consecration
               </button>
               <button
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'dharma' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-                onClick={() => setActiveTab('dharma')}
+                onMouseEnter={() => setActiveTab('dharma')}
               >
                 Request Dharma Form
               </button>
               <button
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'lamp' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-                onClick={() => setActiveTab('lamp')}
+                onMouseEnter={() => setActiveTab('lamp')}
               >
                 Lamp Blessing
               </button>
               <button
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'temple' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-                onClick={() => setActiveTab('temple')}
+                onMouseEnter={() => setActiveTab('temple')}
               >
                 Custom Temple Tours
               </button>

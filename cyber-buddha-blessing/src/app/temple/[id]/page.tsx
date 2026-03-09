@@ -1,90 +1,81 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import NextImage from 'next/image';
-import { useRouter, useParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { Temple, temples as staticTemples } from '../../../data/TempleData';
-import ContactForm from '../../../components/ContactForm';
+import ContactFormWrapper from '../../../components/ContactFormWrapper';
 
-export default function TempleDetailPage() {
-  const router = useRouter();
-  const params = useParams();
-  const { id } = params;
-  
-  const [temple, setTemple] = useState<Temple | null>(null);
-  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  
-  // 从API获取单个寺庙数据
-  useEffect(() => {
-    const fetchTemple = async () => {
-      setLoading(true);
-      
-      try {
-        let templeId: string;
-        if (typeof id === 'string') {
-          templeId = id;
-        } else if (Array.isArray(id) && id.length > 0) {
-          templeId = id[0];
-        } else {
-          throw new Error('Invalid temple id');
-        }
-        
-        const res = await fetch(`/api/public/temples/${templeId}`, {
-          cache: 'no-store'
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          setTemple(data);
-        } else {
-          // 如果API请求失败，尝试从静态数据中查找
-          const staticTemple = staticTemples.find(t => t.id === parseInt(templeId));
-          if (staticTemple) {
-            setTemple(staticTemple);
-          } else {
-            router.push('/');
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch temple:', error);
-        // 如果获取失败，重定向到首页
-        router.push('/');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchTemple();
-  }, [id, router]);
-  
-  if (loading || !temple) {
-    return (
-      <div className="min-h-screen bg-[#1D1D1F] flex items-center justify-center">
-        <div className="text-[#F5F5F7]">
-          Loading...
-        </div>
-      </div>
-    );
+// Dynamic rendering for temple detail page
+export const dynamic = 'force-dynamic';
+
+// Generate metadata based on temple data
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  let templeId: string;
+  if (typeof params.id === 'string') {
+    templeId = params.id;
+  } else {
+    templeId = '0';
   }
   
-  const handleOpenContactForm = () => {
-    setIsContactFormOpen(true);
+  const temple = staticTemples.find(t => t.id === parseInt(templeId));
+  
+  if (!temple) {
+    return {
+      title: 'Temple Not Found | Cyber Buddha',
+      description: 'The requested temple could not be found.',
+    };
+  }
+  
+  return {
+    title: `${temple.name} | Cyber Buddha`,
+    description: temple.description,
+    keywords: ['Cyber Buddha', 'Temple Tour', temple.name, temple.location, 'Zen Experience'],
+    openGraph: {
+      title: `${temple.name} | Cyber Buddha`,
+      description: temple.description,
+      type: 'website',
+      url: `https://your-vercel-domain/temple/${temple.id}`,
+      images: [
+        {
+          url: temple.image,
+          width: 1200,
+          height: 630,
+          alt: temple.name,
+        },
+      ],
+    },
   };
+};
+
+export default async function TempleDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
+  
+  let templeId: string;
+  if (typeof id === 'string') {
+    templeId = id;
+  } else {
+    redirect('/');
+  }
+  
+  // 直接从静态数据中查找寺庙
+  const temple = staticTemples.find(t => t.id === parseInt(templeId)) || null;
+  
+  if (!temple) {
+    redirect('/');
+  }
   
   return (
     <div className="min-h-screen bg-[#1D1D1F] text-[#F5F5F7] font-sans">
       {/* Navigation */}
       <header className="sticky top-0 z-50 bg-[#1D1D1F]/80 backdrop-blur-md border-b border-[#8676B6]/30">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button 
-            className="text-[#8676B6] hover:text-[#8676B6]/80 transition-colors duration-300" 
-            onClick={() => router.push('/')}
+          <a 
+            href="/" 
+            className="text-[#8676B6] hover:text-[#8676B6]/80 transition-colors duration-300"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-          </button>
+          </a>
           <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F7] via-[#8676B6] to-[#FFD700]">
             Temple Details
           </h1>
@@ -92,8 +83,78 @@ export default function TempleDetailPage() {
         </div>
       </header>
       
+      {/* Breadcrumb Navigation */}
+      <nav className="max-w-7xl mx-auto px-4 py-2">
+        <ol className="flex items-center space-x-2 text-sm text-[#8676B6]/70">
+          <li>
+            <a 
+              href="/" 
+              className="hover:text-[#8676B6] transition-colors duration-300"
+            >
+              Home
+            </a>
+          </li>
+          <li className="text-[#8676B6]/50">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </li>
+          <li>
+            <a 
+              href="/" 
+              className="hover:text-[#8676B6] transition-colors duration-300"
+            >
+              Temples
+            </a>
+          </li>
+          <li className="text-[#8676B6]/50">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </li>
+          <li className="text-[#8676B6]">
+            {temple.name}
+          </li>
+        </ol>
+      </nav>
+      
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'PlaceOfWorship',
+            '@id': `https://your-vercel-domain/temple/${temple.id}`,
+            name: temple.name,
+            description: temple.description,
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: temple.location,
+            },
+            image: temple.image,
+            url: `https://your-vercel-domain/temple/${temple.id}`,
+            additionalProperty: [
+              {
+                '@type': 'PropertyValue',
+                name: 'Features',
+                value: temple.features.join(', ')
+              },
+              {
+                '@type': 'PropertyValue',
+                name: 'Highlights',
+                value: temple.highlights.join(', ')
+              }
+            ],
+            amenityFeature: temple.features.map(feature => ({
+              '@type': 'LocationFeatureSpecification',
+              name: feature
+            })),
+            isAccessibleForFree: true,
+            openingHours: 'Mo-Su 06:00-18:00'
+          })}}
+        />
         {/* Temple Image and Basic Information */}
         <div className="relative w-full h-[500px] mb-8 rounded-2xl overflow-hidden shadow-2xl">
           <NextImage
@@ -174,43 +235,8 @@ export default function TempleDetailPage() {
             <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-2xl p-6 shadow-lg">
               <h3 className="text-xl font-semibold text-[#8676B6] mb-4">Tour Booking</h3>
               <div className="space-y-3">
-                <button
-                  className="w-full bg-[#8676B6] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#8676B6]/90 transition-colors duration-300 shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-[#8676B6]"
-                  onClick={handleOpenContactForm}
-                  disabled={false}
-                >
-                  Consult Customer Service to Book
-                </button>
+                <ContactFormWrapper templeName={temple.name} />
                 <div>
-                  <style jsx>{`
-                    .pp-VJGYEAUJ7GH6L {
-                      text-align: center;
-                      border: none;
-                      border-radius: 0.5rem;
-                      width: 100%;
-                      padding: 1rem 1.5rem;
-                      font-weight: medium;
-                      background: linear-gradient(to right, #FFD700, #FF6B00);
-                      color: #1D1D1F;
-                      font-family: inherit;
-                      font-size: 1rem;
-                      line-height: 1.25rem;
-                      cursor: pointer;
-                      transition: all 0.3s ease;
-                      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                    }
-                    
-                    .pp-VJGYEAUJ7GH6L:hover:not(:disabled) {
-                      background: linear-gradient(to right, rgba(255, 215, 0, 0.9), rgba(255, 107, 0, 0.9));
-                      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-                    }
-                    
-                    .pp-VJGYEAUJ7GH6L:disabled {
-                      opacity: 0.7;
-                      cursor: not-allowed;
-                      background: linear-gradient(to right, #FFD700, #FF6B00);
-                    }
-                  `}</style>
                   <form 
                     action={`${process.env.PAYPAL_PAYMENT_URL}VJGYEAUJ7GH6L`} 
                     method="post" 
@@ -218,10 +244,10 @@ export default function TempleDetailPage() {
                     className="w-full"
                   >
                     <input 
-                      className="pp-VJGYEAUJ7GH6L"
+                      className="w-full text-center border-none rounded-lg px-6 py-4 font-medium bg-gradient-to-r from-[#FFD700] to-[#FF6B00] text-[#1D1D1F] font-inherit text-base leading-5 cursor-pointer transition-all duration-300 shadow-md hover:shadow-lg hover:from-[#FFD700]/90 hover:to-[#FF6B00]/90 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:from-[#FFD700] disabled:hover:to-[#FF6B00]"
                       type="submit" 
                       value="Pay $10,000 USD to Book" 
-                      disabled={isContactFormOpen}
+                      disabled={false}
                     />
                     <div className="flex justify-center items-center gap-1 mt-2">
                       <img 
@@ -231,11 +257,7 @@ export default function TempleDetailPage() {
                       />
                     </div>
                     <div className="text-center text-xs text-[#F5F5F7]/50 mt-1">
-                      •// <img 
-                        src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" 
-                        alt="paypal" 
-                        style={{ height: '0.875rem', verticalAlign: 'middle' }}
-                      />
+                      <span style={{ fontSize: '0.875rem', color: '#1a56db', fontWeight: 'bold' }}>PayPal</span>
                     </div>
                   </form>
                 </div>
@@ -287,13 +309,6 @@ export default function TempleDetailPage() {
           <p>© 2026 Cyber Buddha. All rights reserved.</p>
         </div>
       </footer>
-      
-      {/* Contact Form Modal */}
-      <ContactForm
-        isOpen={isContactFormOpen}
-        onClose={() => setIsContactFormOpen(false)}
-        templeName={temple.name}
-      />
     </div>
   );
 }

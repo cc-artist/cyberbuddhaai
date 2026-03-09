@@ -123,8 +123,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
       <div className="relative w-full max-w-2xl bg-[#1D1D1F] border border-[#8676B6]/30 rounded-2xl overflow-hidden shadow-2xl">
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 bg-[#8676B6]/20 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-[#8676B6]/30 transition-colors duration-300 z-10"
+          className="absolute top-4 right-4 bg-[#8676B6]/20 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-[#8676B6]/30 transition-colors duration-300 z-10 focus:outline-none focus:ring-2 focus:ring-[#8676B6]"
           onClick={onClose}
+          aria-label="Close contact form"
+          type="button"
         >
           <svg className="w-6 h-6 text-[#8676B6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
