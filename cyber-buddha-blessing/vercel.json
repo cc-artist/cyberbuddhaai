@@ -3,5 +3,12 @@
   "scope": "cyber-buddha",
   "framework": "nextjs",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "ignoreCommand": "git status --porcelain | grep -E '^\s*(D|\?\?)' | grep -v '.gitignore'",
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
