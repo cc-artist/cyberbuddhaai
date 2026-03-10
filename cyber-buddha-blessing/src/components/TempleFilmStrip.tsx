@@ -98,14 +98,14 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples }) => {
     e.preventDefault();
     const x = e.pageX - scrollContainerRef.current.offsetLeft;
     const walk = (x - startX) * 2; // Scroll speed multiplier
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+    scrollContainerRef.current.scrollLeft = scrollLeft + walk;
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     if (!isDragging || !scrollContainerRef.current) return;
     const x = e.touches[0].pageX - scrollContainerRef.current.offsetLeft;
     const walk = (x - startX) * 2; // Scroll speed multiplier
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+    scrollContainerRef.current.scrollLeft = scrollLeft + walk;
   };
 
   const handleMouseUp = () => setIsDragging(false);
