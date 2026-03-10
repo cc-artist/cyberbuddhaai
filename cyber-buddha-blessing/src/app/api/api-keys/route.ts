@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getApiSession } from '../../../lib/auth';
-import { supabase } from '../../../lib/supabase';
 
 export async function GET() {
   // 检查管理员是否已登录

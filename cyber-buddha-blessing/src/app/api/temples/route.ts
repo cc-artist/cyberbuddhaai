@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getApiSession } from '../../../lib/auth';
-import { supabase } from '../../../lib/supabase';
 import { temples as mockTemples } from '../../../data/TempleData';
 
 export async function GET() {
