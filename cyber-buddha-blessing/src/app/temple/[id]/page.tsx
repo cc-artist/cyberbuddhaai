@@ -206,36 +206,54 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
                   {/* PayPal Smart Payment Button */}
                   <div id="paypal-button-container" className="w-full"></div>
                   
-                  {/* PayPal SDK Initialization */}
+                  {/* PayPal SDK Initialization with proper error handling */}
                   <script dangerouslySetInnerHTML={{ __html: `
-                    window.paypal.Buttons({
-                      createOrder: function(data, actions) {
-                        // 设置订单详情
-                        return actions.order.create({
-                          purchase_units: [{
-                            amount: {
-                              value: '10000',
-                              currency_code: 'USD'
-                            },
-                            description: 'Custom Tour Booking for ${temple.name}',
-                            custom_id: 'temple_${temple.id}'
-                          }]
-                        });
-                      },
-                      onApprove: function(data, actions) {
-                        // 捕获支付
-                        return actions.order.capture().then(function(details) {
-                          // 支付成功后的处理
-                          alert('Payment successful! Thank you for booking with Cyber Buddha.');
-                          console.log('Payment details:', details);
-                        });
-                      },
-                      onError: function(err) {
-                        // 支付错误处理
-                        console.error('PayPal error:', err);
-                        alert('Payment failed. Please try again or contact customer service.');
+                    // Wait for PayPal SDK to load
+                    if (window.paypal) {
+                      renderPayPalButton();
+                    } else {
+                      // If SDK hasn't loaded yet, add an event listener
+                      window.addEventListener('paypal-sdk:ready', renderPayPalButton);
+                    }
+                    
+                    function renderPayPalButton() {
+                      try {
+                        window.paypal.Buttons({
+                          createOrder: function(data, actions) {
+                            // 设置订单详情
+                            return actions.order.create({
+                              purchase_units: [{
+                                amount: {
+                                  value: '10000.00', // 使用完整的金额格式
+                                  currency_code: 'USD'
+                                },
+                                description: 'Custom Tour Booking for ${temple.name}',
+                                custom_id: 'temple_${temple.id}'
+                              }]
+                            });
+                          },
+                          onApprove: function(data, actions) {
+                            // 捕获支付
+                            return actions.order.capture().then(function(details) {
+                              // 支付成功后的处理
+                              alert('Payment successful! Thank you for booking with Cyber Buddha.');
+                              console.log('Payment details:', details);
+                            });
+                          },
+                          onError: function(err) {
+                            // 支付错误处理
+                            console.error('PayPal error:', err);
+                            alert('Payment failed. Please try again or contact customer service. Error: ' + JSON.stringify(err));
+                          }
+                        }).render('#paypal-button-container');
+                      } catch (error) {
+                        console.error('Error rendering PayPal button:', error);
+                        document.getElementById('paypal-button-container').innerHTML = 
+                          '<div class="w-full bg-[#1D1D1F] border border-[#8676B6]/30 rounded-lg px-6 py-4 text-center text-[#F5F5F7]/70">
+                            <p>Payment service temporarily unavailable. Please contact customer service to book.</p>
+                          </div>';
                       }
-                    }).render('#paypal-button-container');
+                    }
                   ` }} />
                   
                   <div className="flex justify-center items-center gap-1 mt-2">
