@@ -8,7 +8,7 @@ Disallow: /admin
 Disallow: /api/*
 
 # Host
-Host: https://example.com
+Host: https://bc-drab.vercel.app/
 
 # Sitemaps
-Sitemap: https://example.com/sitemap.xml
+Sitemap: https://bc-drab.vercel.app/sitemap.xml
