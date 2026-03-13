@@ -250,20 +250,29 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
                 <div>
                   {/* PayPal Payment Button */}
                   <div className="w-full text-center">
-                    <a 
-                      href={`https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=your-business-email@example.com&item_name=Custom+Tour+Booking+for+${encodeURIComponent(temple.name)}&amount=10000.00&currency_code=USD`} 
+                    <form 
+                      action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" 
+                      method="post" 
                       target="_blank" 
-                      rel="noopener noreferrer"
-                      className="w-full inline-block text-center border-none rounded-lg px-6 py-4 font-medium bg-gradient-to-r from-[#FFD700] to-[#FF6B00] text-[#1D1D1F] font-inherit text-base leading-5 cursor-pointer transition-all duration-300 shadow-md hover:shadow-lg hover:from-[#FFD700]/90 hover:to-[#FF6B00]/90 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:from-[#FFD700] disabled:hover:to-[#FF6B00]"
+                      className="w-full"
                     >
-                      Pay $10,000 USD to Book
-                    </a>
+                      <input 
+                        type="hidden" 
+                        name="item_name" 
+                        value={`Custom Tour Booking for ${temple.name}`} 
+                      />
+                      <input 
+                        type="hidden" 
+                        name="amount" 
+                        value="10000.00" 
+                      />
+                      <input 
+                        className="w-full text-center border-none rounded-lg px-6 py-4 font-medium bg-gradient-to-r from-[#FFD700] to-[#FF6B00] text-[#1D1D1F] font-inherit text-base leading-5 cursor-pointer transition-all duration-300 shadow-md hover:shadow-lg hover:from-[#FFD700]/90 hover:to-[#FF6B00]/90 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:from-[#FFD700] disabled:hover:to-[#FF6B00]"
+                        type="submit" 
+                        value="Pay $10,000 USD to Book" 
+                      />
+                    </form>
                   </div>
-                  
-                  {/* PayPal SDK Script */}
-                  <Script
-                    src="https://www.paypal.com/sdk/js?client-id=BAA9cxy8DYmUMqEob7eABEqPVGx86qxOdd-SK9ptm87tzEYmfPGVcUATLCNs7G3PeEtEh2WDEbXPwZ3ubA&disable-funding=venmo&currency=USD&intent=capture"
-                  />
                   
                   <div className="flex justify-center items-center gap-1 mt-2">
                     <img 
