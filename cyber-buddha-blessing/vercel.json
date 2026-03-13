@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "scope": "cyber-buddha",
   "framework": "nextjs",
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
