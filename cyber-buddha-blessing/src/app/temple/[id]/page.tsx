@@ -248,33 +248,8 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
               <div className="space-y-3">
                 <ContactFormWrapper templeName={temple.name} />
                 <div>
-                  {/* PayPal Standard Payment Button - Backup option */}
-                  <form 
-                    action="https://www.paypal.com/cgi-bin/webscr" 
-                    method="post" 
-                    target="_blank" 
-                    className="w-full mb-4"
-                  >
-                    <input type="hidden" name="cmd" value="_cart" />
-                    <input type="hidden" name="business" value="your-business-email@example.com" />
-                    <input type="hidden" name="lc" value="US" />
-                    <input type="hidden" name="item_name" value="Custom Tour Booking for ${temple.name}" />
-                    <input type="hidden" name="amount" value="10000.00" />
-                    <input type="hidden" name="currency_code" value="USD" />
-                    <input type="hidden" name="button_subtype" value="products" />
-                    <input type="hidden" name="no_note" value="1" />
-                    <input type="hidden" name="add" value="1" />
-                    <input type="hidden" name="bn" value="PP-ShopCartBF:btn_cart_LG.gif:NonHosted" />
-                    <input 
-                      className="w-full text-center border-none rounded-lg px-6 py-4 font-medium bg-gradient-to-r from-[#FFD700] to-[#FF6B00] text-[#1D1D1F] font-inherit text-base leading-5 cursor-pointer transition-all duration-300 shadow-md hover:shadow-lg hover:from-[#FFD700]/90 hover:to-[#FF6B00]/90 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:from-[#FFD700] disabled:hover:to-[#FF6B00]"
-                      type="submit" 
-                      value="Pay $10,000 USD to Book" 
-                      disabled={false}
-                    />
-                  </form>
-                  
-                  {/* Simple PayPal Payment Link - Reliable backup option */}
-                  <div className="w-full text-center mt-4">
+                  {/* PayPal Payment Button */}
+                  <div className="w-full text-center">
                     <a 
                       href={`https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=your-business-email@example.com&item_name=Custom+Tour+Booking+for+${encodeURIComponent(temple.name)}&amount=10000.00&currency_code=USD`} 
                       target="_blank" 
@@ -288,12 +263,6 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
                   {/* PayPal SDK Script */}
                   <Script
                     src="https://www.paypal.com/sdk/js?client-id=BAA9cxy8DYmUMqEob7eABEqPVGx86qxOdd-SK9ptm87tzEYmfPGVcUATLCNs7G3PeEtEh2WDEbXPwZ3ubA&disable-funding=venmo&currency=USD&intent=capture"
-                    onLoad={() => {
-                      console.log('PayPal SDK loaded successfully');
-                    }}
-                    onError={(e) => {
-                      console.error('Failed to load PayPal SDK:', e);
-                    }}
                   />
                   
                   <div className="flex justify-center items-center gap-1 mt-2">

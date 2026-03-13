@@ -178,7 +178,6 @@ export default function Home() {
                 </div>
                 <TempleFilmStrip 
                   temples={temples} 
-                  onTempleClick={handleTempleClick} 
                 />
               </div>
             )}

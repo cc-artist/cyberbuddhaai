@@ -10,7 +10,7 @@ interface TempleFilmStripProps {
   onTempleClick?: (temple: Temple) => void;
 }
 
-const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples }) => {
+const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples, onTempleClick }) => {
   // 反向互动效果状态
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -74,6 +74,12 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples }) => {
             key={temple.id}
             href={`/temple/${temple.id}`}
             className="flex-shrink-0 w-[300px] h-[400px] bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer group"
+            onClick={(e) => {
+              if (onTempleClick) {
+                e.preventDefault();
+                onTempleClick(temple);
+              }
+            }}
           >
             <div className="relative w-full h-[200px] overflow-hidden">
               <NextImage
