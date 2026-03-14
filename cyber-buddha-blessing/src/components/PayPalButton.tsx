@@ -62,9 +62,14 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
       const button = (window as any).paypal.Buttons({
         // 隐藏技术支持提供方文本
         style: {
-          layout: 'vertical',
+          layout: 'horizontal', // 尝试使用水平布局，可能会自动隐藏标签行
           tagline: false, // 隐藏"技术支持提供方：PAYPAL"文本
-          fundingicons: true
+          fundingicons: true,
+          // 添加更多样式选项确保标签行隐藏
+          color: 'gold',
+          shape: 'rect',
+          label: 'paypal',
+          height: 48
         },
         createOrder: (data: any, actions: any) => {
           console.log('[PayPal] Creating order');
