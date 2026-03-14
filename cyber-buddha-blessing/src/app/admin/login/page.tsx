@@ -86,11 +86,7 @@ const SimpleLoginPage = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-400">
-          <p>Use test credentials:</p>
-          <p className="mt-1">Email: admin@example.com</p>
-          <p>Password: admin123</p>
-        </div>
+
       </div>
     </div>
   );
