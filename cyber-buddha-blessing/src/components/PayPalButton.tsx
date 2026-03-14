@@ -18,7 +18,7 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
+  const buttonInstanceRef = useRef<any>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -27,38 +27,68 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
       return;
     }
 
-    // Check if PayPal SDK is already loaded
-    if ((window as any).paypal) {
-      console.log('[PayPal] SDK already loaded');
-      setIsSDKLoaded(true);
-      renderButton();
-      return;
+    // Clear any existing button instance
+    if (buttonInstanceRef.current) {
+      try {
+        buttonInstanceRef.current.close();
+      } catch (e) {
+        console.error('[PayPal] Error closing existing button:', e);
+      }
+      buttonInstanceRef.current = null;
     }
 
-    // Set up a timeout to check if PayPal SDK loads
-    const timeoutId = setTimeout(() => {
-      if (!(window as any).paypal) {
-        console.error('[PayPal] SDK failed to load within timeout period');
-        setIsLoading(false);
-        setError('PayPal SDK failed to load. Please try refreshing the page.');
+    const checkAndRenderButton = () => {
+      if ((window as any).paypal && containerRef.current) {
+        renderButton();
+      } else if (!isLoading) {
+        // If we're not already loading, start loading again
+        setIsLoading(true);
+        setError(null);
       }
-    }, 10000); // 10 seconds timeout
+    };
 
-    // Listen for PayPal SDK load event
-    const handlePayPalSDKLoad = () => {
-      console.log('[PayPal] SDK loaded via event');
-      setIsSDKLoaded(true);
-      clearTimeout(timeoutId);
+    // Check if PayPal SDK is already loaded
+    if ((window as any).paypal) {
+      console.log('[PayPal] SDK already loaded, rendering button immediately');
       renderButton();
-    };
+    } else {
+      console.log('[PayPal] SDK not yet loaded, setting up listeners');
+      // Set up a timeout to check if PayPal SDK loads
+      const timeoutId = setTimeout(() => {
+        if (!(window as any).paypal) {
+          console.error('[PayPal] SDK failed to load within timeout period');
+          setIsLoading(false);
+          setError('PayPal SDK failed to load. Please try refreshing the page.');
+        }
+      }, 10000); // 10 seconds timeout
 
-    window.addEventListener('paypal-sdk:loaded', handlePayPalSDKLoad);
+      // Listen for PayPal SDK load event
+      const handlePayPalSDKLoad = () => {
+        console.log('[PayPal] SDK loaded via event');
+        clearTimeout(timeoutId);
+        renderButton();
+      };
 
-    // Cleanup
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('paypal-sdk:loaded', handlePayPalSDKLoad);
-    };
+      // Also check periodically if SDK has loaded (fallback for cases where event doesn't fire)
+      const intervalId = setInterval(() => {
+        if ((window as any).paypal) {
+          console.log('[PayPal] SDK loaded, detected via interval check');
+          clearTimeout(timeoutId);
+          clearInterval(intervalId);
+          window.removeEventListener('paypal-sdk:loaded', handlePayPalSDKLoad);
+          renderButton();
+        }
+      }, 500);
+
+      window.addEventListener('paypal-sdk:loaded', handlePayPalSDKLoad);
+
+      // Cleanup
+      return () => {
+        clearTimeout(timeoutId);
+        clearInterval(intervalId);
+        window.removeEventListener('paypal-sdk:loaded', handlePayPalSDKLoad);
+      };
+    }
   }, [amount, description, name]);
 
   const renderButton = () => {
@@ -73,7 +103,7 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
       console.log('[PayPal] Rendering button with:', { amount, description, name });
       
       // Render PayPal Smart Payment Button
-      (window as any).paypal.Buttons({
+      const buttonInstance = (window as any).paypal.Buttons({
         createOrder: function(data: any, actions: any) {
           console.log('[PayPal] Creating order with:', { amount, description, name });
           try {
@@ -118,7 +148,12 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
           console.log('[PayPal] Payment cancelled:', data);
           alert('Payment cancelled. You can try again later.');
         }
-      }).render(containerRef.current)
+      });
+
+      // Store the button instance for later cleanup
+      buttonInstanceRef.current = buttonInstance;
+
+      buttonInstance.render(containerRef.current)
         .then(() => {
           console.log('[PayPal] Button rendered successfully');
           setIsLoading(false);
