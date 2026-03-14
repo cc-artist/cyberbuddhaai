@@ -37,22 +37,15 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
       buttonInstanceRef.current = null;
     }
 
-    const checkAndRenderButton = () => {
-      if ((window as any).paypal && containerRef.current) {
-        renderButton();
-      } else if (!isLoading) {
-        // If we're not already loading, start loading again
-        setIsLoading(true);
-        setError(null);
-      }
-    };
-
     // Check if PayPal SDK is already loaded
-    if ((window as any).paypal) {
+    if ((window as any).paypal && containerRef.current) {
       console.log('[PayPal] SDK already loaded, rendering button immediately');
       renderButton();
     } else {
-      console.log('[PayPal] SDK not yet loaded, setting up listeners');
+      console.log('[PayPal] SDK not yet loaded or container not ready, setting up listeners');
+      setIsLoading(true);
+      setError(null);
+      
       // Set up a timeout to check if PayPal SDK loads
       const timeoutId = setTimeout(() => {
         if (!(window as any).paypal) {
@@ -66,13 +59,21 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
       const handlePayPalSDKLoad = () => {
         console.log('[PayPal] SDK loaded via event');
         clearTimeout(timeoutId);
-        renderButton();
+        clearInterval(intervalId);
+        window.removeEventListener('paypal-sdk:loaded', handlePayPalSDKLoad);
+        if (containerRef.current) {
+          renderButton();
+        } else {
+          console.error('[PayPal] Container not ready when SDK loaded');
+          setIsLoading(false);
+          setError('Cannot initialize PayPal button. Please try refreshing the page.');
+        }
       };
 
       // Also check periodically if SDK has loaded (fallback for cases where event doesn't fire)
       const intervalId = setInterval(() => {
-        if ((window as any).paypal) {
-          console.log('[PayPal] SDK loaded, detected via interval check');
+        if ((window as any).paypal && containerRef.current) {
+          console.log('[PayPal] SDK loaded and container ready, detected via interval check');
           clearTimeout(timeoutId);
           clearInterval(intervalId);
           window.removeEventListener('paypal-sdk:loaded', handlePayPalSDKLoad);
