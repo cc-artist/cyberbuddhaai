@@ -392,7 +392,7 @@ const Consecration: React.FC = () => {
                 </div>
             
             <div>
-              <h3 className="text-lg font-medium mb-3 text-[#F5F5F7]">Consecration Result</h3>
+              <h3 className="text-lg font-medium mb-3 text-[#F5F5F7]">Digital Blessing Result</h3>
               {isProcessing ? (
                 <div className="border border-[#8676B6]/30 rounded-xl p-8 text-center bg-[#1D1D1F]/50 backdrop-blur-sm">
                   <div className="w-16 h-16 border-4 border-[#8676B6]/30 border-t-[#8676B6] rounded-full animate-spin mx-auto mb-4"></div>
@@ -560,7 +560,7 @@ const Consecration: React.FC = () => {
                   <svg className="w-16 h-16 text-[#8676B6]/30 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-[#F5F5F7]/70">Click the button below to start consecration</p>
+                  <p className="text-[#F5F5F7]/70">Click the button below to start digital blessing</p>
                 </div>
               )}
             </div>
