@@ -65,62 +65,74 @@ const CommentScroll: React.FC = () => {
   const currentComment = comments[currentIndex];
 
   return (
-    <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-8 overflow-hidden">
-      <h3 className="text-xl font-bold mb-6 text-center text-[#F5F5F7]">Community Shares</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-        {/* 分享的图片 */}
-        <div className="relative aspect-square overflow-hidden rounded-lg border border-[#8676B6]/30">
-          <NextImage
-            src={currentComment.imageUrl}
-            alt={currentComment.title}
-            fill
-            className="object-contain"
-          />
-        </div>
-        
-        {/* 评论内容和用户信息 */}
-        <div className="space-y-4">
-          {/* 用户信息和头像 */}
-          <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#8676B6]/30">
-              <img 
-                src={currentComment.userAvatar} 
-                alt={currentComment.userName} 
-                className="w-full h-full object-cover" 
+    <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 overflow-hidden max-w-md mx-auto">
+      <h3 className="text-sm font-bold mb-3 text-center text-[#F5F5F7]">Community Shares</h3>
+      
+      {/* 评论滚动容器 */}
+      <div className="relative overflow-hidden">
+        {/* 单个评论卡片 - 带平滑过渡动画 */}
+        <div 
+          className="transition-all duration-500 ease-in-out transform"
+          style={{
+            opacity: 1,
+            transform: 'translateX(0)',
+            position: 'relative',
+            zIndex: 10
+          }}
+        >
+          <div className="grid grid-cols-1 gap-3">
+            {/* 分享的图片 */}
+            <div className="relative w-full h-24 overflow-hidden rounded-lg border border-[#8676B6]/30">
+              <NextImage
+                src={currentComment.imageUrl}
+                alt={currentComment.title}
+                fill
+                className="object-contain"
               />
             </div>
-            <div>
-              <h4 className="text-sm font-medium text-[#F5F5F7]">{currentComment.userName}</h4>
-              <div className="flex items-center text-xs text-[#F5F5F7]/50">
-                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-                {new Date(currentComment.createdAt).toLocaleDateString()}
+            
+            {/* 评论内容和用户信息 */}
+            <div className="space-y-2">
+              {/* 用户信息和头像 */}
+              <div className="flex items-center gap-2">
+                <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#8676B6]/30">
+                  <img 
+                    src={currentComment.userAvatar} 
+                    alt={currentComment.userName} 
+                    className="w-full h-full object-cover" 
+                  />
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-medium text-[#F5F5F7]">{currentComment.userName}</span>
+                  <span className="text-[#F5F5F7]/50 text-[10px]">
+                    {new Date(currentComment.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
               </div>
+              
+              {/* 分享标题 */}
+              <h4 className="text-sm font-semibold text-[#8676B6] line-clamp-1">{currentComment.title}</h4>
+              
+              {/* 用户自定义评论 */}
+              {currentComment.userComment && (
+                <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-2">
+                  <p className="text-[#F5F5F7]/80 italic text-xs line-clamp-2">"{currentComment.userComment}"</p>
+                </div>
+              )}
+              
+              {/* 原始描述 */}
+              <p className="text-[#F5F5F7]/70 text-xs line-clamp-1">{currentComment.description}</p>
             </div>
           </div>
-          
-          {/* 分享标题 */}
-          <h4 className="text-lg font-semibold text-[#8676B6]">{currentComment.title}</h4>
-          
-          {/* 用户自定义评论 */}
-          {currentComment.userComment && (
-            <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-3">
-              <p className="text-[#F5F5F7]/80 italic">"{currentComment.userComment}"</p>
-            </div>
-          )}
-          
-          {/* 原始描述 */}
-          <p className="text-[#F5F5F7]/70">{currentComment.description}</p>
         </div>
       </div>
       
-      {/* 指示器 */}
-      <div className="flex justify-center gap-2 mt-6">
+      {/* 指示器 - 缩小版本 */}
+      <div className="flex justify-center gap-1 mt-3">
         {comments.map((_, index) => (
           <button
             key={index}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-[#8676B6] w-6' : 'bg-[#8676B6]/30'}`}
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-[#8676B6] w-4' : 'bg-[#8676B6]/30'}`}
             onClick={() => setCurrentIndex(index)}
             aria-label={`Go to comment ${index + 1}`}
           />
