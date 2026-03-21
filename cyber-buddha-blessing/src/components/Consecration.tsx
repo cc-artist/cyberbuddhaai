@@ -10,6 +10,7 @@ const Consecration: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [completeResultUrl, setCompleteResultUrl] = useState<string | null>(null); // 完整合成图URL，与下载的图片完全一致
   // 下载选项状态
   const [downloadFormat, setDownloadFormat] = useState<'png' | 'jpg'>('png');
   const [downloadQuality, setDownloadQuality] = useState<number>(0.9);
@@ -22,6 +23,190 @@ const Consecration: React.FC = () => {
   const [offeringStatus, setOfferingStatus] = useState<string | null>(null);
 
 
+
+  // 生成完整合成图的功能
+  const generateCompleteResult = async (): Promise<string | null> => {
+    if (!resultUrl) return null;
+
+    try {
+      // 创建canvas元素用于合成图像
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) {
+        throw new Error('无法创建Canvas上下文');
+      }
+
+      // 创建图像对象
+      const bgImage = new Image();
+      const itemImage = new Image();
+
+      // 设置图像加载完成后的处理
+      const loadImage = (image: HTMLImageElement, src: string, isBackground: boolean = false): Promise<void> => {
+        return new Promise((resolve, reject) => {
+          image.crossOrigin = 'anonymous';
+          image.onload = () => {
+            resolve();
+          };
+          image.onerror = () => {
+            if (isBackground) {
+              // 背景图加载失败，使用默认背景
+              resolve(); // 继续执行，后面会处理默认背景
+            } else {
+              reject(new Error(`无法加载物品图像: ${src}`));
+            }
+          };
+          image.src = src;
+        });
+      };
+
+      // 先加载背景图以确定画布尺寸
+      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.png', true);
+      
+      // 设置画布尺寸以匹配背景图的原始宽高比
+      let width, height;
+      if (bgImage.complete && bgImage.naturalHeight > 0) {
+        // 使用背景图的宽高比
+        const aspectRatio = bgImage.naturalWidth / bgImage.naturalHeight;
+        width = 800; // 使用中等分辨率
+        height = width / aspectRatio;
+      } else {
+        // 如果背景图加载失败，使用默认4:3比例
+        width = 800;
+        height = width * 3/4;
+      }
+      
+      // 设置canvas实际尺寸
+      canvas.width = width;
+      canvas.height = height;
+      
+      // 然后加载物品图
+      await loadImage(itemImage, resultUrl);
+
+      // 绘制合成图
+      // 1. 先填充画布背景色，确保整体视觉完整
+      ctx.fillStyle = '#1D1D1F';
+      ctx.fillRect(0, 0, width, height);
+      
+      // 2. 绘制背景图，确保完整显示（现在画布已匹配背景图比例）
+      if (bgImage.complete && bgImage.naturalHeight > 0) {
+        // 背景图加载成功，画布尺寸已匹配，直接绘制完整背景
+        const scaleFactor = width / bgImage.naturalWidth;
+        
+        // 计算绘制尺寸，确保完整显示
+        const drawWidth = bgImage.naturalWidth * scaleFactor;
+        const drawHeight = bgImage.naturalHeight * scaleFactor;
+        
+        // 绘制背景图，确保完整显示，无剪切
+        ctx.drawImage(bgImage, 0, 0, drawWidth, drawHeight);
+      } else {
+        // 背景图加载失败，使用默认背景效果
+        const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height)/2);
+        gradient.addColorStop(0, 'rgba(134, 118, 182, 0.3)');
+        gradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.1)');
+        gradient.addColorStop(1, 'rgba(134, 118, 182, 0.2)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+      }
+      
+      // 2. 绘制佛光效果 - 外层光晕
+      const centerX = width / 2;
+      const centerY = height / 2;
+      
+      // 外层光晕 - 与页面效果一致
+      const outerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 200);
+      outerGradient.addColorStop(0, 'rgba(255, 215, 0, 0.1)');
+      outerGradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.2)');
+      outerGradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+      ctx.fillStyle = outerGradient;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 200, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // 3. 物品容器 - 包含物品和佛光效果
+      
+      // 物品浮动动画位置
+      const itemContainerX = centerX;
+      const itemContainerY = centerY;
+      
+      // 4. 物品佛光 - 内层光晕
+      const innerHaloSize = 150;
+      const innerGradient1 = ctx.createRadialGradient(itemContainerX, itemContainerY, 0, itemContainerX, itemContainerY, innerHaloSize);
+      innerGradient1.addColorStop(0, 'rgba(255, 215, 0, 0.2)');
+      innerGradient1.addColorStop(0.7, 'rgba(255, 215, 0, 0.1)');
+      innerGradient1.addColorStop(1, 'rgba(255, 215, 0, 0)');
+      ctx.fillStyle = innerGradient1;
+      ctx.beginPath();
+      ctx.arc(itemContainerX, itemContainerY, innerHaloSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // 5. 旋转佛光效果
+      const rotateGradientSize = 120;
+      ctx.save();
+      ctx.translate(itemContainerX, itemContainerY);
+      ctx.rotate(45 * Math.PI / 180);
+      
+      const rotateGradient = ctx.createLinearGradient(-rotateGradientSize, 0, rotateGradientSize, 0);
+      rotateGradient.addColorStop(0, 'rgba(255, 215, 0, 0.3)');
+      rotateGradient.addColorStop(0.5, 'rgba(134, 118, 182, 0.3)');
+      rotateGradient.addColorStop(1, 'rgba(255, 215, 0, 0.3)');
+      
+      ctx.fillStyle = rotateGradient;
+      ctx.beginPath();
+      ctx.arc(0, 0, rotateGradientSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.restore();
+      
+      // 6. 绘制物品图
+      const maxItemSize = 200;
+      
+      // 保持物品图的原始宽高比
+      const itemAspectRatio = itemImage.naturalWidth / itemImage.naturalHeight;
+      let itemWidth, itemHeight;
+      
+      if (itemAspectRatio > 1) {
+        // 物品图更宽，按宽度缩放
+        itemWidth = maxItemSize;
+        itemHeight = maxItemSize / itemAspectRatio;
+      } else {
+        // 物品图更高，按高度缩放
+        itemHeight = maxItemSize;
+        itemWidth = maxItemSize * itemAspectRatio;
+      }
+      
+      // 计算绘制位置，居中显示
+      const itemX = itemContainerX - itemWidth / 2;
+      const itemY = itemContainerY - itemHeight / 2;
+      
+      // 绘制物品图，保持宽高比，居中显示
+      ctx.drawImage(itemImage, itemX, itemY, itemWidth, itemHeight);
+      
+      // 7. 绘制顶部光线效果
+      const rayCount = 3;
+      const rayColors = ['rgba(255, 215, 0, 0.8)', 'rgba(134, 118, 182, 0.8)', 'rgba(255, 215, 0, 0.8)'];
+      
+      for (let i = 0; i < rayCount; i++) {
+        const rayX = itemContainerX + (i - 1) * 50;
+        const rayHeight = 100;
+        
+        // 使用物品的实际高度来计算光线位置
+        const rayGradient = ctx.createLinearGradient(rayX, itemContainerY - itemHeight / 2 - rayHeight, rayX, itemContainerY - itemHeight / 2);
+        rayGradient.addColorStop(0, 'transparent');
+        rayGradient.addColorStop(1, rayColors[i]);
+        
+        ctx.fillStyle = rayGradient;
+        ctx.fillRect(rayX - 2, itemContainerY - itemHeight / 2 - rayHeight, 4, rayHeight);
+      }
+      
+      // 生成Data URL
+      const dataUrl = canvas.toDataURL('image/png', 0.9);
+      return dataUrl;
+    } catch (error) {
+      console.error('生成完整合成图失败:', error);
+      return null;
+    }
+  };
 
   // 下载结果功能
   const handleDownload = async () => {
@@ -226,6 +411,9 @@ const Consecration: React.FC = () => {
       const dataUrl = canvas.toDataURL(mimeType, downloadQuality);
       console.log('Successfully generated consecration synthesis image Data URL');
       
+      // 保存完整合成图URL，用于分享
+      setCompleteResultUrl(dataUrl);
+      
       // 创建下载链接
       const link = document.createElement('a');
       link.href = dataUrl;
@@ -294,6 +482,8 @@ const Consecration: React.FC = () => {
       // 这里应该调用实际的开光API
       // 我们将在UI层面实现合成效果，所以只需要设置resultUrl为previewUrl即可
       setResultUrl(previewUrl);
+      // 清除之前的完整合成图，确保使用最新的下载设置生成
+      setCompleteResultUrl(null);
       setIsProcessing(false);
     }, 2000);
   };
@@ -529,12 +719,21 @@ const Consecration: React.FC = () => {
                   <div className="border border-[#8676B6]/30 rounded-xl p-4 bg-[#1D1D1F]/50 backdrop-blur-sm">
                     <h3 className="text-lg font-medium mb-3 text-[#F5F5F7]">Share to Social Media</h3>
                     {resultUrl && (
-                      <SocialShare 
-                        imageUrl={resultUrl} 
-                        title="Cyber Buddha Digital Blessing Result" 
-                        description="Check out my Cyber Buddha Digital Blessing result!" 
-                        pageUrl={window.location.href} 
-                      />
+                      <div className="space-y-3">
+                        {/* 提示信息 */}
+                        {!completeResultUrl && (
+                          <div className="p-2 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg text-sm text-[#FFD700]/80">
+                            Tip: Click "Download Result" first to generate the complete blessing image with background, then share for best effect!
+                          </div>
+                        )}
+                        {/* 分享按钮 */}
+                        <SocialShare 
+                          imageUrl={completeResultUrl || resultUrl} 
+                          title="Cyber Buddha Digital Blessing Result" 
+                          description="Check out my Cyber Buddha Digital Blessing result!" 
+                          pageUrl={window.location.href} 
+                        />
+                      </div>
                     )}
                   </div>
                   

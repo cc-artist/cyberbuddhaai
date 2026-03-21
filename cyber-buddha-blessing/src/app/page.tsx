@@ -7,6 +7,7 @@ import TempleDetailModal from '../components/TempleDetailModal';
 import Consecration from '../components/Consecration';
 import DharmaForm from '../components/DharmaForm';
 import LampBlessing from '../components/LampBlessing';
+import CommentScroll from '../components/CommentScroll';
 import { Temple, temples as staticTemples } from '../data/TempleData';
 
 // Static generation for homepage for better performance
@@ -182,6 +183,13 @@ export default function Home() {
               </div>
             )}
           </div>
+        </div>
+      </section>
+
+      {/* Community Shares Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-[#1D1D1F] to-[#1D1D1F]/90">
+        <div className="max-w-7xl mx-auto">
+          <CommentScroll />
         </div>
       </section>
 
