@@ -89,14 +89,13 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
     }
   };
 
-  // 保存评论到localStorage
-  const saveComment = () => {
+  // 保存评论到数据库和localStorage
+  const saveComment = async () => {
     if (!userName.trim() || !userComment.trim()) {
       alert('Please enter both username and comment!');
       return;
     }
 
-    const comments = JSON.parse(localStorage.getItem('cyberBuddhaComments') || '[]');
     const newComment: Comment = {
       id: Date.now().toString(),
       imageUrl,
@@ -108,6 +107,27 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
       userComment,
       userAvatar
     };
+
+    try {
+      // 保存到数据库
+      const response = await fetch('/api/public/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newComment),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save comment to database');
+      }
+    } catch (error) {
+      console.error('Error saving comment to database:', error);
+      // 数据库保存失败时，仍然保存到localStorage
+    }
+
+    // 保存到localStorage以保持兼容性
+    const comments = JSON.parse(localStorage.getItem('cyberBuddhaComments') || '[]');
     comments.push(newComment);
     localStorage.setItem('cyberBuddhaComments', JSON.stringify(comments));
     
@@ -179,94 +199,97 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
       {/* 评论分享模态框 */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-6 max-w-md w-full mx-4">
+          <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] flex flex-col">
             <h3 className="text-xl font-bold mb-4 text-[#F5F5F7]">Share to Comments</h3>
             
-            {/* 预览图片 */}
-            <div className="border border-[#8676B6]/30 rounded-lg overflow-hidden mb-4">
-              <img 
-                src={imageUrl} 
-                alt="Preview" 
-                className="w-full h-48 object-cover" 
-              />
-            </div>
-            
-            {/* 用户名输入 */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-[#F5F5F7]/80 mb-2">Username</label>
-              <input 
-                type="text" 
-                value={userName} 
-                onChange={(e) => setUserName(e.target.value)} 
-                className="w-full bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg px-4 py-2 text-[#F5F5F7] focus:outline-none focus:border-[#8676B6] focus:shadow-lg transition-all duration-300"
-                placeholder="Enter your username..."
-              />
-            </div>
-            
-            {/* 评论内容输入 */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-[#F5F5F7]/80 mb-2">Your Comment</label>
-              <textarea 
-                value={userComment} 
-                onChange={(e) => setUserComment(e.target.value)} 
-                className="w-full bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg px-4 py-2 text-[#F5F5F7] focus:outline-none focus:border-[#8676B6] focus:shadow-lg transition-all duration-300"
-                placeholder="Share your thoughts..."
-                rows={4}
-              ></textarea>
-            </div>
-            
-            {/* 头像选择 */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-[#F5F5F7]/80 mb-3">Choose Avatar</label>
+            {/* 可滚动内容区域 */}
+            <div className="overflow-y-auto flex-1 pr-2">
+              {/* 预览图片 */}
+              <div className="border border-[#8676B6]/30 rounded-lg overflow-hidden mb-4">
+                <img 
+                  src={imageUrl} 
+                  alt="Preview" 
+                  className="w-full h-48 object-cover" 
+                />
+              </div>
               
-              {/* 当前头像预览 */}
-              <div className="flex items-center gap-4 mb-4">
-                <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#8676B6]/30">
-                  <img 
-                    src={userAvatar} 
-                    alt="Current Avatar" 
-                    className="w-full h-full object-cover" 
-                  />
+              {/* 用户名输入 */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-[#F5F5F7]/80 mb-2">Username</label>
+                <input 
+                  type="text" 
+                  value={userName} 
+                  onChange={(e) => setUserName(e.target.value)} 
+                  className="w-full bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg px-4 py-2 text-[#F5F5F7] focus:outline-none focus:border-[#8676B6] focus:shadow-lg transition-all duration-300"
+                  placeholder="Enter your username..."
+                />
+              </div>
+              
+              {/* 评论内容输入 */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-[#F5F5F7]/80 mb-2">Your Comment</label>
+                <textarea 
+                  value={userComment} 
+                  onChange={(e) => setUserComment(e.target.value)} 
+                  className="w-full bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg px-4 py-2 text-[#F5F5F7] focus:outline-none focus:border-[#8676B6] focus:shadow-lg transition-all duration-300"
+                  placeholder="Share your thoughts..."
+                  rows={4}
+                ></textarea>
+              </div>
+              
+              {/* 头像选择 */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-[#F5F5F7]/80 mb-3">Choose Avatar</label>
+                
+                {/* 当前头像预览 */}
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#8676B6]/30">
+                    <img 
+                      src={userAvatar} 
+                      alt="Current Avatar" 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                  
+                  {/* 本地文件上传 */}
+                  <div className="flex gap-2">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleAvatarChange} 
+                      className="hidden" 
+                      id="avatar-upload"
+                    />
+                    <label 
+                      htmlFor="avatar-upload"
+                      className="px-3 py-1 bg-[#8676B6]/20 border border-[#8676B6]/30 rounded-lg text-sm text-[#F5F5F7]/80 hover:bg-[#8676B6]/30 transition-colors duration-300 cursor-pointer"
+                    >
+                      Upload Image
+                    </label>
+                  </div>
                 </div>
                 
-                {/* 本地文件上传 */}
-                <div className="flex gap-2">
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleAvatarChange} 
-                    className="hidden" 
-                    id="avatar-upload"
-                  />
-                  <label 
-                    htmlFor="avatar-upload"
-                    className="px-3 py-1 bg-[#8676B6]/20 border border-[#8676B6]/30 rounded-lg text-sm text-[#F5F5F7]/80 hover:bg-[#8676B6]/30 transition-colors duration-300 cursor-pointer"
-                  >
-                    Upload Image
-                  </label>
+                {/* 预设像素头像选择 - 增加列数减少垂直空间 */}
+                <div className="grid grid-cols-8 gap-2">
+                  {pixelAvatars.map((avatar, index) => (
+                    <button 
+                      key={index} 
+                      onClick={() => setUserAvatar(avatar)} 
+                      className={`rounded-full overflow-hidden border-2 transition-all duration-300 ${userAvatar === avatar ? 'border-[#8676B6] shadow-lg' : 'border-[#8676B6]/30 hover:border-[#8676B6]'}`}
+                    >
+                      <img 
+                        src={avatar} 
+                        alt={`Avatar ${index + 1}`} 
+                        className="w-8 h-8 object-cover" 
+                      />
+                    </button>
+                  ))}
                 </div>
-              </div>
-              
-              {/* 预设像素头像选择 */}
-              <div className="grid grid-cols-4 gap-3">
-                {pixelAvatars.map((avatar, index) => (
-                  <button 
-                    key={index} 
-                    onClick={() => setUserAvatar(avatar)} 
-                    className={`rounded-full overflow-hidden border-2 transition-all duration-300 ${userAvatar === avatar ? 'border-[#8676B6] shadow-lg' : 'border-[#8676B6]/30 hover:border-[#8676B6]'}`}
-                  >
-                    <img 
-                      src={avatar} 
-                      alt={`Avatar ${index + 1}`} 
-                      className="w-10 h-10 object-cover" 
-                    />
-                  </button>
-                ))}
               </div>
             </div>
             
-            {/* 操作按钮 */}
-            <div className="flex gap-3">
+            {/* 操作按钮 - 固定在底部 */}
+            <div className="mt-4 flex gap-3">
               <button 
                 onClick={() => setIsModalOpen(false)} 
                 className="flex-1 bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg py-2 text-[#F5F5F7]/80 hover:bg-[#1D1D1F]/70 transition-colors duration-300"

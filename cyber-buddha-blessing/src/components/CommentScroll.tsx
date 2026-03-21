@@ -18,22 +18,36 @@ interface Comment {
 const CommentScroll: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
-  const commentsPerGroup = 2; // 每组显示的评论数量
+  const commentsPerGroup = 3; // 每组显示的评论数量，根据需求改为3个
 
-  // 从localStorage获取评论数据
+  // 从数据库和localStorage获取评论数据
   useEffect(() => {
-    const loadComments = () => {
-      const storedComments = localStorage.getItem('cyberBuddhaComments');
-      if (storedComments) {
-        const parsedComments = JSON.parse(storedComments);
-        // 转换createdAt字符串为Date对象
-        const formattedComments = parsedComments.map((comment: any) => ({
-          ...comment,
-          createdAt: new Date(comment.createdAt)
-        }));
-        setComments(formattedComments);
-        // 重置当前组索引
-        setCurrentGroupIndex(0);
+    const loadComments = async () => {
+      try {
+        // 优先从数据库获取评论
+        const response = await fetch('/api/public/comments');
+        if (response.ok) {
+          const dbComments = await response.json();
+          setComments(dbComments);
+          // 重置当前组索引
+          setCurrentGroupIndex(0);
+          return;
+        }
+      } catch (error) {
+        console.error('Error fetching comments from database:', error);
+        // 数据库获取失败时，从localStorage获取
+        const storedComments = localStorage.getItem('cyberBuddhaComments');
+        if (storedComments) {
+          const parsedComments = JSON.parse(storedComments);
+          // 转换createdAt字符串为Date对象
+          const formattedComments = parsedComments.map((comment: any) => ({
+            ...comment,
+            createdAt: new Date(comment.createdAt)
+          }));
+          setComments(formattedComments);
+          // 重置当前组索引
+          setCurrentGroupIndex(0);
+        }
       }
     };
 
@@ -82,7 +96,7 @@ const CommentScroll: React.FC = () => {
       <div className="relative overflow-hidden">
         {/* 当前显示的评论组 */}
         <div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-3 transition-all duration-500 ease-in-out transform"
+          className="grid grid-cols-1 md:grid-cols-3 gap-3 transition-all duration-500 ease-in-out transform"
           style={{
             opacity: 1,
             transform: 'translateY(0)',
