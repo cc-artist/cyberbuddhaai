@@ -212,7 +212,7 @@ const CommentScroll: React.FC = () => {
       </div>
       
       {/* 提示信息 */}
-      {comments.length === 0 && (
+      {displayComments.length === 0 && (
         <div className="mt-4 text-center">
           <p className="text-[#F5F5F7]/70 text-sm">No comments yet. Be the first to share!</p>
         </div>
