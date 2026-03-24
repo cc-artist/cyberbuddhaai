@@ -1,0 +1,14 @@
+# *
+User-agent: *
+Allow: /
+
+# *
+User-agent: *
+Disallow: /admin
+Disallow: /api/*
+
+# Host
+Host: https://bc-drab.vercel.app/
+
+# Sitemaps
+Sitemap: https://bc-drab.vercel.app/sitemap.xml
