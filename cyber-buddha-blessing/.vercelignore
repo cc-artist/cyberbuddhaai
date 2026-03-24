@@ -1,0 +1,21 @@
+# Exclude unnecessary directories and files from Vercel build
+../
+temp-cyberbuddhaai/
+*.png
+*.jpg
+*.pdf
+*.txt
+*.webp
+!src/
+!public/
+!package.json
+!next.config.js
+!vercel.json
+!.env
+!.env.local
+!.gitignore
+!tailwind.config.js
+!postcss.config.js
+!eslint.config.mjs
+!next-env.d.ts
+!tsconfig.json
