@@ -434,6 +434,17 @@ const LampBlessing: React.FC = () => {
           </div>
         )}
 
+        {/* Social Share Buttons - Always Visible */}
+        <div className="border border-[#8676B6]/30 rounded-xl p-6 bg-[#1D1D1F]/50 backdrop-blur-sm">
+          <h3 className="text-md font-medium mb-4 text-[#F5F5F7]">Share Your Blessing Experience</h3>
+          <SocialShare
+            imageUrl={generatedImage || ''}
+            title="My Cyber Buddha Lamp Blessing"
+            description={wishResult || ''}
+            pageUrl="https://cyber-buddha.blessing"
+          />
+        </div>
+
         {/* Blessing Result */}
         {isWishing ? (
           <div className="border border-[#8676B6]/30 rounded-xl p-8 text-center bg-[#1D1D1F]/50 backdrop-blur-sm">
@@ -466,14 +477,6 @@ const LampBlessing: React.FC = () => {
                     </svg>
                     Download Image
                   </button>
-                  
-                  {/* Social Share Buttons */}
-                  <SocialShare
-                    imageUrl={generatedImage || ''}
-                    title="My Cyber Buddha Lamp Blessing"
-                    description={wishResult || ''}
-                    pageUrl="https://cyber-buddha.blessing"
-                  />
                 </div>
                 
                 {/* Offer Oil Button - Moved below Download Image */}

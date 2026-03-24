@@ -91,54 +91,129 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
 
   // 保存评论到数据库和localStorage
   const saveComment = async () => {
-    if (!userName.trim() || !userComment.trim()) {
-      alert('Please enter both username and comment!');
-      return;
-    }
-
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      imageUrl,
-      title,
-      description,
-      pageUrl,
-      createdAt: new Date(),
-      userName,
-      userComment,
-      userAvatar
-    };
-
     try {
-      // 保存到数据库
-      const response = await fetch('/api/public/comments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newComment),
+      console.log('saveComment function called');
+      console.log('Current state:', { userName, userComment });
+      
+      // 检查用户名和评论是否为空
+      if (!userName.trim()) {
+        console.log('Username is empty');
+        alert('Please enter your username!');
+        return;
+      }
+      
+      if (!userComment.trim()) {
+        console.log('Comment is empty');
+        alert('Please enter your comment!');
+        return;
+      }
+
+      // 检查是否有结果图 - 更严格的检查
+      console.log('Checking imageUrl:', imageUrl);
+      if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'undefined' || imageUrl === 'null') {
+        console.log('No valid imageUrl provided');
+        alert('点击生成和下载DIGITAL BLESSING结果后才能分享完整的DIGITAL BLESSING结果图');
+        return;
+      }
+
+      console.log('Creating new comment:', {
+        userName: userName.trim(),
+        userComment: userComment.trim(),
+        imageUrl,
+        title,
+        description,
+        pageUrl
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to save comment to database');
-      }
-    } catch (error) {
-      console.error('Error saving comment to database:', error);
-      // 数据库保存失败时，仍然保存到localStorage
-    }
+      const newComment: Comment = {
+        id: Date.now().toString(),
+        imageUrl,
+        title,
+        description,
+        pageUrl,
+        createdAt: new Date(),
+        userName: userName.trim(),
+        userComment: userComment.trim(),
+        userAvatar
+      };
 
-    // 保存到localStorage以保持兼容性
-    const comments = JSON.parse(localStorage.getItem('cyberBuddhaComments') || '[]');
-    comments.push(newComment);
-    localStorage.setItem('cyberBuddhaComments', JSON.stringify(comments));
+      // 保存到localStorage - 增加错误处理和降级方案
+      try {
+        // 先检查localStorage是否可用
+        const testKey = 'test_' + Date.now();
+        localStorage.setItem(testKey, 'test');
+        localStorage.removeItem(testKey);
+        
+        // localStorage可用，保存评论
+        const comments = JSON.parse(localStorage.getItem('cyberBuddhaComments') || '[]');
+        comments.push(newComment);
+        localStorage.setItem('cyberBuddhaComments', JSON.stringify(comments));
+        console.log('Comment saved to localStorage:', newComment);
+      } catch (localStorageError) {
+        console.error('Error saving comment to localStorage:', localStorageError);
+        // localStorage不可用，跳过localStorage保存，直接保存到数据库
+        console.log('localStorage not available, skipping localStorage save');
+      }
+      
+      // 保存到数据库
+      try {
+        console.log('Saving comment to database...');
+        const response = await fetch('/api/public/comments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newComment),
+        });
+
+        console.log('Database response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Database response error:', errorText);
+          // 数据库保存失败时，仍然继续执行后续逻辑
+          console.log('Database save failed, but comment processing continues');
+        } else {
+          const savedComment = await response.json();
+          console.log('Comment saved to database:', savedComment);
+        }
+      } catch (databaseError) {
+        console.error('Error saving comment to database:', databaseError);
+        // 数据库保存失败时，仍然继续执行后续逻辑
+        console.log('Database save failed, but comment processing continues');
+      }
     
-    // 重置状态并关闭模态框
-    setIsModalOpen(false);
-    setUserName('');
-    setUserComment('');
-    setUserAvatar('https://ui-avatars.com/api/?name=Guest&background=random');
-    setAvatarFile(null);
-    
-    alert('Successfully shared to comments section!');
+      // 触发自定义事件，通知CommentScroll组件刷新评论
+      console.log('Dispatching commentAdded event');
+      window.dispatchEvent(new CustomEvent('commentAdded'));
+      
+      // 直接调用CommentScroll组件的loadComments函数（如果存在）
+      // 这是一个备用方案，确保评论立即显示
+      if ((window as any).loadComments) {
+        console.log('Calling window.loadComments() directly');
+        (window as any).loadComments();
+      }
+      
+      // 触发storage事件，通知其他标签页
+      window.dispatchEvent(new Event('storage'));
+      
+      // 重置状态并关闭模态框
+      console.log('Closing modal and resetting state');
+      setIsModalOpen(false);
+      setUserName('');
+      setUserComment('');
+      setUserAvatar('https://ui-avatars.com/api/?name=Guest&background=random');
+      setAvatarFile(null);
+      
+      alert('Successfully shared to comments section!');
+      // 提示用户可以在首页查看评论
+      setTimeout(() => {
+        alert('You can now see your comment on the homepage!');
+      }, 1000);
+    } catch (error) {
+      console.error('Error in saveComment function:', error);
+      alert('Failed to share comment. Please try again!');
+    }
   };
   
   return (

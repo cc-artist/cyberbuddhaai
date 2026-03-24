@@ -21,42 +21,87 @@ const CommentScroll: React.FC = () => {
   const commentsPerGroup = 3; // 每组显示的评论数量，根据需求改为3个
 
   // 从数据库和localStorage获取评论数据
-  useEffect(() => {
-    const loadComments = async () => {
-      try {
-        // 优先从数据库获取评论
-        const response = await fetch('/api/public/comments');
-        if (response.ok) {
-          const dbComments = await response.json();
-          setComments(dbComments);
-          // 重置当前组索引
-          setCurrentGroupIndex(0);
-          return;
-        }
-      } catch (error) {
-        console.error('Error fetching comments from database:', error);
-        // 数据库获取失败时，从localStorage获取
-        const storedComments = localStorage.getItem('cyberBuddhaComments');
-        if (storedComments) {
-          const parsedComments = JSON.parse(storedComments);
-          // 转换createdAt字符串为Date对象
-          const formattedComments = parsedComments.map((comment: any) => ({
-            ...comment,
-            createdAt: new Date(comment.createdAt)
-          }));
-          setComments(formattedComments);
-          // 重置当前组索引
-          setCurrentGroupIndex(0);
-        }
+  const loadComments = async () => {
+    console.log('loadComments function called');
+    try {
+      // 优先从数据库获取评论
+      console.log('Fetching comments from database...');
+      const response = await fetch('/api/public/comments', { cache: 'no-store' });
+      console.log('Response status:', response.status);
+      if (response.ok) {
+        const dbComments = await response.json();
+        console.log('Database comments:', dbComments);
+        setComments(dbComments);
+        // 重置当前组索引
+        setCurrentGroupIndex(0);
+        console.log('Comments updated from database');
+        return;
+      } else {
+        console.error('Failed to fetch comments from database:', await response.text());
       }
+    } catch (error) {
+      console.error('Error fetching comments from database:', error);
+    }
+    
+    // 数据库获取失败时，从localStorage获取
+    console.log('Fetching comments from localStorage...');
+    const storedComments = localStorage.getItem('cyberBuddhaComments');
+    if (storedComments) {
+      const parsedComments = JSON.parse(storedComments);
+      // 转换createdAt字符串为Date对象
+      const formattedComments = parsedComments.map((comment: any) => ({
+        ...comment,
+        createdAt: new Date(comment.createdAt)
+      }));
+      console.log('LocalStorage comments:', formattedComments);
+      setComments(formattedComments);
+      // 重置当前组索引
+      setCurrentGroupIndex(0);
+      console.log('Comments updated from localStorage');
+    } else {
+      console.log('No comments found in localStorage');
+      // 如果localStorage也没有评论，设置为空数组
+      setComments([]);
+    }
+  };
+  
+  // 将loadComments函数暴露到window对象上，方便其他组件调用
+  useEffect(() => {
+    // @ts-ignore
+    window.loadComments = loadComments;
+    console.log('loadComments function exposed to window');
+    
+    return () => {
+      // 清理window对象上的函数
+      // @ts-ignore
+      delete window.loadComments;
+      console.log('loadComments function removed from window');
     };
+  }, [loadComments]);
 
+  useEffect(() => {
     loadComments();
     // 监听localStorage变化
     window.addEventListener('storage', loadComments);
+    // 添加轮询机制，每30秒刷新一次评论
+    const interval = setInterval(loadComments, 30000);
 
     return () => {
       window.removeEventListener('storage', loadComments);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // 添加评论后手动刷新（通过自定义事件）
+  useEffect(() => {
+    const handleCommentAdded = () => {
+      loadComments();
+    };
+
+    window.addEventListener('commentAdded', handleCommentAdded as EventListener);
+
+    return () => {
+      window.removeEventListener('commentAdded', handleCommentAdded as EventListener);
     };
   }, []);
 
@@ -74,22 +119,32 @@ const CommentScroll: React.FC = () => {
     return () => clearInterval(interval);
   }, [comments, commentsPerGroup]);
 
+  // 添加默认评论，确保评论区域始终可见
+  const defaultComments: Comment[] = [
+    {
+      id: 'default-1',
+      imageUrl: '/temple-images/灵隐寺.webp',
+      title: 'My First Blessing',
+      description: 'Received my digital blessing today!',
+      pageUrl: 'https://cyber-buddha.blessing',
+      createdAt: new Date(),
+      userName: 'Cyber Monk',
+      userComment: 'May peace and wisdom fill your heart',
+      userAvatar: 'https://ui-avatars.com/api/?name=Monk&background=random'
+    }
+  ];
+
+  // 使用实际评论或默认评论
+  const displayComments = comments.length > 0 ? comments : defaultComments;
+
   // 计算当前显示的评论组
   const getCurrentComments = () => {
     const startIndex = currentGroupIndex * commentsPerGroup;
-    return comments.slice(startIndex, startIndex + commentsPerGroup);
+    return displayComments.slice(startIndex, startIndex + commentsPerGroup);
   };
 
-  if (comments.length === 0) {
-    return (
-      <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 text-center max-w-md mx-auto">
-        <p className="text-[#F5F5F7]/70 text-sm">No comments yet. Be the first to share!</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 overflow-hidden max-w-md mx-auto">
+    <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 overflow-hidden max-w-7xl mx-auto">
       <h3 className="text-sm font-bold mb-3 text-center text-[#F5F5F7]">Community Shares</h3>
       
       {/* 评论滚动容器 - 带平滑过渡动画 */}
@@ -156,10 +211,17 @@ const CommentScroll: React.FC = () => {
         </div>
       </div>
       
+      {/* 提示信息 */}
+      {comments.length === 0 && (
+        <div className="mt-4 text-center">
+          <p className="text-[#F5F5F7]/70 text-sm">No comments yet. Be the first to share!</p>
+        </div>
+      )}
+      
       {/* 指示器 - 显示当前评论组 */}
-      {comments.length > commentsPerGroup && (
+      {displayComments.length > commentsPerGroup && (
         <div className="flex justify-center gap-1 mt-3">
-          {Array(Math.ceil(comments.length / commentsPerGroup)).fill(0).map((_, index) => (
+          {Array(Math.ceil(displayComments.length / commentsPerGroup)).fill(0).map((_, index) => (
             <button
               key={index}
               className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentGroupIndex ? 'bg-[#8676B6] w-4' : 'bg-[#8676B6]/30'}`}
