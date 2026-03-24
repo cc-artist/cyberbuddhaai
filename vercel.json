@@ -1,6 +1,5 @@
 {
   "version": 2,
   "scope": "cyber-buddha",
-  "framework": "nextjs",
-  "rootDirectory": "cyber-buddha-blessing"
+  "framework": "nextjs"
 }
