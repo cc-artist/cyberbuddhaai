@@ -1,0 +1,35 @@
+
+https://dash.domain.digitalplat.org/domains/cyberbuddhaai.qzz.io
+cyberbuddhaai.qzz.io
+
+ns1.vercel-dns.com
+ns2.vercel-dns.com
+
+TX RECORD:
+_vercel
+vc-domain-verify=qzz.io,f2322faacd17a9e39e88
+
+
+
+https://dash.infinityfree.com/accounts
+cyberbuddhaai.xo.je
+
+
+
+https://nic.eu.org/arf/en/domain/new/
+cyberbuddhaai.eu.org
+ns1.vercel-dns.com
+ns2.vercel-dns.com
+
+---- Servers and domain names check
+
+Getting IP for NS1.VERCEL-DNS.COM: 198.51.44.13
+Getting IP for NS1.VERCEL-DNS.COM: 2620:4d:4000:6259:7:13:0:1
+Getting IP for NS2.VERCEL-DNS.COM: 198.51.45.13
+Getting IP for NS2.VERCEL-DNS.COM: 2a00:edc0:6259:7:13::2
+
+
+No error, storing for validation...
+Saved as request 20260316105103-arf-50587
+
+Done

@@ -1,3 +1,42 @@
+- 管理后台URL ： https://bc-drab.vercel.app/admin
+- 登录页面URL ： https://bc-drab.vercel.app/admin/login
+- 登录账号 ： admin@example.com
+- 登录密码 ：admin123
+
+
+
+
+## 更新部署后登录后端管理界面的方法
+### 1. 访问管理界面
+部署完成后，使用以下地址访问管理登录页面：
+
+```
+https://<your-vercel-domain>/admin/
+login
+```
+### 2. 使用管理员凭据登录
+- 邮箱 : admin@example.com
+- 密码 : admin123
+### 3. 访问管理功能
+登录成功后，您将进入管理仪表板（ /admin ），可以访问以下功能：
+
+- 寺庙管理 ：添加、编辑、删除寺庙信息
+- API Key管理 ：安全管理AI API密钥
+- 支付配置 ：管理PayPal等支付平台的配置
+## 安全建议
+1. 生产环境务必修改默认密码 ：登录后请立即修改管理员密码，确保系统安全
+2. 配置环境变量 ：在Vercel控制台中配置敏感信息（API Key、支付配置等）
+3. 定期备份数据 ：建议定期备份寺庙数据和配置信息
+
+
+
+
+
+
+
+
+
+
 ### 1. 检查Vercel部署配置
 
 * **根目录配置**：确保Vercel部署时指定了正确的根目录`cyber-buddha-blessing`
