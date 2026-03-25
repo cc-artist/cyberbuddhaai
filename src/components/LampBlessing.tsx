@@ -445,6 +445,17 @@ const LampBlessing: React.FC = () => {
           />
         </div>
 
+        {/* Social Share Buttons - Always Visible and Before Result */}
+        <div className="border border-[#8676B6]/30 rounded-xl p-6 bg-[#1D1D1F]/50 backdrop-blur-sm">
+          <h3 className="text-md font-medium mb-4 text-[#F5F5F7]">Share Your Blessing Experience</h3>
+          <SocialShare
+            imageUrl={generatedImage || ''}
+            title="My Cyber Buddha Lamp Blessing"
+            description={wishResult || ''}
+            pageUrl="https://cyber-buddha.blessing"
+          />
+        </div>
+
         {/* Blessing Result */}
         {isWishing ? (
           <div className="border border-[#8676B6]/30 rounded-xl p-8 text-center bg-[#1D1D1F]/50 backdrop-blur-sm">
@@ -454,7 +465,7 @@ const LampBlessing: React.FC = () => {
           </div>
         ) : wishResult ? (
           <div className="border border-[#8676B6]/30 rounded-xl p-8 bg-[#1D1D1F]/50 backdrop-blur-sm">
-            {/* Generated Image Preview */}
+            {/* Generated Image Preview - Responsive height */}
             {generatedImage && (
               <div className="mt-6 space-y-4">
                 <h4 className="text-md font-medium text-[#F5F5F7]">Blessing Image (9:16)</h4>
@@ -462,7 +473,8 @@ const LampBlessing: React.FC = () => {
                   <img 
                     src={generatedImage} 
                     alt="Blessing Image" 
-                    className="w-full max-w-md mx-auto rounded-xl"
+                    className="w-full max-w-md mx-auto rounded-xl object-contain"
+                    style={{ maxHeight: '400px' }} // 限制图片最大高度，避免遮挡下方内容
                   />
                 </div>
                 

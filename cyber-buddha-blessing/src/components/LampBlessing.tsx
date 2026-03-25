@@ -458,11 +458,12 @@ const LampBlessing: React.FC = () => {
             {generatedImage && (
               <div className="mt-6 space-y-4">
                 <h4 className="text-md font-medium text-[#F5F5F7]">Blessing Image (9:16)</h4>
-                <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden">
+                <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden flex justify-center items-center">
                   <img 
                     src={generatedImage} 
                     alt="Blessing Image" 
-                    className="w-full max-w-md mx-auto rounded-xl"
+                    className="w-full max-w-md mx-auto rounded-xl" 
+                    style={{ maxHeight: '400px' }} // 限制图片高度，防止遮挡评论区
                   />
                 </div>
                 

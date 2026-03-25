@@ -32,6 +32,12 @@ const CommentScroll: React.FC = () => {
         const dbComments = await response.json();
         console.log('Database comments:', dbComments);
         setComments(dbComments);
+        // 将数据库评论保存到localStorage作为备份
+        try {
+          localStorage.setItem('cyberBuddhaComments', JSON.stringify(dbComments));
+        } catch (localStorageError) {
+          console.error('Error saving comments to localStorage:', localStorageError);
+        }
         // 重置当前组索引
         setCurrentGroupIndex(0);
         console.log('Comments updated from database');
@@ -47,17 +53,22 @@ const CommentScroll: React.FC = () => {
     console.log('Fetching comments from localStorage...');
     const storedComments = localStorage.getItem('cyberBuddhaComments');
     if (storedComments) {
-      const parsedComments = JSON.parse(storedComments);
-      // 转换createdAt字符串为Date对象
-      const formattedComments = parsedComments.map((comment: any) => ({
-        ...comment,
-        createdAt: new Date(comment.createdAt)
-      }));
-      console.log('LocalStorage comments:', formattedComments);
-      setComments(formattedComments);
-      // 重置当前组索引
-      setCurrentGroupIndex(0);
-      console.log('Comments updated from localStorage');
+      try {
+        const parsedComments = JSON.parse(storedComments);
+        // 转换createdAt字符串为Date对象
+        const formattedComments = parsedComments.map((comment: any) => ({
+          ...comment,
+          createdAt: new Date(comment.createdAt)
+        }));
+        console.log('LocalStorage comments:', formattedComments);
+        setComments(formattedComments);
+        // 重置当前组索引
+        setCurrentGroupIndex(0);
+        console.log('Comments updated from localStorage');
+      } catch (parseError) {
+        console.error('Error parsing comments from localStorage:', parseError);
+        setComments([]);
+      }
     } else {
       console.log('No comments found in localStorage');
       // 如果localStorage也没有评论，设置为空数组
