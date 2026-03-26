@@ -725,6 +725,21 @@ const Consecration: React.FC = () => {
                             Tip: Click "Download Result" first to generate the complete blessing image with background, then share for best effect!
                           </div>
                         )}
+                        {/* 生成完整合成图按钮 */}
+                        {!completeResultUrl && (
+                          <button
+                            className="w-full bg-[#FFD700] hover:bg-[#FFD700]/90 text-[#1D1D1F] py-2 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 mb-3"
+                            onClick={async () => {
+                              const completeUrl = await generateCompleteResult();
+                              if (completeUrl) {
+                                setCompleteResultUrl(completeUrl);
+                              }
+                            }}
+                          >
+                            Generate Complete Blessing Image with Background
+                          </button>
+                        )}
+                        
                         {/* 分享按钮 */}
                         <SocialShare 
                           imageUrl={completeResultUrl || resultUrl} 
