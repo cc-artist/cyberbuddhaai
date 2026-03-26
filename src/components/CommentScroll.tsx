@@ -31,7 +31,13 @@ const CommentScroll: React.FC = () => {
       if (response.ok) {
         const dbComments = await response.json();
         console.log('Database comments:', dbComments);
-        setComments(dbComments);
+        // 转换createdAt字符串为Date对象
+        const formattedComments = dbComments.map((comment: any) => ({
+          ...comment,
+          createdAt: new Date(comment.createdAt)
+        }));
+        console.log('Formatted database comments:', formattedComments);
+        setComments(formattedComments);
         // 重置当前组索引
         setCurrentGroupIndex(0);
         console.log('Comments updated from database');

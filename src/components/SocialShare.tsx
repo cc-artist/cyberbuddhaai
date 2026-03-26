@@ -273,7 +273,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
 
       {/* 评论分享模态框 */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-9999">
           <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] flex flex-col">
             <h3 className="text-xl font-bold mb-4 text-[#F5F5F7]">Share to Comments</h3>
             

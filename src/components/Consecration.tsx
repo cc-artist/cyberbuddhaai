@@ -595,11 +595,10 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                      <NextImage
+                      <img
                         src="/temple-images/赛博佛祖背景图.png"
                         alt="Cyber Buddha Background"
-                        fill
-                        className="object-cover opacity-70"
+                        className="absolute inset-0 w-full h-full object-cover opacity-70"
                       />
                        
                       {/* 佛光效果 - 外层光晕 */}

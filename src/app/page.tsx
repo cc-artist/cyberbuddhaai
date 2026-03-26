@@ -112,11 +112,10 @@ export default function Home() {
 
         {/* Cyber Buddha Background */}
         <div className="absolute inset-0 z-0 opacity-30">
-          <NextImage
+          <img
             src="/temple-images/赛博佛祖背景图.png"
             alt="Cyber Buddha"
-            fill
-            className="object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
             style={{ objectPosition: 'center 20%' }}
           />
         </div>
