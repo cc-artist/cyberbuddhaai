@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import React from "react";
 import { SessionProviderClient } from "./providers/SessionProviderClient";
+import Breadcrumb from "../components/Breadcrumb";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -80,6 +81,83 @@ const organizationJsonLd = {
   ],
 };
 
+// BreadcrumbList structured data
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://bc-drab.vercel.app/'
+    }
+  ]
+};
+
+// WebSite structured data
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Cyber Buddha',
+  url: 'https://bc-drab.vercel.app/',
+  description: 'Digital spiritual blessing service where users upload item photos and AI generates an animation of Buddha holding the item with chanting background music.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: 'https://bc-drab.vercel.app/?q={search_term_string}',
+    'query-input': 'required name=search_term_string'
+  }
+};
+
+// Helper function to generate dynamic structured data based on page type
+const generateDynamicJsonLd = () => {
+  // Get current pathname
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  
+  // Generate structured data based on path
+  if (pathname.startsWith('/temple/')) {
+    // Temple page structured data
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'PlaceOfWorship',
+      name: 'Cyber Buddha Temple',
+      description: 'A famous Buddhist temple in China',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'China',
+        addressCountry: 'CN'
+      },
+      url: `https://bc-drab.vercel.app${pathname}`
+    };
+  } else if (pathname === '/admin') {
+    // Admin page - no specific structured data needed
+    return null;
+  } else {
+    // Home page and other pages - add general content structured data
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Cyber Buddha - Digital Blessing Service',
+      description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
+      url: 'https://bc-drab.vercel.app/',
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': 'https://bc-drab.vercel.app/'
+      },
+      author: {
+        '@type': 'Organization',
+        name: 'Cyber Buddha Team'
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Cyber Buddha'
+      },
+      datePublished: '2023-01-01',
+      dateModified: new Date().toISOString().split('T')[0]
+    };
+  }
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -93,9 +171,23 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        {/* Dynamic structured data based on page type */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateDynamicJsonLd()) }}
+        />
       </head>
       <body className="antialiased">
         <SessionProviderClient>
+          <Breadcrumb />
           <ErrorBoundary>{children}</ErrorBoundary>
         </SessionProviderClient>
       </body>

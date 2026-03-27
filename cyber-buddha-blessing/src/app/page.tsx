@@ -102,7 +102,7 @@ export default function Home() {
 
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <header className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Golden Particle Halo Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-r from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '4s' }}></div>
@@ -114,7 +114,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0 opacity-30">
           <NextImage
             src="/temple-images/赛博佛祖背景图.png"
-            alt="Cyber Buddha"
+            alt="Cyber Buddha meditating with golden light" // 更详细的alt文本
             fill
             className="object-cover"
             style={{ objectPosition: 'center 20%' }}
@@ -130,41 +130,45 @@ export default function Home() {
           </p>
 
         </div>
-      </section>
+      </header>
 
       {/* Core Features Module */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Function Tabs */}
-          <div className="mb-10">
-            <h2 className="text-3xl font-bold mb-6 text-center text-[#F5F5F7]">Core Features</h2>
-            <div className="flex flex-wrap justify-center gap-4">
-              <button
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'blessing' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-                onMouseEnter={() => setActiveTab('blessing')}
-              >
-                Cyber Buddha Digital Blessing
-              </button>
-              <button
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'dharma' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-                onMouseEnter={() => setActiveTab('dharma')}
-              >
-                Request Dharma Form
-              </button>
-              <button
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'lamp' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-                onMouseEnter={() => setActiveTab('lamp')}
-              >
-                Lamp Blessing
-              </button>
-              <button
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'temple' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-                onMouseEnter={() => setActiveTab('temple')}
-              >
-                Custom Temple Tours
-              </button>
-            </div>
+        <div className="mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-[#F5F5F7]">Core Features</h2>
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+            <button
+              className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'blessing' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
+              onClick={() => setActiveTab('blessing')} // 移动端使用点击事件代替悬停
+              onMouseEnter={() => setActiveTab('blessing')}
+            >
+              Digital Blessing
+            </button>
+            <button
+              className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'dharma' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
+              onClick={() => setActiveTab('dharma')}
+              onMouseEnter={() => setActiveTab('dharma')}
+            >
+              Dharma Form
+            </button>
+            <button
+              className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'lamp' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
+              onClick={() => setActiveTab('lamp')}
+              onMouseEnter={() => setActiveTab('lamp')}
+            >
+              Lamp Blessing
+            </button>
+            <button
+              className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'temple' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
+              onClick={() => setActiveTab('temple')}
+              onMouseEnter={() => setActiveTab('temple')}
+            >
+              Temple Tours
+            </button>
           </div>
+        </div>
 
           {/* Feature Content */}
           <div className="space-y-10">
