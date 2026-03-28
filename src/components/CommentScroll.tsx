@@ -172,20 +172,11 @@ const CommentScroll: React.FC = () => {
             >
               {/* 分享的图片 */}
               <div className="relative w-full h-16 overflow-hidden rounded-md border border-[#8676B6]/30 mb-2">
-                {comment.imageUrl.startsWith('data:image/') ? (
-                  <img
-                    src={comment.imageUrl}
-                    alt={comment.title}
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <NextImage
-                    src={comment.imageUrl}
-                    alt={comment.title}
-                    fill
-                    className="object-contain"
-                  />
-                )}
+                <img
+                  src={comment.imageUrl}
+                  alt={comment.title}
+                  className="absolute inset-0 w-full h-full object-contain"
+                />
               </div>
               
               {/* 评论内容和用户信息 */}

@@ -173,11 +173,10 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
         <div 
           className="relative w-full h-[500px] mb-8 rounded-2xl overflow-hidden shadow-2xl"
         >
-          <NextImage
+          <img
             src={temple.image}
             alt={temple.name}
-            fill
-            className="object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Gradient overlay and text content */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#1D1D1F]/90 via-[#1D1D1F]/30 to-transparent"></div>
