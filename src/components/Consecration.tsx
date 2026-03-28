@@ -571,11 +571,9 @@ const Consecration: React.FC = () => {
             <div>
                   <h3 className="text-lg font-medium mb-3 text-[#F5F5F7]">Upload Preview</h3>
                   <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden">
-                    <NextImage
+                    <img
                       src={previewUrl}
                       alt="Upload Preview"
-                      width={500}
-                      height={500}
                       className="w-full h-auto object-contain"
                     />
                   </div>
@@ -613,12 +611,10 @@ const Consecration: React.FC = () => {
                           <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/30 to-[#8676B6]/30 rounded-full blur-md animate-spin-slow"></div>
                           
                           {/* 物品图像 */}
-                          <NextImage
+                          <img
                             src={resultUrl}
                             alt="开光物品"
-                            width={200}
-                            height={200}
-                            className="relative z-10 object-contain shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                            className="relative z-10 w-40 h-40 object-contain shadow-[0_0_20px_rgba(255,215,0,0.5)]"
                           />
                           
                           
