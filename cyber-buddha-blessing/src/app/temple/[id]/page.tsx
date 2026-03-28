@@ -52,8 +52,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-// Dynamic rendering for temple detail page
-export const dynamic = 'force-dynamic';
+// ISR configuration for temple detail page
+export const dynamicParams = true;
+export const revalidate = 86400; // 24 hours
 
 export default function TempleDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -170,14 +171,13 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
           })}}
         />
         {/* Temple Image and Basic Information */}
-        <div 
+        <div
           className="relative w-full h-[500px] mb-8 rounded-2xl overflow-hidden shadow-2xl"
         >
-          <NextImage
+          <img
             src={temple.image}
             alt={temple.name}
-            fill
-            className="object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Gradient overlay and text content */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#1D1D1F]/90 via-[#1D1D1F]/30 to-transparent"></div>
@@ -265,9 +265,12 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
                   </div>
                   
                   <div className="flex justify-center items-center gap-1 mt-2">
-                    <img 
+                    <NextImage 
                       src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" 
                       alt="cards" 
+                      width={200} 
+                      height={25}
+                      unoptimized={true}
                       className="h-6"
                     />
                   </div>

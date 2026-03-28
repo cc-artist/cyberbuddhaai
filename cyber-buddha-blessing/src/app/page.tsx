@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import NextImage from 'next/image';
-import TempleFilmStrip from '../components/TempleFilmStrip';
-import TempleDetailModal from '../components/TempleDetailModal';
-import Consecration from '../components/Consecration';
-import DharmaForm from '../components/DharmaForm';
-import LampBlessing from '../components/LampBlessing';
-import CommentScroll from '../components/CommentScroll';
 import { Temple, temples as staticTemples } from '../data/TempleData';
+
+// 动态导入组件，实现代码分割
+const TempleFilmStrip = React.lazy(() => import('../components/TempleFilmStrip'));
+const TempleDetailModal = React.lazy(() => import('../components/TempleDetailModal'));
+const Consecration = React.lazy(() => import('../components/Consecration'));
+const DharmaForm = React.lazy(() => import('../components/DharmaForm'));
+const LampBlessing = React.lazy(() => import('../components/LampBlessing'));
+const CommentScroll = React.lazy(() => import('../components/CommentScroll'));
 
 // Static generation for homepage for better performance
 export const dynamic = 'force-static';
@@ -112,11 +114,10 @@ export default function Home() {
 
         {/* Cyber Buddha Background */}
         <div className="absolute inset-0 z-0 opacity-30">
-          <NextImage
+          <img
             src="/temple-images/赛博佛祖背景图.png"
-            alt="Cyber Buddha meditating with golden light" // 更详细的alt文本
-            fill
-            className="object-cover"
+            alt="Cyber Buddha meditating with golden light"
+            className="w-full h-full object-cover"
             style={{ objectPosition: 'center 20%' }}
           />
         </div>
@@ -138,11 +139,16 @@ export default function Home() {
           {/* Function Tabs */}
         <div className="mb-10">
           <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-[#F5F5F7]">Core Features</h2>
-          <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4" role="tablist" aria-label="Core Features">
             <button
               className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'blessing' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
               onClick={() => setActiveTab('blessing')} // 移动端使用点击事件代替悬停
               onMouseEnter={() => setActiveTab('blessing')}
+              role="tab"
+              aria-selected={activeTab === 'blessing'}
+              aria-controls="blessing-panel"
+              id="blessing-tab"
+              tabIndex={activeTab === 'blessing' ? 0 : -1}
             >
               Digital Blessing
             </button>
@@ -150,6 +156,11 @@ export default function Home() {
               className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'dharma' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
               onClick={() => setActiveTab('dharma')}
               onMouseEnter={() => setActiveTab('dharma')}
+              role="tab"
+              aria-selected={activeTab === 'dharma'}
+              aria-controls="dharma-panel"
+              id="dharma-tab"
+              tabIndex={activeTab === 'dharma' ? 0 : -1}
             >
               Dharma Form
             </button>
@@ -157,6 +168,11 @@ export default function Home() {
               className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'lamp' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
               onClick={() => setActiveTab('lamp')}
               onMouseEnter={() => setActiveTab('lamp')}
+              role="tab"
+              aria-selected={activeTab === 'lamp'}
+              aria-controls="lamp-panel"
+              id="lamp-tab"
+              tabIndex={activeTab === 'lamp' ? 0 : -1}
             >
               Lamp Blessing
             </button>
@@ -164,6 +180,11 @@ export default function Home() {
               className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'temple' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
               onClick={() => setActiveTab('temple')}
               onMouseEnter={() => setActiveTab('temple')}
+              role="tab"
+              aria-selected={activeTab === 'temple'}
+              aria-controls="temple-panel"
+              id="temple-tab"
+              tabIndex={activeTab === 'temple' ? 0 : -1}
             >
               Temple Tours
             </button>
@@ -172,18 +193,40 @@ export default function Home() {
 
           {/* Feature Content */}
           <div className="space-y-10">
-            {activeTab === 'blessing' && <Consecration />}
-            {activeTab === 'dharma' && <DharmaForm />}
-            {activeTab === 'lamp' && <LampBlessing />}
+            {activeTab === 'blessing' && (
+              <div id="blessing-panel" role="tabpanel" aria-labelledby="blessing-tab" tabIndex={0}>
+                <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
+                  <Consecration />
+                </Suspense>
+              </div>
+            )}
+            {activeTab === 'dharma' && (
+              <div id="dharma-panel" role="tabpanel" aria-labelledby="dharma-tab" tabIndex={0}>
+                <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
+                  <DharmaForm />
+                </Suspense>
+              </div>
+            )}
+            {activeTab === 'lamp' && (
+              <div id="lamp-panel" role="tabpanel" aria-labelledby="lamp-tab" tabIndex={0}>
+                <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
+                  <LampBlessing />
+                </Suspense>
+              </div>
+            )}
             {activeTab === 'temple' && (
-              <div>
-                <div className="text-center mb-12">
-                  <h3 className="text-2xl font-bold mb-2 text-[#F5F5F7]">Custom Tours of Famous Chinese Temples</h3>
-                  <p className="text-[#F5F5F7]/70">Explore Chinese Buddhist cultural sites and customize your exclusive meditation journey</p>
+              <div id="temple-panel" role="tabpanel" aria-labelledby="temple-tab" tabIndex={0}>
+                <div>
+                  <div className="text-center mb-12">
+                    <h3 className="text-2xl font-bold mb-2 text-[#F5F5F7]">Custom Tours of Famous Chinese Temples</h3>
+                    <p className="text-[#F5F5F7]/70">Explore Chinese Buddhist cultural sites and customize your exclusive meditation journey</p>
+                  </div>
+                  <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
+                    <TempleFilmStrip 
+                      temples={temples} 
+                    />
+                  </Suspense>
                 </div>
-                <TempleFilmStrip 
-                  temples={temples} 
-                />
               </div>
             )}
           </div>
@@ -193,7 +236,9 @@ export default function Home() {
       {/* Community Shares Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-[#1D1D1F] to-[#1D1D1F]/90">
         <div className="max-w-7xl mx-auto">
-          <CommentScroll />
+          <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
+            <CommentScroll />
+          </Suspense>
         </div>
       </section>
 
@@ -234,16 +279,18 @@ export default function Home() {
       </footer>
 
       {/* Temple Detail Modal */}
-      <TempleDetailModal 
-        temple={selectedTemple} 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-        onPayment={handlePayment} 
-        isContactFormOpen={isContactFormOpen}
-        onOpenContactForm={handleOpenContactForm}
-        onCloseContactForm={handleCloseContactForm}
-        isPaying={isPaying}
-      />
+      <Suspense fallback={<div></div>}>
+        <TempleDetailModal 
+          temple={selectedTemple} 
+          isOpen={isModalOpen} 
+          onClose={handleCloseModal} 
+          onPayment={handlePayment} 
+          isContactFormOpen={isContactFormOpen}
+          onOpenContactForm={handleOpenContactForm}
+          onCloseContactForm={handleCloseContactForm}
+          isPaying={isPaying}
+        />
+      </Suspense>
     </div>
   );
 }

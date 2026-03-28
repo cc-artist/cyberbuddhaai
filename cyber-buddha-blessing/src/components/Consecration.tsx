@@ -595,11 +595,10 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                      <NextImage
+                      <img
                         src="/temple-images/赛博佛祖背景图.png"
                         alt="Cyber Buddha Background"
-                        fill
-                        className="object-cover opacity-70"
+                        className="absolute inset-0 object-cover opacity-70"
                       />
                        
                       {/* 佛光效果 - 外层光晕 */}
@@ -748,7 +747,7 @@ const Consecration: React.FC = () => {
                       <style>{`.pp-KWCN3QN74N4X4{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:Helvetica Neue,Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}`}</style>
                       <form action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" method="post" target="_blank" style={{display:'inline-grid',justifyItems:'center',alignContent:'start',gap:'0.5rem'}}>
                         <input className="pp-KWCN3QN74N4X4" type="submit" value="Click to Pay" />
-                        <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
+                        <NextImage src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" width={200} height={25} unoptimized={true} />
                         <section style={{fontSize: '0.75rem', color: '#1a56db', fontWeight: 'bold'}}>PayPal</section>
                       </form>
                     </div>

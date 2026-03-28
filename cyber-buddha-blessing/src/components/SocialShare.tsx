@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import NextImage from 'next/image';
 
 interface SocialShareProps {
   imageUrl: string;
@@ -280,11 +281,13 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
             {/* 可滚动内容区域 */}
             <div className="overflow-y-auto flex-1 pr-2">
               {/* 预览图片 */}
-              <div className="border border-[#8676B6]/30 rounded-lg overflow-hidden mb-4">
-                <img 
+              <div className="border border-[#8676B6]/30 rounded-lg overflow-hidden mb-4 relative w-full h-48">
+                <NextImage 
                   src={imageUrl} 
                   alt="Preview" 
-                  className="w-full h-48 object-cover" 
+                  fill
+                  unoptimized={true}
+                  className="object-cover" 
                 />
               </div>
               
@@ -317,14 +320,16 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
                 <label className="block text-sm font-medium text-[#F5F5F7]/80 mb-3">Choose Avatar</label>
                 
                 {/* 当前头像预览 */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#8676B6]/30">
-                    <img 
-                      src={userAvatar} 
-                      alt="Current Avatar" 
-                      className="w-full h-full object-cover" 
-                    />
-                  </div>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#8676B6]/30">
+                      <NextImage 
+                        src={userAvatar} 
+                        alt="Current Avatar" 
+                        fill
+                        unoptimized={true}
+                        className="object-cover" 
+                      />
+                    </div>
                   
                   {/* 本地文件上传 */}
                   <div className="flex gap-2">
@@ -352,10 +357,13 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
                       onClick={() => setUserAvatar(avatar)} 
                       className={`rounded-full overflow-hidden border-2 transition-all duration-300 ${userAvatar === avatar ? 'border-[#8676B6] shadow-lg' : 'border-[#8676B6]/30 hover:border-[#8676B6]'}`}
                     >
-                      <img 
+                      <NextImage 
                         src={avatar} 
                         alt={`Avatar ${index + 1}`} 
-                        className="w-8 h-8 object-cover" 
+                        width={32}
+                        height={32}
+                        unoptimized={true}
+                        className="object-cover" 
                       />
                     </button>
                   ))}

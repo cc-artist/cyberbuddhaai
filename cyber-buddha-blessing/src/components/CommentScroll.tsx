@@ -190,10 +190,12 @@ const CommentScroll: React.FC = () => {
                 {/* 用户信息和头像 */}
                 <div className="flex items-center gap-2">
                   <div className="relative w-5 h-5 rounded-full overflow-hidden border border-[#8676B6]/30">
-                    <img 
+                    <NextImage 
                       src={comment.userAvatar} 
                       alt={comment.userName} 
-                      className="w-full h-full object-cover" 
+                      fill
+                      unoptimized={true}
+                      className="object-cover" 
                     />
                   </div>
                   <div className="flex items-center gap-1">

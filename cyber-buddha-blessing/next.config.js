@@ -1,12 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   staticPageGenerationTimeout: 120,
+  // JavaScript 优化配置
+  swcMinify: true,
+  productionBrowserSourceMaps: false,
+  optimizeFonts: true,
+  // 代码分割和 Tree Shaking 优化
+  modularizeImports: {
+    '@mui/icons-material': {
+      transform: '@mui/icons-material/{{member}}',
+    },
+  },
+  // 移除未使用的 CSS
+  experimental: {
+    optimizeCss: true,
+  },
   images: {
+    // 配置图片优化
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    formats: ['image/webp'],
+    minimumCacheTTL: 60,
     // 允许本地图片加载
-    unoptimized: false,
-    // 移除可能导致问题的配置
-    contentDispositionType: 'inline',
-    contentSecurityPolicy: "default-src 'self'",
+    unoptimized: true,
+    // 允许 SVG 图片
+    dangerouslyAllowSVG: true,
     // 简化远程配置
     remotePatterns: [
       {
@@ -20,7 +38,6 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    dangerouslyAllowSVG: true,
   },
   trailingSlash: false,
   reactStrictMode: true,

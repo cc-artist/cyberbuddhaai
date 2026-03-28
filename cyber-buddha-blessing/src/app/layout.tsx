@@ -117,21 +117,48 @@ const generateDynamicJsonLd = () => {
   // Generate structured data based on path
   if (pathname.startsWith('/temple/')) {
     // Temple page structured data
+    const templeId = pathname.split('/').pop();
     return {
       '@context': 'https://schema.org',
       '@type': 'PlaceOfWorship',
-      name: 'Cyber Buddha Temple',
-      description: 'A famous Buddhist temple in China',
+      name: `Cyber Buddha Temple - ${templeId}`,
+      description: 'A famous Buddhist temple in China with custom meditation tours',
       address: {
         '@type': 'PostalAddress',
         addressLocality: 'China',
         addressCountry: 'CN'
       },
-      url: `https://bc-drab.vercel.app${pathname}`
+      url: `https://bc-drab.vercel.app${pathname}`,
+      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png',
+      sameAs: [
+        'https://twitter.com/cyberbuddha',
+        'https://facebook.com/cyberbuddha',
+        'https://instagram.com/cyberbuddha'
+      ]
     };
   } else if (pathname === '/admin') {
     // Admin page - no specific structured data needed
     return null;
+  } else if (pathname.startsWith('/api/')) {
+    // API endpoints - no structured data needed
+    return null;
+  } else if (pathname === '/blessing' || pathname === '/dharma' || pathname === '/lamp') {
+    // Service pages structured data
+    const serviceName = pathname === '/blessing' ? 'Digital Blessing' : 
+                        pathname === '/dharma' ? 'Dharma Form' : 'Lamp Blessing';
+    
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: `Cyber Buddha ${serviceName}`,
+      description: `Cyber Buddha ${serviceName} service - experience digital spiritual blessing`,
+      provider: {
+        '@type': 'Organization',
+        name: 'Cyber Buddha'
+      },
+      url: `https://bc-drab.vercel.app${pathname}`,
+      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png'
+    };
   } else {
     // Home page and other pages - add general content structured data
     return {
@@ -146,14 +173,31 @@ const generateDynamicJsonLd = () => {
       },
       author: {
         '@type': 'Organization',
-        name: 'Cyber Buddha Team'
+        name: 'Cyber Buddha Team',
+        url: 'https://bc-drab.vercel.app/'
       },
       publisher: {
         '@type': 'Organization',
-        name: 'Cyber Buddha'
+        name: 'Cyber Buddha',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://bc-drab.vercel.app/favicon.ico'
+        }
       },
       datePublished: '2023-01-01',
-      dateModified: new Date().toISOString().split('T')[0]
+      dateModified: new Date().toISOString().split('T')[0],
+      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png',
+      breadcrumb: {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://bc-drab.vercel.app/'
+          }
+        ]
+      }
     };
   }
 };
@@ -180,15 +224,22 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         {/* Dynamic structured data based on page type */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateDynamicJsonLd()) }}
-        />
+        {(() => {
+          const dynamicJsonLd = generateDynamicJsonLd();
+          return dynamicJsonLd ? (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(dynamicJsonLd) }}
+            />
+          ) : null;
+        })()}
       </head>
       <body className="antialiased">
         <SessionProviderClient>
           <Breadcrumb />
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <main>
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </main>
         </SessionProviderClient>
       </body>
     </html>
