@@ -1,11 +1,8 @@
 # Exclude unnecessary directories and files from Vercel build
 ../
 temp-cyberbuddhaai/
-*.png
-*.jpg
 *.pdf
 *.txt
-*.webp
 !src/
 !public/
 !package.json
