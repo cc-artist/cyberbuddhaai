@@ -473,7 +473,7 @@ const LampBlessing: React.FC = () => {
                 </div>
                 
                 {/* Social Share Buttons */}
-                <div className="w-full mt-6">
+                <div id="unique-share-section" className="w-full mt-6">
                   <h3 className="text-md font-medium mb-4 text-[#F5F5F7]">Share Your Blessing Experience</h3>
                   <SocialShare
                     imageUrl={generatedImage || ''}
