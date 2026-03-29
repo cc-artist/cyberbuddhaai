@@ -104,37 +104,45 @@ export default function Home() {
 
 
       {/* Hero Section */}
-      <header className="relative h-screen flex items-center justify-center overflow-hidden">
+      <header className="relative h-[80vh] md:h-screen flex items-center justify-center overflow-hidden">
         {/* Golden Particle Halo Background */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-r from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '4s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-l from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-gradient-to-t from-[#FFD700]/20 via-[#8676B6]/20 to-transparent animate-pulse" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full bg-gradient-to-r from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '4s' }}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] md:w-[600px] md:h-[600px] rounded-full bg-gradient-to-l from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full bg-gradient-to-t from-[#FFD700]/20 via-[#8676B6]/20 to-transparent animate-pulse" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
         </div>
 
         {/* Cyber Buddha Background */}
         <div className="absolute inset-0 z-0 opacity-30">
-          <img
+          <NextImage
             src="/temple-images/赛博佛祖背景图.png"
             alt="Cyber Buddha meditating with golden light"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             style={{ objectPosition: 'center 20%' }}
+            priority
           />
         </div>
 
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F7] via-[#8676B6] to-[#FFD700] animate-pulse">
+          <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F7] via-[#8676B6] to-[#FFD700] animate-pulse">
             Cyber Buddha
           </h1>
-          <p className="text-2xl md:text-3xl mb-10 text-[#F5F5F7]/90">
+          <p className="text-base md:text-xl lg:text-3xl mb-8 md:mb-10 text-[#F5F5F7]/90">
             Cyber Buddha Digital Blessing · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples
           </p>
-
+          <a 
+            href="#features" 
+            className="inline-block bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-8 py-4 rounded-full font-medium text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+            aria-label="Begin your digital blessing journey"
+          >
+            Begin Your Blessing
+          </a>
         </div>
       </header>
 
       {/* Core Features Module */}
-      <section className="py-20 px-4">
+      <section id="features" className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Function Tabs */}
         <div className="mb-10">
@@ -144,6 +152,12 @@ export default function Home() {
               className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'blessing' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
               onClick={() => setActiveTab('blessing')} // 移动端使用点击事件代替悬停
               onMouseEnter={() => setActiveTab('blessing')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setActiveTab('blessing');
+                }
+              }}
               role="tab"
               aria-selected={activeTab === 'blessing'}
               aria-controls="blessing-panel"
@@ -156,6 +170,12 @@ export default function Home() {
               className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'dharma' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
               onClick={() => setActiveTab('dharma')}
               onMouseEnter={() => setActiveTab('dharma')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setActiveTab('dharma');
+                }
+              }}
               role="tab"
               aria-selected={activeTab === 'dharma'}
               aria-controls="dharma-panel"
@@ -168,6 +188,12 @@ export default function Home() {
               className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'lamp' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
               onClick={() => setActiveTab('lamp')}
               onMouseEnter={() => setActiveTab('lamp')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setActiveTab('lamp');
+                }
+              }}
               role="tab"
               aria-selected={activeTab === 'lamp'}
               aria-controls="lamp-panel"
@@ -180,6 +206,12 @@ export default function Home() {
               className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'temple' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
               onClick={() => setActiveTab('temple')}
               onMouseEnter={() => setActiveTab('temple')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setActiveTab('temple');
+                }
+              }}
               role="tab"
               aria-selected={activeTab === 'temple'}
               aria-controls="temple-panel"

@@ -541,22 +541,22 @@ const Consecration: React.FC = () => {
       
       <div className="space-y-6">
         {/* Upload Area */}
-        <div className="border border-[#8676B6]/30 rounded-xl p-8 text-center bg-[#1D1D1F]/50 backdrop-blur-sm">
-          <svg className="w-16 h-16 text-[#8676B6] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="border border-[#8676B6]/30 rounded-xl p-6 md:p-8 text-center bg-[#1D1D1F]/50 backdrop-blur-sm">
+          <svg className="w-12 md:w-16 h-12 md:h-16 text-[#8676B6] mx-auto mb-3 md:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
-          <h3 className="text-lg font-medium mb-2 text-[#F5F5F7]">Upload Item Photo</h3>
-          <p className="text-sm text-[#F5F5F7]/70 mb-4">Select a photo of the item you want to consecrate. Cyber Buddha will infuse it with digital spirituality.</p>
+          <h3 className="text-base md:text-lg font-medium mb-2 text-[#F5F5F7]">Upload Item Photo</h3>
+          <p className="text-xs md:text-sm text-[#F5F5F7]/70 mb-3 md:mb-4">Select a photo of the item you want to consecrate. Cyber Buddha will infuse it with digital spirituality.</p>
           
-          <div className="flex flex-col items-center gap-4">
-            <label className="cursor-pointer">
+          <div className="flex flex-col items-center gap-3 md:gap-4">
+            <label className="cursor-pointer w-full max-w-xs">
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
                 className="hidden"
               />
-              <span className="inline-block bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+              <span className="inline-block w-full bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-4 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
                 Choose Image
               </span>
             </label>
@@ -595,10 +595,11 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                      <img
+                      <NextImage
                         src="/temple-images/赛博佛祖背景图.png"
                         alt="Cyber Buddha Background"
-                        className="absolute inset-0 object-cover opacity-70"
+                        fill
+                        className="object-cover opacity-70"
                       />
                        
                       {/* 佛光效果 - 外层光晕 */}

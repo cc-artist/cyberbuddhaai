@@ -73,7 +73,7 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples, onTempleClic
           <Link
             key={temple.id}
             href={`/temple/${temple.id}`}
-            className="flex-shrink-0 w-[300px] h-[400px] bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer group"
+            className="flex-shrink-0 w-[300px] h-[400px] bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer group hover:-translate-y-2"
             onClick={(e) => {
               if (onTempleClick) {
                 e.preventDefault();
@@ -82,29 +82,31 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples, onTempleClic
             }}
           >
             <div className="relative w-full h-[200px] overflow-hidden">
-              <img
+              <NextImage
                 src={temple.image}
                 alt={temple.name}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
                 loading="lazy"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="absolute bottom-0 left-0 p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute bottom-0 left-0 p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:translate-y-0 translate-y-2">
                 <h3 className="text-xl font-bold">{temple.name}</h3>
                 <p className="text-sm opacity-90">{temple.location}</p>
               </div>
             </div>
-            <div className="p-4">
-              <h4 className="text-lg font-semibold text-purple-900 mb-2">{temple.title}</h4>
-              <p className="text-sm text-gray-600 line-clamp-3 mb-4">{temple.description}</p>
+            <div className="p-4 bg-white transition-all duration-300 group-hover:bg-gradient-to-b from-white to-gray-50">
+              <h4 className="text-lg font-semibold text-purple-900 mb-2 transition-colors duration-300 group-hover:text-purple-600">{temple.title}</h4>
+              <p className="text-sm text-gray-600 line-clamp-3 mb-4 transition-colors duration-300 group-hover:text-gray-800">{temple.description}</p>
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1 transition-colors duration-300 group-hover:text-purple-600">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                   Custom Tour
                 </span>
-                <span className="font-medium text-purple-600">Learn More →</span>
+                <span className="font-medium text-purple-600 transition-transform duration-300 group-hover:translate-x-1">Learn More →</span>
               </div>
             </div>
           </Link>

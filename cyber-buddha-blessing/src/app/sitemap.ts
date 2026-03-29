@@ -10,13 +10,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [
+  // 生成服务页面的URL
+  const serviceUrls = [
     {
       url: 'https://bc-drab.vercel.app/',
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 1,
     },
+    {
+      url: 'https://bc-drab.vercel.app/digital-blessing',
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
+    {
+      url: 'https://bc-drab.vercel.app/dharma-form',
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
+    {
+      url: 'https://bc-drab.vercel.app/lamp-blessing',
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
+  ];
+
+  return [
+    ...serviceUrls,
     ...templeUrls,
   ];
 }
