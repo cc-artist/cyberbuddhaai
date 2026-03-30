@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import NextImage from 'next/image';
 import { Temple } from '../data/TempleData';
 import ContactForm from './ContactForm';
 
@@ -46,11 +45,10 @@ const TempleDetailModal: React.FC<TempleDetailModalProps> = ({
         <div className="flex flex-col md:flex-row h-full">
           {/* Left Side Image */}
           <div className="relative w-full md:w-1/2 h-64 md:h-auto">
-            <NextImage
+            <img
               src={temple.image}
               alt={temple.name}
-              fill
-              className="object-cover"
+              className="w-full h-full object-cover"
             />
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[#1D1D1F]/80 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 text-white">

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import NextImage from 'next/image';
 import Link from 'next/link';
 import { Temple } from '../data/TempleData';
 
@@ -82,13 +81,11 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples, onTempleClic
             }}
           >
             <div className="relative w-full h-[200px] overflow-hidden">
-              <NextImage
+              <img
                 src={temple.image}
                 alt={temple.name}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 loading="lazy"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="absolute bottom-0 left-0 p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:translate-y-0 translate-y-2">

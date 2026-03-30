@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import NextImage from 'next/image';
 import SocialShare from './SocialShare';
 
 
@@ -571,11 +570,9 @@ const Consecration: React.FC = () => {
             <div>
                   <h3 className="text-lg font-medium mb-3 text-[#F5F5F7]">Upload Preview</h3>
                   <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden">
-                    <NextImage
+                    <img
                       src={previewUrl}
                       alt="Upload Preview"
-                      width={500}
-                      height={500}
                       className="w-full h-auto object-contain"
                     />
                   </div>
@@ -595,12 +592,11 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                      <NextImage
-                        src="/temple-images/赛博佛祖背景图.png"
-                        alt="Cyber Buddha Background"
-                        fill
-                        className="object-cover opacity-70"
-                      />
+                    <img
+                      src="/temple-images/赛博佛祖背景图.png"
+                      alt="Cyber Buddha Background"
+                      className="absolute inset-0 w-full h-full object-cover opacity-70"
+                    />
                        
                       {/* 佛光效果 - 外层光晕 */}
                       <div className="absolute inset-0 bg-gradient-to-center from-transparent via-[#FFD700]/10 to-transparent animate-pulse"></div>
@@ -614,12 +610,10 @@ const Consecration: React.FC = () => {
                           <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/30 to-[#8676B6]/30 rounded-full blur-md animate-spin-slow"></div>
                           
                           {/* 物品图像 */}
-                          <NextImage
+                          <img
                             src={resultUrl}
                             alt="开光物品"
-                            width={200}
-                            height={200}
-                            className="relative z-10 object-contain shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                            className="relative z-10 w-[200px] h-[200px] object-contain shadow-[0_0_20px_rgba(255,215,0,0.5)]"
                           />
                           
                           

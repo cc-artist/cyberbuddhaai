@@ -21,10 +21,12 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     formats: ['image/webp'],
     minimumCacheTTL: 60,
-    // 允许本地图片加载
+    // 允许本地图片加载，与 Vercel 环境兼容
     unoptimized: true,
     // 允许 SVG 图片
     dangerouslyAllowSVG: true,
+    // 配置图片域名
+    domains: ['localhost', 'cyberbuddhaai.vercel.app', 'vercel.app'],
     // 简化远程配置
     remotePatterns: [
       {
@@ -34,7 +36,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'cyberbuddhaai.vercel.app',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'vercel.app',
         pathname: '/**',
       },
     ],
