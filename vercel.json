@@ -1,9 +1,5 @@
 {
   "version": 2,
   "scope": "cyber-buddha",
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "rootDirectory": "cyber-buddha-blessing"
+  "framework": "nextjs"
 }
