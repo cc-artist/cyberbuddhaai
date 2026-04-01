@@ -12,8 +12,7 @@ const DharmaForm = React.lazy(() => import('../components/DharmaForm'));
 const LampBlessing = React.lazy(() => import('../components/LampBlessing'));
 const CommentScroll = React.lazy(() => import('../components/CommentScroll'));
 
-// Static generation for homepage for better performance
-export const dynamic = 'force-static';
+
 
 export default function Home() {
   const [temples, setTemples] = useState<Temple[]>(staticTemples);

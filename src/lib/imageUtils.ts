@@ -6,19 +6,28 @@
  * @returns 完整的图片URL
  */
 export const getImageUrl = (path: string): string => {
+  if (!path) return '';
+  
+  // 移除前后空白字符
+  const trimmedPath = path.trim();
+  
   // 如果是完整URL，直接返回
-  if (path.startsWith('http://') || path.startsWith('https://')) {
-    return path;
+  if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://')) {
+    return trimmedPath;
   }
   
-  // 确保路径以斜杠开头，无论原始路径是什么格式
-  // 处理中文文件名和各种路径格式
-  const cleanPath = path.trim();
+  // 处理Windows路径分隔符
+  const normalizedPath = trimmedPath.replace(/\\/g, '/');
+  
+  // 移除多余的斜杠
+  const cleanPath = normalizedPath.replace(/\/+/g, '/');
+  
+  // 确保路径以斜杠开头
   if (cleanPath.startsWith('/')) {
     return cleanPath;
   }
   
-  // 确保路径格式正确，不包含多个斜杠
+  // 添加斜杠前缀
   return `/${cleanPath}`;
 };
 

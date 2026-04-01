@@ -760,7 +760,7 @@ const DharmaForm: React.FC = () => {
               {/* Star Map Display */}
               <div className="relative w-full h-96 overflow-hidden">
                 <img
-                  src={getImageUrl(resultData.imageUrl)}
+                  src={resultData.imageUrl}
                   alt="Generated Dharma Form"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 />

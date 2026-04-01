@@ -26,7 +26,7 @@ const nextConfig = {
     // 允许 SVG 图片
     dangerouslyAllowSVG: true,
     // 配置图片域名
-    domains: ['localhost', 'cyberbuddhaai.vercel.app', 'vercel.app'],
+    domains: ['localhost', 'cyberbuddhaai.vercel.app', 'vercel.app', 'ui-avatars.com'],
     // 简化远程配置
     remotePatterns: [
       {
@@ -43,6 +43,16 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'vercel.app',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ui-avatars.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+        pathname: '**',
       },
     ],
   },
