@@ -6,6 +6,7 @@ import { Temple, temples as staticTemples } from '../../../data/TempleData';
 import ContactFormWrapper from '../../../components/ContactFormWrapper';
 import SocialShare from '../../../components/SocialShare';
 import PayPalButton from '../../../components/PayPalButton';
+import { getImageUrl } from '../../../lib/imageUtils';
 
 // Generate dynamic metadata for each temple page
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   
   const baseUrl = 'https://bc-drab.vercel.app';
   const pageUrl = `${baseUrl}/temple/${temple.id}`;
-  const imageUrl = `${baseUrl}${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`;
+  const imageUrl = `${baseUrl}${getImageUrl(temple.image)}`;
   
   return {
     title: `${temple.name} - Cyber Buddha`,
@@ -147,7 +148,7 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
               '@type': 'PostalAddress',
               addressLocality: temple.location,
             },
-            image: `https://bc-drab.vercel.app${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`,
+            image: `https://bc-drab.vercel.app${getImageUrl(temple.image)}`,
             url: `https://bc-drab.vercel.app/temple/${temple.id}`,
             additionalProperty: [
               {
@@ -174,7 +175,7 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
           className="relative w-full h-[500px] mb-8 rounded-2xl overflow-hidden shadow-2xl"
         >
           <img
-            src={temple.image}
+            src={getImageUrl(temple.image)}
             alt={temple.name}
             className="absolute inset-0 w-full h-full object-cover"
           />

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { Temple, temples as staticTemples } from '../data/TempleData';
+import { getImageUrl } from '../lib/imageUtils';
 
 // 动态导入组件，实现代码分割
 const TempleFilmStrip = React.lazy(() => import('../components/TempleFilmStrip'));
@@ -114,7 +115,7 @@ export default function Home() {
         {/* Cyber Buddha Background */}
         <div className="absolute inset-0 z-0 opacity-30">
           <img
-            src="/temple-images/赛博佛祖背景图.png"
+            src={getImageUrl('/temple-images/赛博佛祖背景图.png')}
             alt="Cyber Buddha meditating with golden light"
             className="w-full h-full object-cover"
             style={{ objectPosition: 'center 20%' }}

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Temple } from '../data/TempleData';
+import { getImageUrl } from '../lib/imageUtils';
 
 interface TempleFilmStripProps {
   temples: Temple[];
@@ -82,7 +83,7 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples, onTempleClic
           >
             <div className="relative w-full h-[200px] overflow-hidden">
               <img
-                src={temple.image}
+                src={getImageUrl(temple.image)}
                 alt={temple.name}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 loading="lazy"

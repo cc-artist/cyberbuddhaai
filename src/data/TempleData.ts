@@ -11,6 +11,15 @@ export interface Temple {
   highlights: string[];
 }
 
+// 获取当前环境的基础URL
+export const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return '';
+  }
+  // 服务端渲染时使用环境变量或默认值
+  return process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+};
+
 export const temples: Temple[] = [
   {
     id: 1,
@@ -18,7 +27,7 @@ export const temples: Temple[] = [
     location: "Maba Town, Qujiang District, Shaoguan City, Guangdong Province",
     title: "Zen Ancestral Court, Dharma Preaching Site of Sixth Patriarch Huineng",
     description: "Nanhua Temple is an important ancestral court of Chinese Buddhist Zen. Sixth Patriarch Huineng preached here for 37 years, making it the birthplace of the Southern Zen sect. The temple houses the mummified body of Sixth Patriarch Huineng and numerous precious Buddhist cultural relics.",
-    image: "/temple-images/南华寺.webp",
+    image: "temple-images/南华寺.webp",
     features: [
       "Ancient Zen ancestral court with long history",
       "Housing place of Sixth Patriarch Huineng's mummified body",

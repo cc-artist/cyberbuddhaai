@@ -3,6 +3,7 @@
 import React from 'react';
 import { Temple } from '../data/TempleData';
 import ContactForm from './ContactForm';
+import { getImageUrl } from '../lib/imageUtils';
 
 interface TempleDetailModalProps {
   temple: Temple | null;
@@ -46,7 +47,7 @@ const TempleDetailModal: React.FC<TempleDetailModalProps> = ({
           {/* Left Side Image */}
           <div className="relative w-full md:w-1/2 h-64 md:h-auto">
             <img
-              src={temple.image}
+              src={getImageUrl(temple.image)}
               alt={temple.name}
               className="w-full h-full object-cover"
             />
