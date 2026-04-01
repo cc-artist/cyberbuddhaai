@@ -11,13 +11,15 @@ export const getImageUrl = (path: string): string => {
     return path;
   }
   
-  // 如果路径已经以斜杠开头，直接使用
-  if (path.startsWith('/')) {
-    return path;
+  // 确保路径以斜杠开头，无论原始路径是什么格式
+  // 处理中文文件名和各种路径格式
+  const cleanPath = path.trim();
+  if (cleanPath.startsWith('/')) {
+    return cleanPath;
   }
   
-  // 否则添加斜杠前缀
-  return `/${path}`;
+  // 确保路径格式正确，不包含多个斜杠
+  return `/${cleanPath}`;
 };
 
 /**
@@ -32,4 +34,22 @@ export const isValidImageUrl = (path: string): boolean => {
   } catch {
     return false;
   }
+};
+
+/**
+ * 确保图片路径使用正确的格式
+ * 用于Vercel部署时的中文文件名处理
+ * @param path 图片路径
+ * @returns 标准化的图片路径
+ */
+export const normalizeImagePath = (path: string): string => {
+  // 移除可能的重复斜杠
+  const normalizedPath = path.replace(/\/+/g, '/');
+  
+  // 确保路径以斜杠开头
+  if (!normalizedPath.startsWith('/')) {
+    return `/${normalizedPath}`;
+  }
+  
+  return normalizedPath;
 };

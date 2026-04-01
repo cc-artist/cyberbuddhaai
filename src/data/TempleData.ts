@@ -27,7 +27,7 @@ export const temples: Temple[] = [
     location: "Maba Town, Qujiang District, Shaoguan City, Guangdong Province",
     title: "Zen Ancestral Court, Dharma Preaching Site of Sixth Patriarch Huineng",
     description: "Nanhua Temple is an important ancestral court of Chinese Buddhist Zen. Sixth Patriarch Huineng preached here for 37 years, making it the birthplace of the Southern Zen sect. The temple houses the mummified body of Sixth Patriarch Huineng and numerous precious Buddhist cultural relics.",
-    image: "temple-images/南华寺.webp",
+    image: "/temple-images/南华寺.webp",
     features: [
       "Ancient Zen ancestral court with long history",
       "Housing place of Sixth Patriarch Huineng's mummified body",
