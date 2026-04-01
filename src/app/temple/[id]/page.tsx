@@ -320,7 +320,7 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
             <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-2xl p-6 shadow-lg">
               <h3 className="text-xl font-semibold text-[#8676B6] mb-4">Share to Social Media</h3>
               <SocialShare 
-                imageUrl={`https://bc-drab.vercel.app${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`}
+                imageUrl={`https://bc-drab.vercel.app${getImageUrl(temple.image)}`}
                 title={temple.name}
                 description={temple.description}
                 pageUrl={`https://bc-drab.vercel.app/temple/${temple.id}`}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { getImageUrl } from '../lib/imageUtils';
 
 interface Comment {
   id: string;
@@ -177,7 +178,7 @@ const CommentScroll: React.FC = () => {
               {/* 分享的图片 */}
               <div className="relative w-full h-16 overflow-hidden rounded-md border border-[#8676B6]/30 mb-2">
                 <img
-                  src={comment.imageUrl}
+                  src={getImageUrl(comment.imageUrl)}
                   alt={comment.title}
                   className="absolute inset-0 w-full h-full object-contain"
                 />
