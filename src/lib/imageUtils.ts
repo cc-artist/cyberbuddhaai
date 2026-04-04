@@ -17,38 +17,74 @@ export const getImageUrl = (path: string): string => {
     return trimmedPath;
   }
   
-  // 处理Windows路径分隔符
-  const normalizedPath = trimmedPath.replace(/\\/g, '/');
+  // 处理路径
+  let processedPath = trimmedPath;
+  
+  // 替换Windows路径分隔符
+  processedPath = processedPath.split('\\').join('/');
   
   // 移除多余的斜杠
-  const cleanPath = normalizedPath.replace(/\/+/g, '/');
+  while (processedPath.includes('//')) {
+    processedPath = processedPath.replace('//', '/');
+  }
   
   // 确保路径以斜杠开头
-  const finalPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+  if (!processedPath.startsWith('/')) {
+    processedPath = '/' + processedPath;
+  }
   
   // 从映射表中获取图片路径
-  const mappedPath = getMappedImageUrl(finalPath);
+  const mappedPath = getMappedImageUrl(processedPath);
   
   // 检查是否为客户端环境
   if (typeof window !== 'undefined') {
-    // 客户端环境，返回直接路径，浏览器会自动处理中文编码
-    return mappedPath;
+    // 客户端环境：使用相对路径，避免Vercel路径问题
+    // 移除开头的斜杠，使用相对路径
+    const relativePath = mappedPath.startsWith('/') ? mappedPath.substring(1) : mappedPath;
+    return relativePath;
   } else {
-    // 服务端环境，需要手动编码中文文件名部分
-    // 分离路径和文件名
-    const pathParts = mappedPath.split('/');
-    const fileName = pathParts.pop();
-    const directoryPath = pathParts.join('/');
-    
-    if (fileName) {
-      // 编码文件名
-      const encodedFileName = encodeURIComponent(fileName);
-      // 重组路径
-      return `${directoryPath}/${encodedFileName}`;
-    }
-    
+    // 服务端环境：使用绝对路径，确保构建时能正确解析
     return mappedPath;
   }
+};
+
+/**
+ * 获取生产环境安全的图片路径
+ * 专为Vercel部署优化
+ * @param path 图片路径
+ * @returns 生产环境安全的图片路径
+ */
+export const getProductionSafeImageUrl = (path: string): string => {
+  if (!path) return '';
+  
+  // 处理完整URL
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  
+  // 标准化路径
+  let normalizedPath = path;
+  
+  // 替换Windows路径分隔符
+  normalizedPath = normalizedPath.split('\\').join('/');
+  
+  // 移除多余的斜杠
+  while (normalizedPath.includes('//')) {
+    normalizedPath = normalizedPath.replace('//', '/');
+  }
+  
+  // 确保路径格式正确
+  let safePath = normalizedPath;
+  if (!safePath.startsWith('/')) {
+    safePath = `/${safePath}`;
+  }
+  
+  // 对于Vercel，使用相对路径格式
+  if (safePath.startsWith('/temple-images/')) {
+    return safePath.substring(1); // 移除开头的斜杠
+  }
+  
+  return safePath;
 };
 
 /**

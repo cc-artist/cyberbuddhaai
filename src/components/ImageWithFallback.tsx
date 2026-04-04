@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getProductionSafeImageUrl } from '../lib/imageUtils';
 
 interface ImageWithFallbackProps {
   src: string;
@@ -11,19 +12,22 @@ interface ImageWithFallbackProps {
   [key: string]: any;
 }
 
-/**
- * 带有备用图片的图片组件
- * 当主图片加载失败时，显示备用图片
- */
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src,
   alt,
   className = '',
-  fallbackSrc = '/temple-images/赛博佛祖背景图.png',
+  fallbackSrc = 'temple-images/赛博佛祖背景图.png',
   onError,
   ...props
 }) => {
   const [isError, setIsError] = useState(false);
+  const [finalSrc, setFinalSrc] = useState('');
+
+  useEffect(() => {
+    // 使用生产环境安全的图片路径
+    const safeSrc = getProductionSafeImageUrl(src);
+    setFinalSrc(safeSrc);
+  }, [src]);
 
   const handleError = () => {
     setIsError(true);
@@ -32,9 +36,11 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     }
   };
 
+  const displaySrc = isError ? fallbackSrc : finalSrc;
+
   return (
     <img
-      src={isError ? fallbackSrc : src}
+      src={displaySrc}
       alt={alt}
       className={className}
       onError={handleError}
