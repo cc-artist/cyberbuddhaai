@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getProductionSafeImageUrl } from '../lib/imageUtils';
+import { getImageUrl } from '../lib/imageUtils';
 
 interface ImageWithFallbackProps {
   src: string;
@@ -24,8 +24,8 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   const [finalSrc, setFinalSrc] = useState('');
 
   useEffect(() => {
-    // 使用生产环境安全的图片路径
-    const safeSrc = getProductionSafeImageUrl(src);
+    // 使用统一的图片路径处理函数
+    const safeSrc = getImageUrl(src);
     setFinalSrc(safeSrc);
   }, [src]);
 
@@ -36,7 +36,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     }
   };
 
-  const displaySrc = isError ? fallbackSrc : finalSrc;
+  const displaySrc = isError ? getImageUrl(fallbackSrc) : finalSrc;
 
   return (
     <img

@@ -36,16 +36,12 @@ export const getImageUrl = (path: string): string => {
   // 从映射表中获取图片路径
   const mappedPath = getMappedImageUrl(processedPath);
   
-  // 检查是否为客户端环境
-  if (typeof window !== 'undefined') {
-    // 客户端环境：使用相对路径，避免Vercel路径问题
-    // 移除开头的斜杠，使用相对路径
-    const relativePath = mappedPath.startsWith('/') ? mappedPath.substring(1) : mappedPath;
-    return relativePath;
-  } else {
-    // 服务端环境：使用绝对路径，确保构建时能正确解析
-    return mappedPath;
-  }
+  // 统一处理：在所有环境下都使用相对路径格式
+  // 这确保了开发和生产环境的一致性
+  const finalPath = mappedPath.startsWith('/') ? mappedPath.substring(1) : mappedPath;
+  
+  // 确保路径格式正确，特别是对于中文文件名
+  return finalPath;
 };
 
 /**
