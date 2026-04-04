@@ -1,9 +1,10 @@
 // 图片路径处理工具函数
+import { getMappedImageUrl } from './imageMap';
 
 /**
  * 获取完整的图片URL
  * @param path 图片路径
- * @returns 完整的图片URL
+ * @returns 完整的图片URL，中文文件名已正确编码
  */
 export const getImageUrl = (path: string): string => {
   if (!path) return '';
@@ -23,12 +24,31 @@ export const getImageUrl = (path: string): string => {
   const cleanPath = normalizedPath.replace(/\/+/g, '/');
   
   // 确保路径以斜杠开头
-  if (cleanPath.startsWith('/')) {
-    return cleanPath;
-  }
+  const finalPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
   
-  // 添加斜杠前缀
-  return `/${cleanPath}`;
+  // 从映射表中获取图片路径
+  const mappedPath = getMappedImageUrl(finalPath);
+  
+  // 检查是否为客户端环境
+  if (typeof window !== 'undefined') {
+    // 客户端环境，返回直接路径，浏览器会自动处理中文编码
+    return mappedPath;
+  } else {
+    // 服务端环境，需要手动编码中文文件名部分
+    // 分离路径和文件名
+    const pathParts = mappedPath.split('/');
+    const fileName = pathParts.pop();
+    const directoryPath = pathParts.join('/');
+    
+    if (fileName) {
+      // 编码文件名
+      const encodedFileName = encodeURIComponent(fileName);
+      // 重组路径
+      return `${directoryPath}/${encodedFileName}`;
+    }
+    
+    return mappedPath;
+  }
 };
 
 /**

@@ -56,6 +56,17 @@ const nextConfig = {
       },
     ],
   },
+  // 确保中文文件名能正确处理
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.(png|jpe?g|gif|webp|svg)$/i,
+      type: 'asset/resource',
+      generator: {
+        filename: 'temple-images/[name][ext]',
+      },
+    });
+    return config;
+  },
   trailingSlash: false,
   reactStrictMode: true,
 };

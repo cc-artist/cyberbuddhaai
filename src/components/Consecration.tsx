@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import SocialShare from './SocialShare';
 import { getImageUrl } from '../lib/imageUtils';
+import ImageWithFallback from './ImageWithFallback';
 
 
 const Consecration: React.FC = () => {
@@ -593,7 +594,7 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                    <img
+                    <ImageWithFallback
                       src={getImageUrl('/temple-images/赛博佛祖背景图.png')}
                       alt="Cyber Buddha Background"
                       className="absolute inset-0 w-full h-full object-cover opacity-70"
