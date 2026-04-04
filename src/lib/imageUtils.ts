@@ -28,17 +28,12 @@ export const getImageUrl = (path: string): string => {
     processedPath = processedPath.replace('//', '/');
   }
   
-  // 确保路径格式正确
-  if (processedPath.startsWith('/temple-images/')) {
-    // 对于寺庙图片，直接返回相对路径
-    return processedPath.substring(1); // 移除开头的斜杠
-  } else if (!processedPath.startsWith('/')) {
-    // 如果是相对路径，直接返回
-    return processedPath;
-  } else {
-    // 其他情况，移除开头的斜杠
-    return processedPath.substring(1);
+  // 确保路径以斜杠开头（Next.js需要绝对路径来加载静态资源）
+  if (!processedPath.startsWith('/')) {
+    processedPath = '/' + processedPath;
   }
+  
+  return processedPath;
 };
 
 /**
