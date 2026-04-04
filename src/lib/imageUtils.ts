@@ -28,20 +28,17 @@ export const getImageUrl = (path: string): string => {
     processedPath = processedPath.replace('//', '/');
   }
   
-  // 确保路径以斜杠开头
-  if (!processedPath.startsWith('/')) {
-    processedPath = '/' + processedPath;
+  // 确保路径格式正确
+  if (processedPath.startsWith('/temple-images/')) {
+    // 对于寺庙图片，直接返回相对路径
+    return processedPath.substring(1); // 移除开头的斜杠
+  } else if (!processedPath.startsWith('/')) {
+    // 如果是相对路径，直接返回
+    return processedPath;
+  } else {
+    // 其他情况，移除开头的斜杠
+    return processedPath.substring(1);
   }
-  
-  // 从映射表中获取图片路径
-  const mappedPath = getMappedImageUrl(processedPath);
-  
-  // 统一处理：在所有环境下都使用相对路径格式
-  // 这确保了开发和生产环境的一致性
-  const finalPath = mappedPath.startsWith('/') ? mappedPath.substring(1) : mappedPath;
-  
-  // 确保路径格式正确，特别是对于中文文件名
-  return finalPath;
 };
 
 /**
