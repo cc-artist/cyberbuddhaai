@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import NextImage from 'next/image';
+import { getImageUrl } from '../lib/imageUtils';
+import ImageWithFallback from './ImageWithFallback';
 
 interface Comment {
   id: string;
@@ -18,7 +19,28 @@ interface Comment {
 const CommentScroll: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
   const commentsPerGroup = 3; // 每组显示的评论数量，根据需求改为3个
+
+  // 使用 Intersection Observer 延迟加载评论区
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    const section = document.getElementById('community-shares-section');
+    if (section) {
+      observer.observe(section);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   // 从数据库和localStorage获取评论数据
   const loadComments = async () => {
@@ -90,7 +112,10 @@ const CommentScroll: React.FC = () => {
     };
   }, [loadComments]);
 
+  // 仅在评论区可见时加载数据
   useEffect(() => {
+    if (!isVisible) return;
+    
     loadComments();
     // 监听localStorage变化
     window.addEventListener('storage', loadComments);
@@ -101,7 +126,7 @@ const CommentScroll: React.FC = () => {
       window.removeEventListener('storage', loadComments);
       clearInterval(interval);
     };
-  }, []);
+  }, [isVisible]);
 
   // 添加评论后手动刷新（通过自定义事件）
   useEffect(() => {
@@ -177,11 +202,10 @@ const CommentScroll: React.FC = () => {
             >
               {/* 分享的图片 */}
               <div className="relative w-full h-16 overflow-hidden rounded-md border border-[#8676B6]/30 mb-2">
-                <NextImage
-                  src={comment.imageUrl}
+                <ImageWithFallback
+                  src={getImageUrl(comment.imageUrl)}
                   alt={comment.title}
-                  fill
-                  className="object-contain"
+                  className="absolute inset-0 w-full h-full object-contain"
                 />
               </div>
               
@@ -190,12 +214,10 @@ const CommentScroll: React.FC = () => {
                 {/* 用户信息和头像 */}
                 <div className="flex items-center gap-2">
                   <div className="relative w-5 h-5 rounded-full overflow-hidden border border-[#8676B6]/30">
-                    <NextImage 
+                    <img 
                       src={comment.userAvatar} 
                       alt={comment.userName} 
-                      fill
-                      unoptimized={true}
-                      className="object-cover" 
+                      className="absolute inset-0 w-full h-full object-cover" 
                     />
                   </div>
                   <div className="flex items-center gap-1">

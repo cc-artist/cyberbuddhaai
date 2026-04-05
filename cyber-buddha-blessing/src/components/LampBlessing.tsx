@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import NextImage from 'next/image';
 import SocialShare from './SocialShare';
 
 const LampBlessing: React.FC = () => {
@@ -449,7 +448,7 @@ const LampBlessing: React.FC = () => {
               <div className="mt-6 space-y-4">
                 <h4 className="text-md font-medium text-[#F5F5F7]">Blessing Image (9:16)</h4>
                 <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden flex justify-center items-center">
-                  <NextImage 
+                  <img 
                     src={generatedImage || ''} 
                     alt="Blessing Image" 
                     width={800} 
@@ -494,7 +493,7 @@ const LampBlessing: React.FC = () => {
                     <style>{`.pp-KWCN3QN74N4X4{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:Helvetica Neue,Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}`}</style>
                     <form action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" method="post" target="_blank" style={{display:'inline-grid',justifyItems:'center',alignContent:'start',gap:'0.5rem'}}>
                       <input className="pp-KWCN3QN74N4X4" type="submit" value="Click to Pay" />
-                      <NextImage src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" width={200} height={25} unoptimized={true} />
+                      <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" width={200} height={25} />
                       <section style={{fontSize: '0.75rem', color: '#1a56db', fontWeight: 'bold'}}>PayPal</section>
                     </form>
                   </div>

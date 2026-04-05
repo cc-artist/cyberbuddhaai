@@ -3,6 +3,8 @@
 import React from 'react';
 import { Temple } from '../data/TempleData';
 import ContactForm from './ContactForm';
+import { getImageUrl } from '../lib/imageUtils';
+import ImageWithFallback from './ImageWithFallback';
 
 interface TempleDetailModalProps {
   temple: Temple | null;
@@ -45,18 +47,18 @@ const TempleDetailModal: React.FC<TempleDetailModalProps> = ({
         <div className="flex flex-col md:flex-row h-full">
           {/* Left Side Image */}
           <div className="relative w-full md:w-1/2 h-64 md:h-auto">
-            <img
-              src={temple.image}
-              alt={temple.name}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[#1D1D1F]/80 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 p-6 text-white">
-              <h2 className="text-2xl font-bold mb-1">{temple.name}</h2>
-              <p className="text-sm opacity-90">{temple.location}</p>
-              <p className="text-sm mt-2 bg-[#8676B6] inline-block px-3 py-1 rounded-full">{temple.title}</p>
+              <ImageWithFallback
+                src={getImageUrl(temple.image)}
+                alt={temple.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[#1D1D1F]/80 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-6 text-white">
+                <h2 className="text-2xl font-bold mb-1">{temple.name}</h2>
+                <p className="text-sm opacity-90">{temple.location}</p>
+                <p className="text-sm mt-2 bg-[#8676B6] inline-block px-3 py-1 rounded-full">{temple.title}</p>
+              </div>
             </div>
-          </div>
 
           {/* Right Side Content */}
           <div className="w-full md:w-1/2 overflow-y-auto p-6">

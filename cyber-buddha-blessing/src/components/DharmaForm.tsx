@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import Image from 'next/image';
 import SocialShare from './SocialShare';
+import { getImageUrl } from '../lib/imageUtils';
 
 
 
@@ -759,11 +759,10 @@ const DharmaForm: React.FC = () => {
             <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden bg-[#1D1D1F]/50 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500">
               {/* Star Map Display */}
               <div className="relative w-full h-96 overflow-hidden">
-                <Image
+                <img
                   src={resultData.imageUrl}
                   alt="Generated Dharma Form"
-                  fill
-                  className="object-cover transition-transform duration-700 hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
             </div>
@@ -820,7 +819,7 @@ const DharmaForm: React.FC = () => {
                 <style>{`.pp-KWCN3QN74N4X4{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:Helvetica Neue,Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}`}</style>
                 <form action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" method="post" target="_blank" style={{display:'inline-grid',justifyItems:'center',alignContent:'start',gap:'0.5rem'}}>
                   <input className="pp-KWCN3QN74N4X4" type="submit" value="Click to Pay" />
-                  <Image src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" width={200} height={25} unoptimized={true} />
+                  <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" width={200} height={25} />
                   <section style={{fontSize: '0.75rem', color: '#1a56db', fontWeight: 'bold'}}>PayPal</section>
                 </form>
               </div>

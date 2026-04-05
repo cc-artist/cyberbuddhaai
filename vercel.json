@@ -1,5 +1,21 @@
 {
   "version": 2,
-  "scope": "cyber-buddha",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "headers": [
+    {
+      "source": "/temple-images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "Content-Type",
+          "value": "image/*"
+        }
+      ]
+    }
+  ],
+  "trailingSlash": false,
+  "outputDirectory": ".next"
 }

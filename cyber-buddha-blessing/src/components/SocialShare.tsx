@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import NextImage from 'next/image';
 
 interface SocialShareProps {
   imageUrl: string;
@@ -282,12 +281,10 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
             <div className="overflow-y-auto flex-1 pr-2">
               {/* 预览图片 */}
               <div className="border border-[#8676B6]/30 rounded-lg overflow-hidden mb-4 relative w-full h-48">
-                <NextImage 
+                <img 
                   src={imageUrl} 
                   alt="Preview" 
-                  fill
-                  unoptimized={true}
-                  className="object-cover" 
+                  className="absolute inset-0 w-full h-full object-cover" 
                 />
               </div>
               
@@ -322,12 +319,10 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
                 {/* 当前头像预览 */}
                   <div className="flex items-center gap-4 mb-4">
                     <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#8676B6]/30">
-                      <NextImage 
+                      <img 
                         src={userAvatar} 
                         alt="Current Avatar" 
-                        fill
-                        unoptimized={true}
-                        className="object-cover" 
+                        className="absolute inset-0 w-full h-full object-cover" 
                       />
                     </div>
                   
@@ -357,12 +352,11 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
                       onClick={() => setUserAvatar(avatar)} 
                       className={`rounded-full overflow-hidden border-2 transition-all duration-300 ${userAvatar === avatar ? 'border-[#8676B6] shadow-lg' : 'border-[#8676B6]/30 hover:border-[#8676B6]'}`}
                     >
-                      <NextImage 
+                      <img 
                         src={avatar} 
                         alt={`Avatar ${index + 1}`} 
                         width={32}
                         height={32}
-                        unoptimized={true}
                         className="object-cover" 
                       />
                     </button>

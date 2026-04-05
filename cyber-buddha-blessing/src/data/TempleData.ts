@@ -11,6 +11,15 @@ export interface Temple {
   highlights: string[];
 }
 
+// 获取当前环境的基础URL
+export const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return '';
+  }
+  // 服务端渲染时使用环境变量或默认值
+  return process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+};
+
 export const temples: Temple[] = [
   {
     id: 1,

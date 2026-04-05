@@ -1,344 +1,156 @@
-import type { Metadata } from 'next';
-import React from 'react';
-import NextImage from 'next/image';
-import Script from 'next/script';
-import { redirect } from 'next/navigation';
-import { Temple, temples as staticTemples } from '../../../data/TempleData';
-import ContactFormWrapper from '../../../components/ContactFormWrapper';
-import SocialShare from '../../../components/SocialShare';
-import PayPalButton from '../../../components/PayPalButton';
+'use client';
 
-// Generate dynamic metadata for each temple page
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const temple = staticTemples.find(t => t.id === parseInt(id)) || null;
-  
-  if (!temple) {
-    return {
-      title: 'Cyber Buddha - Temple Not Found',
-      description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
-    };
-  }
-  
-  const baseUrl = 'https://bc-drab.vercel.app';
-  const pageUrl = `${baseUrl}/temple/${temple.id}`;
-  const imageUrl = `${baseUrl}${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`;
-  
-  return {
-    title: `${temple.name} - Cyber Buddha`,
-    description: temple.description,
-    openGraph: {
-      title: `${temple.name} - Cyber Buddha`,
-      description: temple.description,
-      type: 'website',
-      url: pageUrl,
-      siteName: 'Cyber Buddha',
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: temple.name,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${temple.name} - Cyber Buddha`,
-      description: temple.description,
-      images: [imageUrl],
-      creator: '@cyberbuddha',
-    },
-  };
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { Temple, temples } from '../../../data/TempleData';
+import { getImageUrl } from '../../../lib/imageUtils';
+import ImageWithFallback from '../../../components/ImageWithFallback';
+
+interface TemplePageProps {
+  params: { id: string };
 }
 
-// ISR configuration for temple detail page
-export const dynamicParams = true;
-export const revalidate = 86400; // 24 hours
+const TemplePage: React.FC<TemplePageProps> = ({ params }) => {
+  const router = useRouter();
+  const templeId = parseInt(params.id);
+  const temple = temples.find(t => t.id === templeId) || null;
 
-export default function TempleDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
-  
-  let templeId: string;
-  if (typeof id === 'string') {
-    templeId = id;
-  } else {
-    redirect('/');
-  }
-  
-  // 直接从静态数据中查找寺庙
-  const temple = staticTemples.find(t => t.id === parseInt(templeId)) || null;
-  
   if (!temple) {
-    redirect('/');
-  }
-  
-  return (
-    <div className="min-h-screen bg-[#1D1D1F] text-[#F5F5F7] font-sans">
-      {/* PayPal SDK Script */}
-      <Script
-        src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"
-        strategy="afterInteractive"
-      />
-      {/* Navigation */}
-      <header className="sticky top-0 z-50 bg-[#1D1D1F]/80 backdrop-blur-md border-b border-[#8676B6]/30">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <a 
-            href="/" 
-            className="text-[#8676B6] hover:text-[#8676B6]/80 transition-colors duration-300"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-          </a>
-          <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F7] via-[#8676B6] to-[#FFD700]">
-            Temple Details
-          </h1>
-          <div className="w-6"></div> {/* Placeholder to keep title centered */}
-        </div>
-      </header>
-      
-      {/* Breadcrumb Navigation */}
-      <nav className="max-w-7xl mx-auto px-4 py-2">
-        <ol className="flex items-center space-x-2 text-sm text-[#8676B6]/70">
-          <li>
-            <a 
-              href="/" 
-              className="hover:text-[#8676B6] transition-colors duration-300"
-            >
-              Home
-            </a>
-          </li>
-          <li className="text-[#8676B6]/50">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </li>
-          <li>
-            <a 
-              href="/" 
-              className="hover:text-[#8676B6] transition-colors duration-300"
-            >
-              Temples
-            </a>
-          </li>
-          <li className="text-[#8676B6]/50">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </li>
-          <li className="text-[#8676B6]">
-            {temple.name}
-          </li>
-        </ol>
-      </nav>
-      
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'PlaceOfWorship',
-            '@id': `https://bc-drab.vercel.app/temple/${temple.id}`,
-            name: temple.name,
-            description: temple.description,
-            address: {
-              '@type': 'PostalAddress',
-              addressLocality: temple.location,
-            },
-            image: `https://bc-drab.vercel.app${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`,
-            url: `https://bc-drab.vercel.app/temple/${temple.id}`,
-            additionalProperty: [
-              {
-                '@type': 'PropertyValue',
-                name: 'Features',
-                value: temple.features.join(', ')
-              },
-              {
-                '@type': 'PropertyValue',
-                name: 'Highlights',
-                value: temple.highlights.join(', ')
-              }
-            ],
-            amenityFeature: temple.features.map(feature => ({
-              '@type': 'LocationFeatureSpecification',
-              name: feature
-            })),
-            isAccessibleForFree: true,
-            openingHours: 'Mo-Su 06:00-18:00'
-          })}}
-        />
-        {/* Temple Image and Basic Information */}
-        <div
-          className="relative w-full h-[500px] mb-8 rounded-2xl overflow-hidden shadow-2xl"
+    return (
+      <div className="min-h-screen bg-[#1D1D1F] text-[#F5F5F7] flex flex-col items-center justify-center p-4">
+        <h1 className="text-3xl font-bold mb-4">Temple Not Found</h1>
+        <p className="text-lg mb-8">The requested temple could not be found.</p>
+        <button
+          className="bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+          onClick={() => router.push('/')}
         >
-          <NextImage
-            src={temple.image}
-            alt={temple.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 100vw"
-          />
-          {/* Gradient overlay and text content */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1D1D1F]/90 via-[#1D1D1F]/30 to-transparent"></div>
-          <div className="absolute bottom-0 left-0 p-8">
-            <h2 className="text-4xl font-bold mb-2">{temple.name}</h2>
-            <p className="text-lg opacity-90">{temple.location}</p>
-            <p className="text-sm mt-2 bg-[#8676B6] inline-block px-3 py-1 rounded-full">{temple.title}</p>
+          Back to Home
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#1D1D1F] text-[#F5F5F7]">
+      {/* Temple Hero Section */}
+      <section className="relative h-[60vh] overflow-hidden">
+        <ImageWithFallback
+          src={getImageUrl(temple.image)}
+          alt={temple.name}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'center 20%' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1D1D1F] to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2">{temple.name}</h1>
+          <p className="text-lg md:text-xl text-[#F5F5F7]/90">{temple.location}</p>
+          <div className="mt-4">
+            <span className="bg-[#8676B6] text-white px-4 py-1 rounded-full text-sm">{temple.title}</span>
           </div>
         </div>
-        
+      </section>
+
+      {/* Temple Content */}
+      <section className="max-w-7xl mx-auto p-4 md:p-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Side: Temple Introduction and Features */}
+          {/* Main Content */}
           <div className="md:col-span-2 space-y-8">
-            {/* Temple Introduction */}
+            {/* Description */}
             <div>
-              <h3 className="text-2xl font-semibold text-[#8676B6] mb-4">Temple Introduction</h3>
+              <h2 className="text-2xl font-bold mb-4 text-[#8676B6]">About {temple.name}</h2>
               <p className="text-[#F5F5F7]/80 leading-relaxed">{temple.description}</p>
             </div>
-            
-            {/* Tour Features */}
+
+            {/* Features */}
             <div>
-              <h3 className="text-2xl font-semibold text-[#8676B6] mb-4">Tour Features</h3>
+              <h2 className="text-2xl font-bold mb-4 text-[#8676B6]">Tour Features</h2>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {temple.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2 text-[#F5F5F7]/70">
+                  <li key={index} className="flex items-start gap-2">
                     <svg className="w-5 h-5 text-[#8676B6] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span>{feature}</span>
+                    <span className="text-[#F5F5F7]/80">{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            
+
             {/* Route Planning */}
             <div>
-              <h3 className="text-2xl font-semibold text-[#8676B6] mb-4">Route Planning</h3>
-              <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 p-4 rounded-lg">
-                <div className="mb-4">
-                  <h4 className="text-lg font-medium text-[#8676B6] mb-2">Transportation</h4>
-                  <p className="text-[#F5F5F7]/70">{temple.route.transport}</p>
+              <h2 className="text-2xl font-bold mb-4 text-[#8676B6]">Route Planning</h2>
+              <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 p-6 rounded-xl">
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium text-[#8676B6] mb-2">Transportation</h3>
+                  <p className="text-[#F5F5F7]/80">{temple.route.transport}</p>
                 </div>
-                <div className="mb-4">
-                  <h4 className="text-lg font-medium text-[#8676B6] mb-2">Itinerary</h4>
-                  <p className="text-[#F5F5F7]/70 whitespace-pre-line">{temple.route.itinerary}</p>
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium text-[#8676B6] mb-2">Itinerary</h3>
+                  <pre className="text-[#F5F5F7]/80 whitespace-pre-line font-mono text-sm">{temple.route.itinerary}</pre>
                 </div>
                 {temple.route.combination && (
                   <div>
-                    <h4 className="text-lg font-medium text-[#8676B6] mb-2">Combination Attractions</h4>
-                    <p className="text-[#F5F5F7]/70">{temple.route.combination}</p>
+                    <h3 className="text-lg font-medium text-[#8676B6] mb-2">Combination Attractions</h3>
+                    <p className="text-[#F5F5F7]/80">{temple.route.combination}</p>
                   </div>
                 )}
               </div>
             </div>
-            
+
             {/* Cultural Experiences */}
             <div>
-              <h3 className="text-2xl font-semibold text-[#8676B6] mb-4">Cultural Experiences</h3>
+              <h2 className="text-2xl font-bold mb-4 text-[#8676B6]">Cultural Experiences</h2>
               <div className="flex flex-wrap gap-3">
                 {temple.culture.map((culture, index) => (
-                  <span key={index} className="bg-[#8676B6]/10 text-[#8676B6] px-4 py-2 rounded-full text-sm border border-[#8676B6]/30">
+                  <span key={index} className="bg-[#8676B6]/20 text-[#8676B6] px-4 py-2 rounded-full text-sm border border-[#8676B6]/30">
                     {culture}
                   </span>
                 ))}
               </div>
             </div>
           </div>
-          
-          {/* Right Side: Action Buttons */}
-          <div className="space-y-6">
-            {/* Consultation and Payment Buttons */}
-            <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-semibold text-[#8676B6] mb-4">Tour Booking</h3>
-              <div className="space-y-3">
-                <ContactFormWrapper templeName={temple.name} />
-                <div>
-                  {/* PayPal Payment Button */}
-                  <div className="w-full text-center">
-                    <PayPalButton 
-                      amount="10000.00" 
-                      description={`Custom Tour Booking for ${temple.name}`} 
-                      name="Custom Tour Booking"
-                      className=""
-                    />
-                  </div>
-                  
-                  <div className="flex justify-center items-center gap-1 mt-2">
-                    <NextImage 
-                      src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" 
-                      alt="cards" 
-                      width={200} 
-                      height={25}
-                      unoptimized={true}
-                      className="h-6"
-                    />
-                  </div>
-                  <div className="text-center text-xs text-[#F5F5F7]/50 mt-1">
-                    <span style={{ fontSize: '0.875rem', color: '#1a56db', fontWeight: 'bold' }}>PayPal</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Price Information */}
-              <div className="mt-6 pt-4 border-t border-[#8676B6]/30">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[#F5F5F7]/70 text-sm">Tour Price</span>
-                  <span className="text-[#FFD700] font-bold text-xl">$10,000</span>
-                </div>
-                <p className="text-[#F5F5F7]/50 text-xs">
-                  Includes tickets, accommodation, meals, and guide services
-                </p>
-              </div>
-            </div>
-            
-            {/* Temple Highlights */}
-            <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-semibold text-[#8676B6] mb-4">Temple Highlights</h3>
+
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Highlights */}
+            <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 p-6 rounded-xl">
+              <h2 className="text-xl font-bold mb-4 text-[#8676B6]">Highlights</h2>
               <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-[#8676B6] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                  <span className="text-[#F5F5F7]/70">{temple.highlights[0]}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-[#8676B6] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                  <span className="text-[#F5F5F7]/70">{temple.highlights[1]}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-[#8676B6] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                  <span className="text-[#F5F5F7]/70">{temple.highlights[2]}</span>
-                </li>
+                {temple.highlights.map((highlight, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-[#FFD700] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span className="text-[#F5F5F7]/80">{highlight}</span>
+                  </li>
+                ))}
               </ul>
             </div>
-            
-            {/* Social Share */}
-            <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-semibold text-[#8676B6] mb-4">Share to Social Media</h3>
-              <SocialShare 
-                imageUrl={`https://bc-drab.vercel.app${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`}
-                title={temple.name}
-                description={temple.description}
-                pageUrl={`https://bc-drab.vercel.app/temple/${temple.id}`}
-              />
+
+            {/* Back Button */}
+            <div>
+              <button
+                className="w-full bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                onClick={() => router.push('/')}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Home
+              </button>
             </div>
           </div>
         </div>
-      </main>
-      
+      </section>
+
       {/* Footer */}
-      <footer className="bg-[#1D1D1F] border-t border-[#8676B6]/30 py-12 px-4">
-        <div className="max-w-7xl mx-auto text-center text-[#F5F5F7]/50 text-sm">
-          <p>© 2026 Cyber Buddha. All rights reserved.</p>
+      <footer className="bg-[#1D1D1F] border-t border-[#8676B6]/30 py-8 px-4 mt-12">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-[#F5F5F7]/50 text-sm">© 2026 Cyber Buddha. All rights reserved.</p>
         </div>
       </footer>
     </div>
   );
-}
+};
+
+export default TemplePage;

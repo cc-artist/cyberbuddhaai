@@ -26,7 +26,7 @@ const nextConfig = {
     // 允许 SVG 图片
     dangerouslyAllowSVG: true,
     // 配置图片域名
-    domains: ['localhost', 'cyberbuddhaai.vercel.app', 'vercel.app'],
+    domains: ['localhost', 'cyberbuddhaai.vercel.app', 'vercel.app', 'ui-avatars.com'],
     // 简化远程配置
     remotePatterns: [
       {
@@ -44,7 +44,32 @@ const nextConfig = {
         hostname: 'vercel.app',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'ui-avatars.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+        pathname: '**',
+      },
     ],
+  },
+  // 确保静态资源正确处理
+  assetPrefix: '',
+  // 确保中文文件名能正确处理
+  webpack: (config) => {
+    // 确保中文文件名能正确处理
+    config.module.rules.forEach((rule) => {
+      if (rule.test && rule.test.toString().includes('\.(png|jpe?g|gif|webp|svg)$')) {
+        rule.type = 'asset/resource';
+        rule.generator = {
+          filename: 'temple-images/[name][ext]',
+        };
+      }
+    });
+    return config;
   },
   trailingSlash: false,
   reactStrictMode: true,

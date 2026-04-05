@@ -2,6 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import SocialShare from './SocialShare';
+import { getImageUrl } from '../lib/imageUtils';
+import ImageWithFallback from './ImageWithFallback';
 
 
 const Consecration: React.FC = () => {
@@ -60,7 +62,7 @@ const Consecration: React.FC = () => {
       };
 
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.png', true);
+      await loadImage(bgImage, getImageUrl('/temple-images/赛博佛祖背景图.png'), true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -262,7 +264,7 @@ const Consecration: React.FC = () => {
       setDownloadStatus('正在加载图像...');
       
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.png', true);
+      await loadImage(bgImage, getImageUrl('/temple-images/赛博佛祖背景图.png'), true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -592,8 +594,8 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                    <img
-                      src="/temple-images/赛博佛祖背景图.png"
+                    <ImageWithFallback
+                      src={getImageUrl('/temple-images/赛博佛祖背景图.png')}
                       alt="Cyber Buddha Background"
                       className="absolute inset-0 w-full h-full object-cover opacity-70"
                     />

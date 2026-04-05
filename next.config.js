@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   staticPageGenerationTimeout: 120,
+  assetPrefix: '',
   images: {
     // 允许本地图片加载
     unoptimized: true,
@@ -21,6 +22,18 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
+  },
+  webpack: (config) => {
+    // 确保中文文件名能正确处理
+    config.module.rules.forEach((rule) => {
+      if (rule.test && rule.test.toString().includes('\\.(png|jpe?g|gif|webp|svg)$')) {
+        rule.type = 'asset/resource';
+        rule.generator = {
+          filename: 'temple-images/[name][ext]',
+        };
+      }
+    });
+    return config;
   },
   trailingSlash: false,
   reactStrictMode: true,
