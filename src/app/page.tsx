@@ -103,24 +103,24 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Golden Particle Halo Background */}
+        {/* Cyber Buddha Background - Bottom Layer */}
         <div className="absolute inset-0 z-0">
+          <img
+            src="/temple-images/赛博佛祖背景图.jpg"
+            alt="Cyber Buddha"
+            className="w-full h-full object-cover opacity-30"
+            style={{ objectPosition: 'center 20%' }}
+          />
+        </div>
+
+        {/* Golden Particle Halo Background - Middle Layer */}
+        <div className="absolute inset-0 z-1">
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-r from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '4s' }}></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-l from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-gradient-to-t from-[#FFD700]/20 via-[#8676B6]/20 to-transparent animate-pulse" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
         </div>
 
-        {/* Cyber Buddha Background */}
-        <div className="absolute inset-0 z-0 opacity-30">
-          <ImageWithFallback
-            src="/temple-images/赛博佛祖背景图.png"
-            alt="Cyber Buddha"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ objectPosition: 'center 20%' }}
-          />
-        </div>
-
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+        <div className="relative z-2 text-center max-w-4xl mx-auto px-4">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F7] via-[#8676B6] to-[#FFD700] animate-pulse">
             Cyber Buddha
           </h1>
