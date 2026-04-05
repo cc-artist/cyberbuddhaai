@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import NextImage from 'next/image';
 import Link from 'next/link';
+import ImageWithFallback from './ImageWithFallback';
+import { getImageUrl } from '../lib/imageUtils';
 import { Temple } from '../data/TempleData';
 
 interface TempleFilmStripProps {
@@ -82,7 +84,7 @@ const TempleFilmStrip: React.FC<TempleFilmStripProps> = ({ temples, onTempleClic
             }}
           >
             <div className="relative w-full h-[200px] overflow-hidden">
-              <img
+              <ImageWithFallback
                 src={temple.image}
                 alt={temple.name}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"

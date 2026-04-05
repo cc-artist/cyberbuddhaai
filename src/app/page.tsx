@@ -7,11 +7,11 @@ import TempleDetailModal from '../components/TempleDetailModal';
 import Consecration from '../components/Consecration';
 import DharmaForm from '../components/DharmaForm';
 import LampBlessing from '../components/LampBlessing';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 import { Temple, temples as staticTemples } from '../data/TempleData';
 
-// Static generation for homepage for better performance
-export const dynamic = 'force-static';
+// Client component for interactive functionality
 
 export default function Home() {
   const [temples, setTemples] = useState<Temple[]>(staticTemples);
@@ -112,7 +112,7 @@ export default function Home() {
 
         {/* Cyber Buddha Background */}
         <div className="absolute inset-0 z-0 opacity-30">
-          <img
+          <ImageWithFallback
             src="/temple-images/赛博佛祖背景图.png"
             alt="Cyber Buddha"
             className="absolute inset-0 w-full h-full object-cover"
