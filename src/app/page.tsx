@@ -101,7 +101,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#1D1D1F] text-[#F5F5F7] font-sans overflow-x-hidden">
 
 
-      {/* Hero Section */}
+      {/* Hero Section - Updated to trigger deployment */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Cyber Buddha Background - Bottom Layer */}
         <div className="absolute inset-0 z-0">
