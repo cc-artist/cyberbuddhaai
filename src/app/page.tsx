@@ -105,7 +105,7 @@ export default function Home() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Cyber Buddha Background - Bottom Layer */}
         <div className="absolute inset-0 z-0">
-          <img
+          <ImageWithFallback
             src="/temple-images/赛博佛祖背景图.jpg"
             alt="Cyber Buddha"
             className="w-full h-full object-cover opacity-30"

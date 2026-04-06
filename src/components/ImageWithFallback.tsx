@@ -14,7 +14,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src,
   alt,
   className = '',
-  fallbackSrc = '/temple-images/赛博佛祖背景图.png',
+  fallbackSrc = '/temple-images/赛博佛祖背景图.jpg',
   onError,
   ...props
 }) => {
