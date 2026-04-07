@@ -58,6 +58,18 @@ const nextConfig = {
   },
   // 确保静态资源正确处理
   assetPrefix: '',
+  // 确保中文文件名能正确处理
+  webpack: (config) => {
+    config.module.rules.forEach((rule) => {
+      if (rule.test && rule.test.toString().includes('\.(png|jpe?g|gif|webp|svg)$')) {
+        rule.type = 'asset/resource';
+        rule.generator = {
+          filename: 'temple-images/[name][ext]',
+        };
+      }
+    });
+    return config;
+  },
 
   trailingSlash: false,
   reactStrictMode: true,
