@@ -20,17 +20,25 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 }) => {
   const [isError, setIsError] = useState(false);
   const [finalSrc, setFinalSrc] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsError(false);
+    setIsLoading(true);
     const safeSrc = getImageUrl(src);
     setFinalSrc(safeSrc);
   }, [src]);
 
   const handleError = () => {
     setIsError(true);
+    setIsLoading(false);
     if (onError) {
       onError();
     }
+  };
+
+  const handleLoad = () => {
+    setIsLoading(false);
   };
 
   const displaySrc = isError ? getImageUrl(fallbackSrc) : finalSrc;
@@ -41,6 +49,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       alt={alt}
       className={className}
       onError={handleError}
+      onLoad={handleLoad}
       {...props}
     />
   );
