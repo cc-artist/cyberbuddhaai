@@ -1,5 +1,6 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "framework": "nextjs",
   "headers": [
     {
@@ -18,4 +19,7 @@
   ],
   "trailingSlash": false,
   "outputDirectory": ".next"
+=======
+  "framework": "nextjs"
+>>>>>>> 1d78eda (Initial commit with latest code)
 }
