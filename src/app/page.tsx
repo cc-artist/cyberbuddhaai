@@ -127,6 +127,9 @@ export default function Home() {
           <p className="text-2xl md:text-3xl mb-10 text-[#F5F5F7]/90">
             Cyber Buddha Digital Blessing · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples
           </p>
+          <p className="text-xl mb-8 text-[#F5F5F7]/70">
+            Experience the future of spiritual technology
+          </p>
 
         </div>
       </section>
