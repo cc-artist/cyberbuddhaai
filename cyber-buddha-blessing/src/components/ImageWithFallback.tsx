@@ -16,18 +16,11 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src,
   alt,
   className = '',
-  fallbackSrc = 'temple-images/赛博佛祖背景图.png',
+  fallbackSrc = 'https://via.placeholder.com/1200x800?text=Cyber+Buddha+Background',
   onError,
   ...props
 }) => {
   const [isError, setIsError] = useState(false);
-  const [finalSrc, setFinalSrc] = useState('');
-
-  useEffect(() => {
-    // 使用统一的图片路径处理函数
-    const safeSrc = getImageUrl(src);
-    setFinalSrc(safeSrc);
-  }, [src]);
 
   const handleError = () => {
     setIsError(true);
@@ -36,7 +29,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     }
   };
 
-  const displaySrc = isError ? getImageUrl(fallbackSrc) : finalSrc;
+  const displaySrc = isError ? fallbackSrc : getImageUrl(src);
 
   return (
     <img
@@ -44,6 +37,9 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       alt={alt}
       className={className}
       onError={handleError}
+      style={{
+        ...props.style
+      }}
       {...props}
     />
   );
