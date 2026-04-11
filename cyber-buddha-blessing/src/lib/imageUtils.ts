@@ -68,11 +68,8 @@ export const getProductionSafeImageUrl = (path: string): string => {
     safePath = `/${safePath}`;
   }
   
-  // 对于Vercel，使用相对路径格式
-  if (safePath.startsWith('/temple-images/')) {
-    return safePath.substring(1); // 移除开头的斜杠
-  }
-  
+  // 对于Vercel，保持绝对路径格式
+  // Next.js需要绝对路径来加载静态资源
   return safePath;
 };
 
