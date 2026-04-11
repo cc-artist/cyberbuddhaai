@@ -28,9 +28,10 @@ export const getImageUrl = (path: string): string => {
     processedPath = processedPath.replace('//', '/');
   }
   
-  // 确保路径以斜杠开头（Next.js需要绝对路径来加载静态资源）
-  if (!processedPath.startsWith('/')) {
-    processedPath = '/' + processedPath;
+  // 移除开头的斜杠，使用相对路径
+  // 这样图片请求就不会通过/_next/image路由
+  if (processedPath.startsWith('/')) {
+    processedPath = processedPath.substring(1);
   }
   
   // 使用映射表获取正确的图片路径
