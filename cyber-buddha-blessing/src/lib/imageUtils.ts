@@ -62,14 +62,13 @@ export const getProductionSafeImageUrl = (path: string): string => {
     normalizedPath = normalizedPath.replace('//', '/');
   }
   
-  // 确保路径格式正确
+  // 移除开头的斜杠，使用相对路径
+  // 这样图片请求就不会通过/_next/image路由
   let safePath = normalizedPath;
-  if (!safePath.startsWith('/')) {
-    safePath = `/${safePath}`;
+  if (safePath.startsWith('/')) {
+    safePath = safePath.substring(1);
   }
   
-  // 对于Vercel，保持绝对路径格式
-  // Next.js需要绝对路径来加载静态资源
   return safePath;
 };
 
