@@ -33,7 +33,8 @@ export const getImageUrl = (path: string): string => {
     processedPath = '/' + processedPath;
   }
   
-  return processedPath;
+  // 使用映射表获取正确的图片路径
+  return getMappedImageUrl(processedPath);
 };
 
 /**

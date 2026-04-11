@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getImageUrl } from '../lib/imageUtils';
+import { getProductionSafeImageUrl } from '../lib/imageUtils';
 
 interface ImageWithFallbackProps {
   src: string;
@@ -29,7 +29,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     }
   };
 
-  const displaySrc = isError ? fallbackSrc : getImageUrl(src);
+  const displaySrc = isError ? fallbackSrc : getProductionSafeImageUrl(src);
 
   return (
     <img
