@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { getImageUrl } from '../lib/imageUtils';
 
 interface ImageWithFallbackProps {
   src: string;
@@ -25,7 +24,13 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   useEffect(() => {
     setIsError(false);
     setIsLoading(true);
-    const safeSrc = getImageUrl(src);
+    
+    // 确保路径是绝对路径
+    let safeSrc = src;
+    if (safeSrc && !safeSrc.startsWith('http://') && !safeSrc.startsWith('https://') && !safeSrc.startsWith('/')) {
+      safeSrc = '/' + safeSrc;
+    }
+    
     setFinalSrc(safeSrc);
   }, [src]);
 
@@ -41,7 +46,11 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     setIsLoading(false);
   };
 
-  const displaySrc = isError ? getImageUrl(fallbackSrc) : finalSrc;
+  // 处理fallback路径
+  let displaySrc = isError ? fallbackSrc : finalSrc;
+  if (displaySrc && !displaySrc.startsWith('http://') && !displaySrc.startsWith('https://') && !displaySrc.startsWith('/')) {
+    displaySrc = '/' + displaySrc;
+  }
 
   return (
     <img
