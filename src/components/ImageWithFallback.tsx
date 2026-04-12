@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface ImageWithFallbackProps {
   src: string;
@@ -53,12 +54,13 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   }
 
   return (
-    <img
+    <Image
       src={displaySrc}
       alt={alt}
       className={className}
       onError={handleError}
       onLoad={handleLoad}
+      unoptimized={true}
       {...props}
     />
   );
