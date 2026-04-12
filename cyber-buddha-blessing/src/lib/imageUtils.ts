@@ -28,14 +28,15 @@ export const getImageUrl = (path: string): string => {
     processedPath = processedPath.replace('//', '/');
   }
   
-  // 移除开头的斜杠，使用相对路径
+  // 确保路径格式正确，使用相对路径
   // 这样图片请求就不会通过/_next/image路由
   if (processedPath.startsWith('/')) {
     processedPath = processedPath.substring(1);
   }
   
-  // 使用映射表获取正确的图片路径
-  return getMappedImageUrl(processedPath);
+  // 直接返回处理后的路径，避免使用映射表
+  // 这样可以确保图片请求直接访问静态资源
+  return processedPath;
 };
 
 /**
@@ -63,14 +64,13 @@ export const getProductionSafeImageUrl = (path: string): string => {
     normalizedPath = normalizedPath.replace('//', '/');
   }
   
-  // 移除开头的斜杠，使用相对路径
+  // 确保路径格式正确，使用相对路径
   // 这样图片请求就不会通过/_next/image路由
-  let safePath = normalizedPath;
-  if (safePath.startsWith('/')) {
-    safePath = safePath.substring(1);
+  if (normalizedPath.startsWith('/')) {
+    normalizedPath = normalizedPath.substring(1);
   }
   
-  return safePath;
+  return normalizedPath;
 };
 
 /**
