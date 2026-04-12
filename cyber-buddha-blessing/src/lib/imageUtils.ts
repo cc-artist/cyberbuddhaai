@@ -64,10 +64,10 @@ export const getProductionSafeImageUrl = (path: string): string => {
     normalizedPath = normalizedPath.replace('//', '/');
   }
   
-  // 确保路径格式正确，使用相对路径
-  // 这样图片请求就不会通过/_next/image路由
-  if (normalizedPath.startsWith('/')) {
-    normalizedPath = normalizedPath.substring(1);
+  // 确保路径以斜杠开头，使用绝对路径
+  // 这样Next.js能正确加载静态资源
+  if (!normalizedPath.startsWith('/')) {
+    normalizedPath = `/${normalizedPath}`;
   }
   
   return normalizedPath;
