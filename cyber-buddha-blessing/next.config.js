@@ -15,7 +15,10 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
   },
-
+  // 禁用图片优化，避免通过 /_next/image 路由加载
+  images: {
+    unoptimized: true
+  },
 
   trailingSlash: false,
   reactStrictMode: true,

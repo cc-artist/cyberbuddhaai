@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import NextImage from 'next/image';
 
 export default function NotFound() {
   return (
@@ -15,11 +14,10 @@ export default function NotFound() {
         {/* 404 Symbol */}
         <div className="mb-8">
           <div className="relative w-48 h-48 mx-auto">
-            <NextImage
+            <img
               src="/temple-images/赛博佛祖背景图.png"
               alt="Cyber Buddha"
-              fill
-              className="object-contain opacity-50"
+              className="absolute inset-0 w-full h-full object-contain opacity-50"
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8676B6] to-[#FFD700]">

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import NextImage from 'next/image';
 import Link from 'next/link';
 import ImageWithFallback from './ImageWithFallback';
 import { getImageUrl } from '../lib/imageUtils';

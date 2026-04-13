@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import NextImage from 'next/image';
 import SocialShare from './SocialShare';
 import ImageWithFallback from './ImageWithFallback';
 import { getImageUrl } from '../lib/imageUtils';

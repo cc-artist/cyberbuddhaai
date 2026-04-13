@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import React from 'react';
-import NextImage from 'next/image';
 import Script from 'next/script';
 import { redirect } from 'next/navigation';
 import { Temple, temples as staticTemples } from '../../../data/TempleData';

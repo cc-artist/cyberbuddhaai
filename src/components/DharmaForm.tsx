@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import Image from 'next/image';
 import SocialShare from './SocialShare';
 
 
@@ -759,11 +758,10 @@ const DharmaForm: React.FC = () => {
             <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden bg-[#1D1D1F]/50 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500">
               {/* Star Map Display */}
               <div className="relative w-full h-96 overflow-hidden">
-                <Image
+                <img
                   src={resultData.imageUrl}
                   alt="Generated Dharma Form"
-                  fill
-                  className="object-cover transition-transform duration-700 hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
             </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import NextImage from 'next/image';
 import TempleFilmStrip from '../components/TempleFilmStrip';
 import TempleDetailModal from '../components/TempleDetailModal';
 import Consecration from '../components/Consecration';
