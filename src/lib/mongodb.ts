@@ -49,7 +49,6 @@ async function connectMongoDB() {
   }
 }
 
-// 初始化数据库连接
-connectMongoDB();
+
 
 export default connectMongoDB;

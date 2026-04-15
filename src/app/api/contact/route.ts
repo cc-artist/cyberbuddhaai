@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error saving consultation:', error);
     return NextResponse.json(
-      { error: 'Failed to save consultation' },
+      { error: 'Failed to submit message. Please try again later.' },
       { status: 500 }
     );
   }
@@ -66,9 +66,15 @@ export async function GET() {
     );
   } catch (error) {
     console.error('Error getting consultations:', error);
+    // 返回空数据作为默认值
     return NextResponse.json(
-      { error: 'Failed to get consultations' },
-      { status: 500 }
+      { 
+        consultations: [],
+        totalCount: 0,
+        pendingCount: 0,
+        repliedCount: 0
+      },
+      { status: 200 }
     );
   }
 }

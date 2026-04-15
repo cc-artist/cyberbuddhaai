@@ -14,7 +14,8 @@ export async function GET() {
     return NextResponse.json(comments, { status: 200 });
   } catch (error) {
     console.error('Error getting comments:', error);
-    return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 });
+    // 返回空数组作为默认值，避免前端崩溃
+    return NextResponse.json([], { status: 200 });
   }
 }
 
@@ -47,6 +48,7 @@ export async function POST(request: Request) {
     return NextResponse.json(newComment, { status: 201 });
   } catch (error) {
     console.error('Error saving comment:', error);
-    return NextResponse.json({ error: 'Failed to save comment' }, { status: 500 });
+    // 返回友好的错误信息
+    return NextResponse.json({ error: 'Failed to save comment. Please try again later.' }, { status: 500 });
   }
 }

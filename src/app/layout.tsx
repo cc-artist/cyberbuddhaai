@@ -111,51 +111,29 @@ const websiteJsonLd = {
 
 // Helper function to generate dynamic structured data based on page type
 const generateDynamicJsonLd = () => {
-  // Get current pathname
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-  
-  // Generate structured data based on path
-  if (pathname.startsWith('/temple/')) {
-    // Temple page structured data
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'PlaceOfWorship',
-      name: 'Cyber Buddha Temple',
-      description: 'A famous Buddhist temple in China',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'China',
-        addressCountry: 'CN'
-      },
-      url: `https://bc-drab.vercel.app${pathname}`
-    };
-  } else if (pathname === '/admin') {
-    // Admin page - no specific structured data needed
-    return null;
-  } else {
-    // Home page and other pages - add general content structured data
-    return {
-      '@context': 'https://schema.org',
+  // Always return home page structured data for server-side rendering
+  // Client-side path detection is handled in individual pages if needed
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Cyber Buddha - Digital Blessing Service',
+    description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
+    url: 'https://bc-drab.vercel.app/',
+    mainEntityOfPage: {
       '@type': 'WebPage',
-      name: 'Cyber Buddha - Digital Blessing Service',
-      description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
-      url: 'https://bc-drab.vercel.app/',
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': 'https://bc-drab.vercel.app/'
-      },
-      author: {
-        '@type': 'Organization',
-        name: 'Cyber Buddha Team'
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Cyber Buddha'
-      },
-      datePublished: '2023-01-01',
-      dateModified: new Date().toISOString().split('T')[0]
-    };
-  }
+      '@id': 'https://bc-drab.vercel.app/'
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'Cyber Buddha Team'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Cyber Buddha'
+    },
+    datePublished: '2023-01-01',
+    dateModified: new Date().toISOString().split('T')[0]
+  };
 };
 
 export default function RootLayout({

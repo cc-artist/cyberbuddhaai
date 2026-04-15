@@ -464,14 +464,38 @@ const Consecration: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('File input change event:', e);
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      console.log('Selected file:', file);
+      
+      // 检查文件大小
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('File size exceeds 10MB limit. Please select a smaller file.');
+        return;
+      }
+      
+      // 检查文件类型
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid file type. Please select JPG, PNG, or WEBP image.');
+        return;
+      }
+      
       setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
+        console.log('File reader onloadend:', reader.result);
         setPreviewUrl(reader.result as string);
       };
+      reader.onerror = () => {
+        console.error('File reader error');
+        alert('Failed to read the file. Please try again.');
+      };
       reader.readAsDataURL(file);
+    } else {
+      console.log('No file selected');
     }
   };
 
@@ -724,7 +748,7 @@ const Consecration: React.FC = () => {
                         )}
                         {/* 分享按钮 */}
                         <SocialShare 
-                          imageUrl={completeResultUrl || resultUrl} 
+                          imageUrl={completeResultUrl || ''} 
                           title="Cyber Buddha Digital Blessing Result" 
                           description="Check out my Cyber Buddha Digital Blessing result!" 
                           pageUrl={window.location.href} 

@@ -454,7 +454,7 @@ const LampBlessing: React.FC = () => {
                     width={800} 
                     height={1422} 
                     className="w-full max-w-md mx-auto rounded-xl" 
-                    style={{ maxHeight: '400px' }} // 限制图片高度，防止遮挡评论区
+                    style={{ maxHeight: '300px' }} // 进一步限制图片高度，确保分享按钮和评论模态框能够正常显示
                   />
                 </div>
                 

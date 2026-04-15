@@ -2,14 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface BreadcrumbProps {
   currentPage?: string;
 }
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ currentPage }) => {
-  // Get current pathname
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  // Get current pathname using Next.js hook
+  const pathname = usePathname() || '';
   const pathSegments = pathname.split('/').filter(segment => segment);
   
   // Generate breadcrumb items

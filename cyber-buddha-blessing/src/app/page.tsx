@@ -11,6 +11,7 @@ const TempleDetailModal = React.lazy(() => import('../components/TempleDetailMod
 const Consecration = React.lazy(() => import('../components/Consecration'));
 const DharmaForm = React.lazy(() => import('../components/DharmaForm'));
 const LampBlessing = React.lazy(() => import('../components/LampBlessing'));
+const CommentScroll = React.lazy(() => import('../components/CommentScroll'));
 
 
 
@@ -264,9 +265,12 @@ export default function Home() {
 
       {/* Community Shares Section */}
       <section id="community-shares-section" className="py-20 px-4 bg-gradient-to-b from-[#1D1D1F] to-[#1D1D1F]/90">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#F5F5F7]">Community Shares</h2>
-          <p className="text-[#F5F5F7]/70">Coming soon - Share your digital blessing experiences with our community</p>
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-[#F5F5F7]">Community Shares</h2>
+          <p className="text-[#F5F5F7]/70 text-center mb-8">Share your digital blessing experiences with our community</p>
+          <Suspense fallback={<div className="min-h-[200px] flex items-center justify-center">Loading comments...</div>}>
+            <CommentScroll />
+          </Suspense>
         </div>
       </section>
 

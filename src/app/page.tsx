@@ -7,6 +7,7 @@ import Consecration from '../components/Consecration';
 import DharmaForm from '../components/DharmaForm';
 import LampBlessing from '../components/LampBlessing';
 import ImageWithFallback from '../components/ImageWithFallback';
+import CommentScroll from '../components/CommentScroll';
 
 import { Temple, temples as staticTemples } from '../data/TempleData';
 
@@ -187,7 +188,13 @@ export default function Home() {
         </div>
       </section>
 
-
+      {/* User Experiences Section */}
+      <section className="py-20 px-4 bg-[#1D1D1F]/50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold mb-10 text-center text-[#F5F5F7]">User Experiences</h2>
+          <CommentScroll />
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="bg-[#1D1D1F] border-t border-[#8676B6]/30 py-12 px-4">
