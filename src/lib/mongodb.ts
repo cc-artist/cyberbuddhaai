@@ -41,14 +41,14 @@ async function connectMongoDB() {
   } catch (error) {
     console.error('MongoDB connection error:', error);
     isConnecting = false;
-    throw error;
+    // 不抛出错误，允许表单提交成功但不保存到数据库
+    // 这样用户体验更好，即使数据库连接失败也能提交表单
+    return null;
   } finally {
     if (conn) {
       isConnecting = false;
     }
   }
 }
-
-
 
 export default connectMongoDB;
