@@ -36,11 +36,17 @@ const CommentScroll: React.FC = () => {
           createdAt: new Date(comment.createdAt)
         }));
         console.log('Formatted database comments:', formattedComments);
-        setComments(formattedComments);
-        // 重置当前组索引
-        setCurrentGroupIndex(0);
-        console.log('Comments updated from database');
-        return;
+        
+        // 如果数据库有评论，使用数据库评论
+        if (formattedComments.length > 0) {
+          setComments(formattedComments);
+          // 重置当前组索引
+          setCurrentGroupIndex(0);
+          console.log('Comments updated from database');
+          return;
+        }
+        // 如果数据库没有评论，继续从localStorage获取
+        console.log('No comments in database, falling back to localStorage');
       } else {
         console.error('Failed to fetch comments from database:', await response.text());
       }
@@ -48,7 +54,7 @@ const CommentScroll: React.FC = () => {
       console.error('Error fetching comments from database:', error);
     }
     
-    // 数据库获取失败时，从localStorage获取
+    // 数据库获取失败或数据库中没有评论时，从localStorage获取
     console.log('Fetching comments from localStorage...');
     const storedComments = localStorage.getItem('cyberBuddhaComments');
     if (storedComments) {

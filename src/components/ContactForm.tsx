@@ -129,7 +129,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1D1D1F]/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-[#1D1D1F]/80 backdrop-blur-sm">
       <div className="relative w-full max-w-2xl bg-[#1D1D1F] border border-[#8676B6]/30 rounded-2xl overflow-hidden shadow-2xl">
         {/* Close Button */}
         <button
