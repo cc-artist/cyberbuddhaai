@@ -77,6 +77,11 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
         shareUrl = `https://servicewechat.com/share?url=${encodedUrl}&title=${encodedTitle}&desc=${encodedDesc}`;
         break;
       case 'comments':
+        // 检查是否有完整的合成图
+        if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'undefined' || imageUrl === 'null') {
+          alert('请先点击"Download Result"按钮下载Digital Blessing结果图片，然后再分享到评论区，以获得最佳效果！');
+          return;
+        }
         // 显示评论模态框
         setIsModalOpen(true);
         return;
@@ -113,6 +118,14 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
       if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'undefined' || imageUrl === 'null') {
         console.log('No valid imageUrl provided');
         alert('点击生成和下载DIGITAL BLESSING结果后才能分享完整的DIGITAL BLESSING结果图');
+        return;
+      }
+      
+      // 检查是否为完整的合成图（包含背景图）
+      // 简单判断：如果imageUrl是data URL且长度较短，可能只是物品图，不是完整合成图
+      if (imageUrl.startsWith('data:image/') && imageUrl.length < 10000) {
+        console.log('Image URL appears to be just the item image, not the complete合成图');
+        alert('请先点击"Download Result"按钮生成包含赛博佛祖背景图的完整结果，然后再分享，以获得最佳效果！');
         return;
       }
 
@@ -273,8 +286,8 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
 
       {/* 评论分享模态框 */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-9999">
-          <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[999999999]" style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999999999}}>
+          <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] flex flex-col shadow-2xl" style={{position: 'relative', zIndex: 999999999}}>
             <h3 className="text-xl font-bold mb-4 text-[#F5F5F7]">Share to Comments</h3>
             
             {/* 可滚动内容区域 */}

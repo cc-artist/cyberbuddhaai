@@ -38,9 +38,15 @@ export const imageMap: ImageMap = {
  * @returns 生产环境可用的图片路径
  */
 export const getMappedImageUrl = (originalPath: string): string => {
-  // 检查映射表中是否存在该路径
+  // 检查映射表中是否存在该路径（带斜杠开头）
   if (imageMap[originalPath]) {
     return imageMap[originalPath];
+  }
+  
+  // 检查映射表中是否存在带斜杠开头的路径
+  const pathWithSlash = '/' + originalPath;
+  if (imageMap[pathWithSlash]) {
+    return imageMap[pathWithSlash];
   }
   
   // 如果映射表中没有，返回原始路径

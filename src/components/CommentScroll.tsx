@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD
-import NextImage from 'next/image';
-=======
->>>>>>> 1d78eda (Initial commit with latest code)
+import { getImageUrl } from '../lib/imageUtils';
+import ImageWithFallback from './ImageWithFallback';
 
 interface Comment {
   id: string;
@@ -21,7 +19,28 @@ interface Comment {
 const CommentScroll: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
-  const commentsPerGroup = 3; // 每组显示的评论数量，根据需求改为3个
+  const [isVisible, setIsVisible] = useState(false);
+  const commentsPerGroup = 5; // 每组显示的评论数量，根据需求改为5个
+
+  // 使用 Intersection Observer 延迟加载评论区
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    const section = document.getElementById('community-shares-section');
+    if (section) {
+      observer.observe(section);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   // 从数据库和localStorage获取评论数据
   const loadComments = async () => {
@@ -34,15 +53,6 @@ const CommentScroll: React.FC = () => {
       if (response.ok) {
         const dbComments = await response.json();
         console.log('Database comments:', dbComments);
-<<<<<<< HEAD
-        // 转换createdAt字符串为Date对象
-        const formattedComments = dbComments.map((comment: any) => ({
-          ...comment,
-          createdAt: new Date(comment.createdAt)
-        }));
-        console.log('Formatted database comments:', formattedComments);
-        setComments(formattedComments);
-=======
         setComments(dbComments);
         // 将数据库评论保存到localStorage作为备份
         try {
@@ -50,7 +60,6 @@ const CommentScroll: React.FC = () => {
         } catch (localStorageError) {
           console.error('Error saving comments to localStorage:', localStorageError);
         }
->>>>>>> 1d78eda (Initial commit with latest code)
         // 重置当前组索引
         setCurrentGroupIndex(0);
         console.log('Comments updated from database');
@@ -66,19 +75,6 @@ const CommentScroll: React.FC = () => {
     console.log('Fetching comments from localStorage...');
     const storedComments = localStorage.getItem('cyberBuddhaComments');
     if (storedComments) {
-<<<<<<< HEAD
-      const parsedComments = JSON.parse(storedComments);
-      // 转换createdAt字符串为Date对象
-      const formattedComments = parsedComments.map((comment: any) => ({
-        ...comment,
-        createdAt: new Date(comment.createdAt)
-      }));
-      console.log('LocalStorage comments:', formattedComments);
-      setComments(formattedComments);
-      // 重置当前组索引
-      setCurrentGroupIndex(0);
-      console.log('Comments updated from localStorage');
-=======
       try {
         const parsedComments = JSON.parse(storedComments);
         // 转换createdAt字符串为Date对象
@@ -95,7 +91,6 @@ const CommentScroll: React.FC = () => {
         console.error('Error parsing comments from localStorage:', parseError);
         setComments([]);
       }
->>>>>>> 1d78eda (Initial commit with latest code)
     } else {
       console.log('No comments found in localStorage');
       // 如果localStorage也没有评论，设置为空数组
@@ -117,7 +112,10 @@ const CommentScroll: React.FC = () => {
     };
   }, [loadComments]);
 
+  // 仅在评论区可见时加载数据
   useEffect(() => {
+    if (!isVisible) return;
+    
     loadComments();
     // 监听localStorage变化
     window.addEventListener('storage', loadComments);
@@ -128,7 +126,7 @@ const CommentScroll: React.FC = () => {
       window.removeEventListener('storage', loadComments);
       clearInterval(interval);
     };
-  }, []);
+  }, [isVisible]);
 
   // 添加评论后手动刷新（通过自定义事件）
   useEffect(() => {
@@ -182,17 +180,17 @@ const CommentScroll: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 overflow-hidden max-w-7xl mx-auto">
+    <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 max-w-7xl mx-auto">
       <h3 className="text-sm font-bold mb-3 text-center text-[#F5F5F7]">Community Shares</h3>
       
-      {/* 评论滚动容器 - 带平滑过渡动画 */}
-      <div className="relative overflow-hidden">
+      {/* 评论滚动容器 - 横向滚动 */}
+      <div className="relative overflow-x-auto pb-4">
         {/* 当前显示的评论组 */}
         <div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-3 transition-all duration-500 ease-in-out transform"
+          className="flex gap-3 transition-all duration-500 ease-in-out transform min-w-max"
           style={{
             opacity: 1,
-            transform: 'translateY(0)',
+            transform: 'translateX(0)',
             position: 'relative',
             zIndex: 10
           }}
@@ -200,52 +198,48 @@ const CommentScroll: React.FC = () => {
           {getCurrentComments().map((comment) => (
             <div 
               key={comment.id} 
-              className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-3 transition-all duration-300 hover:shadow-lg"
+              className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-3 transition-all duration-300 hover:shadow-lg min-w-[200px]"
             >
               {/* 分享的图片 */}
-              <div className="relative w-full h-16 overflow-hidden rounded-md border border-[#8676B6]/30 mb-2">
-                <img
-                  src={comment.imageUrl}
+              <div className="relative w-full h-32 overflow-hidden rounded-md border border-[#8676B6]/30 mb-3">
+                <ImageWithFallback
+                  src={getImageUrl(comment.imageUrl)}
                   alt={comment.title}
                   className="absolute inset-0 w-full h-full object-contain"
                 />
               </div>
               
               {/* 评论内容和用户信息 */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {/* 用户信息和头像 */}
                 <div className="flex items-center gap-2">
-                  <div className="relative w-5 h-5 rounded-full overflow-hidden border border-[#8676B6]/30">
+                  <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#8676B6]/30">
                     <img 
                       src={comment.userAvatar} 
                       alt={comment.userName} 
-<<<<<<< HEAD
-                      className="w-full h-full object-cover" 
-=======
                       className="absolute inset-0 w-full h-full object-cover" 
->>>>>>> 1d78eda (Initial commit with latest code)
                     />
                   </div>
                   <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-medium text-[#F5F5F7]">{comment.userName}</span>
-                    <span className="text-[#F5F5F7]/50 text-[8px]">
+                    <span className="text-xs font-medium text-[#F5F5F7]">{comment.userName}</span>
+                    <span className="text-[#F5F5F7]/50 text-[9px]">
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
                 
                 {/* 分享标题 */}
-                <h4 className="text-xs font-semibold text-[#8676B6] line-clamp-1">{comment.title}</h4>
+                <h4 className="text-sm font-semibold text-[#8676B6] line-clamp-1">{comment.title}</h4>
                 
                 {/* 用户自定义评论 */}
                 {comment.userComment && (
-                  <div className="bg-[#1D1D1F]/70 border border-[#8676B6]/20 rounded-md p-1">
-                    <p className="text-[#F5F5F7]/80 italic text-[10px] line-clamp-1">"{comment.userComment}"</p>
+                  <div className="bg-[#1D1D1F]/70 border border-[#8676B6]/20 rounded-md p-2">
+                    <p className="text-[#F5F5F7]/80 italic text-xs line-clamp-2">"{comment.userComment}"</p>
                   </div>
                 )}
                 
                 {/* 原始描述 */}
-                <p className="text-[#F5F5F7]/70 text-[10px] line-clamp-1">{comment.description}</p>
+                <p className="text-[#F5F5F7]/70 text-xs line-clamp-1">{comment.description}</p>
               </div>
             </div>
           ))}
@@ -253,11 +247,7 @@ const CommentScroll: React.FC = () => {
       </div>
       
       {/* 提示信息 */}
-<<<<<<< HEAD
-      {displayComments.length === 0 && (
-=======
       {comments.length === 0 && (
->>>>>>> 1d78eda (Initial commit with latest code)
         <div className="mt-4 text-center">
           <p className="text-[#F5F5F7]/70 text-sm">No comments yet. Be the first to share!</p>
         </div>

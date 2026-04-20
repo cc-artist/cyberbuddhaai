@@ -28,11 +28,14 @@ export const getImageUrl = (path: string): string => {
     processedPath = processedPath.replace('//', '/');
   }
   
-  // 确保路径以斜杠开头（Next.js需要绝对路径来加载静态资源）
+  // 确保路径以斜杠开头，使用绝对路径
+  // 这样Next.js能正确加载静态资源
   if (!processedPath.startsWith('/')) {
-    processedPath = '/' + processedPath;
+    processedPath = `/${processedPath}`;
   }
   
+  // 直接返回处理后的路径，避免使用映射表
+  // 这样可以确保图片请求直接访问静态资源
   return processedPath;
 };
 
@@ -61,18 +64,13 @@ export const getProductionSafeImageUrl = (path: string): string => {
     normalizedPath = normalizedPath.replace('//', '/');
   }
   
-  // 确保路径格式正确
-  let safePath = normalizedPath;
-  if (!safePath.startsWith('/')) {
-    safePath = `/${safePath}`;
+  // 确保路径以斜杠开头，使用绝对路径
+  // 这样Next.js能正确加载静态资源
+  if (!normalizedPath.startsWith('/')) {
+    normalizedPath = `/${normalizedPath}`;
   }
   
-  // 对于Vercel，使用相对路径格式
-  if (safePath.startsWith('/temple-images/')) {
-    return safePath.substring(1); // 移除开头的斜杠
-  }
-  
-  return safePath;
+  return normalizedPath;
 };
 
 /**

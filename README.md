@@ -25,3 +25,9 @@ npm run build
 ## Deploy
 
 This project is deployed on Vercel. Make sure to set the Root Directory to `cyber-buddha-blessing` in your Vercel project settings.
+
+### Deployment Notes
+- Static images are stored in the `public/temple-images/` directory
+- .vercelignore has been updated to include image files
+- Vercel deployment should automatically include all static images
+- Multi-service deployment is configured in vercel.json
