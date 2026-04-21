@@ -743,8 +743,8 @@ const Consecration: React.FC = () => {
                       <div className="space-y-3">
                         {/* 提示信息 */}
                         {!completeResultUrl && (
-                          <div className="p-2 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg text-sm text-[#FFD700]/80">
-                            Tip: Click "Download Result" first to generate the complete blessing image with background, then share for best effect!
+                          <div className="p-3 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg text-sm text-[#FFD700]/90 font-medium mb-3">
+                            请先点击"Download Result"下载Digital Blessing Result，生成完整的开光图像后再分享，以获得最佳效果！
                           </div>
                         )}
                         {/* 分享按钮 */}
