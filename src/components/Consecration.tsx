@@ -2,72 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import SocialShare from './SocialShare';
+import ImageWithFallback from './ImageWithFallback';
 import { getImageUrl } from '../lib/imageUtils';
-
-// Inline ImageWithFallback component to avoid import issues
-interface ImageWithFallbackProps {
-  src: string;
-  alt: string;
-  className?: string;
-  fallbackSrc?: string;
-  onError?: () => void;
-  [key: string]: any;
-}
-
-const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
-  src,
-  alt,
-  className = '',
-  fallbackSrc = '/temple-images/fHPlMoqxg.jpg',
-  onError,
-  ...props
-}) => {
-  const [isError, setIsError] = useState(false);
-  const [finalSrc, setFinalSrc] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-
-  React.useEffect(() => {
-    setIsError(false);
-    setIsLoading(true);
-    
-    // 确保路径是绝对路径
-    let safeSrc = src;
-    if (safeSrc && !safeSrc.startsWith('http://') && !safeSrc.startsWith('https://') && !safeSrc.startsWith('/')) {
-      safeSrc = '/' + safeSrc;
-    }
-    
-    setFinalSrc(safeSrc);
-  }, [src]);
-
-  const handleError = () => {
-    setIsError(true);
-    setIsLoading(false);
-    if (onError) {
-      onError();
-    }
-  };
-
-  const handleLoad = () => {
-    setIsLoading(false);
-  };
-
-  // 处理fallback路径
-  let displaySrc = isError ? fallbackSrc : finalSrc;
-  if (displaySrc && !displaySrc.startsWith('http://') && !displaySrc.startsWith('https://') && !displaySrc.startsWith('/')) {
-    displaySrc = '/' + displaySrc;
-  }
-
-  return (
-    <img
-      src={displaySrc}
-      alt={alt}
-      className={className}
-      onError={handleError}
-      onLoad={handleLoad}
-      {...props}
-    />
-  );
-};
 
 
 const Consecration: React.FC = () => {
@@ -662,6 +598,7 @@ const Consecration: React.FC = () => {
                         src="/temple-images/赛博佛祖背景图.png"
                         alt="Cyber Buddha Background"
                         className="absolute inset-0 w-full h-full object-cover opacity-70"
+                        fallbackSrc="/temple-images/fHPlMoqxg.jpg"
                       />
                        
                       {/* 佛光效果 - 外层光晕 */}

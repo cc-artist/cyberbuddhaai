@@ -47,8 +47,8 @@ app.get('/admin/index.html', (req, res) => {
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cyber-buddha', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+  serverSelectionTimeoutMS: 5000, // 5秒服务器选择超时
+  socketTimeoutMS: 5000, // 5秒套接字超时
 }).then(() => {
   console.log('Connected to MongoDB');
 }).catch((err) => {
@@ -517,7 +517,7 @@ app.post('/api/payments/callback/pingpong', async (req, res) => {
 });
 
 // Set port
-const PORT = process.env.PORT || 3001;
+const PORT = 3009; // Use a specific port to avoid conflicts
 
 // Start server
 app.listen(PORT, () => {

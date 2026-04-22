@@ -1,0 +1,5 @@
+首页添加评论区导致首页赛博佛祖背景图不能预览的修复步骤：
+1. 检查了ImageWithFallback.js文件，发现它使用了CommonJS模块语法
+2. 发现项目中同时存在ImageWithFallback.tsx文件，它已经使用了正确的ES模块语法
+3. 删除了ImageWithFallback.js文件以避免冲突
+4. 检查了所有导入ImageWithFallback的文件，确保它们使用了正确的导入路径

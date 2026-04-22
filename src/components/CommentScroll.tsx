@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import ImageWithFallback from './ImageWithFallback';
 
 interface Comment {
   id: string;
@@ -22,14 +23,48 @@ const CommentScroll: React.FC = () => {
   // 从数据库和localStorage获取评论数据
   const loadComments = async () => {
     console.log('loadComments function called');
+    
+    // 首先尝试从localStorage获取评论，作为备用
+    const getLocalStorageComments = () => {
+      console.log('Fetching comments from localStorage...');
+      try {
+        const storedComments = localStorage.getItem('cyberBuddhaComments');
+        if (storedComments) {
+          const parsedComments = JSON.parse(storedComments);
+          const formattedComments = parsedComments.map((comment: any) => ({
+            ...comment,
+            createdAt: new Date(comment.createdAt)
+          }));
+          console.log('LocalStorage comments:', formattedComments);
+          return formattedComments;
+        } else {
+          console.log('No comments found in localStorage');
+          return [];
+        }
+      } catch (error) {
+        console.error('Error reading from localStorage:', error);
+        return [];
+      }
+    };
+    
+    // 先从localStorage获取评论，确保页面能够快速显示评论
+    const localComments = getLocalStorageComments();
+    if (localComments.length > 0) {
+      setComments(localComments);
+      setCurrentGroupIndex(0);
+      console.log('Initial comments loaded from localStorage');
+    }
+    
+    // 然后尝试从数据库获取评论
     try {
-      // 优先从数据库获取评论
       console.log('Fetching comments from database...');
       const response = await fetch('/api/public/comments', { cache: 'no-store' });
       console.log('Response status:', response.status);
+      
       if (response.ok) {
         const dbComments = await response.json();
         console.log('Database comments:', dbComments);
+        
         // 转换createdAt字符串为Date对象
         const formattedComments = dbComments.map((comment: any) => ({
           ...comment,
@@ -40,46 +75,52 @@ const CommentScroll: React.FC = () => {
         // 如果数据库有评论，使用数据库评论
         if (formattedComments.length > 0) {
           setComments(formattedComments);
-          // 重置当前组索引
           setCurrentGroupIndex(0);
           console.log('Comments updated from database');
           return;
         }
-        // 如果数据库没有评论，继续从localStorage获取
-        console.log('No comments in database, falling back to localStorage');
+        
+        // 数据库评论为空，但localStorage有评论，保持localStorage的评论
+        if (localComments.length > 0) {
+          console.log('Database returned empty, keeping localStorage comments');
+          return;
+        }
+        
+        // 都没有评论，设置为空数组
+        setComments([]);
+        console.log('No comments found anywhere');
+        return;
       } else {
         console.error('Failed to fetch comments from database:', await response.text());
+        // 数据库请求失败，但localStorage有评论，保持localStorage的评论
+        if (localComments.length > 0) {
+          console.log('Database request failed, keeping localStorage comments');
+          return;
+        }
+        // 都没有评论，设置为空数组
+        setComments([]);
       }
     } catch (error) {
       console.error('Error fetching comments from database:', error);
-    }
-    
-    // 数据库获取失败或数据库中没有评论时，从localStorage获取
-    console.log('Fetching comments from localStorage...');
-    const storedComments = localStorage.getItem('cyberBuddhaComments');
-    if (storedComments) {
-      const parsedComments = JSON.parse(storedComments);
-      // 转换createdAt字符串为Date对象
-      const formattedComments = parsedComments.map((comment: any) => ({
-        ...comment,
-        createdAt: new Date(comment.createdAt)
-      }));
-      console.log('LocalStorage comments:', formattedComments);
-      setComments(formattedComments);
-      // 重置当前组索引
-      setCurrentGroupIndex(0);
-      console.log('Comments updated from localStorage');
-    } else {
-      console.log('No comments found in localStorage');
-      // 如果localStorage也没有评论，设置为空数组
+      // 数据库连接失败，但localStorage有评论，保持localStorage的评论
+      if (localComments.length > 0) {
+        console.log('Database error, keeping localStorage comments');
+        return;
+      }
+      // 都没有评论，设置为空数组
       setComments([]);
     }
   };
   
   // 将loadComments函数暴露到window对象上，方便其他组件调用
   useEffect(() => {
+    // 创建一个包装函数来处理异步调用
+    const loadCommentsWrapper = async () => {
+      await loadComments();
+    };
+    
     // @ts-ignore
-    window.loadComments = loadComments;
+    window.loadComments = loadCommentsWrapper;
     console.log('loadComments function exposed to window');
     
     return () => {
@@ -88,17 +129,26 @@ const CommentScroll: React.FC = () => {
       delete window.loadComments;
       console.log('loadComments function removed from window');
     };
-  }, [loadComments]);
+  }, []);
 
   useEffect(() => {
+    // 立即加载评论
     loadComments();
+    
     // 监听localStorage变化
-    window.addEventListener('storage', loadComments);
+    const handleStorageChange = () => {
+      loadComments();
+    };
+    
     // 添加轮询机制，每30秒刷新一次评论
-    const interval = setInterval(loadComments, 30000);
+    const interval = setInterval(() => {
+      loadComments();
+    }, 30000);
+
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', loadComments);
+      window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
   }, []);
@@ -109,10 +159,10 @@ const CommentScroll: React.FC = () => {
       loadComments();
     };
 
-    window.addEventListener('commentAdded', handleCommentAdded as EventListener);
+    window.addEventListener('commentAdded', handleCommentAdded);
 
     return () => {
-      window.removeEventListener('commentAdded', handleCommentAdded as EventListener);
+      window.removeEventListener('commentAdded', handleCommentAdded);
     };
   }, []);
 
@@ -177,7 +227,7 @@ const CommentScroll: React.FC = () => {
             >
               {/* 分享的图片 */}
               <div className="relative w-full h-16 overflow-hidden rounded-md border border-[#8676B6]/30 mb-2">
-                <img
+                <ImageWithFallback
                   src={comment.imageUrl}
                   alt={comment.title}
                   className="absolute inset-0 w-full h-full object-contain"
@@ -189,7 +239,7 @@ const CommentScroll: React.FC = () => {
                 {/* 用户信息和头像 */}
                 <div className="flex items-center gap-2">
                   <div className="relative w-5 h-5 rounded-full overflow-hidden border border-[#8676B6]/30">
-                    <img 
+                    <ImageWithFallback 
                       src={comment.userAvatar} 
                       alt={comment.userName} 
                       className="w-full h-full object-cover" 

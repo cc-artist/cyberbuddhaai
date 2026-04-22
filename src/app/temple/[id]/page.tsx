@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     };
   }
   
-  const baseUrl = 'https://bc-drab.vercel.app';
+  const baseUrl = '';
   const pageUrl = `${baseUrl}/temple/${temple.id}`;
   const imageUrl = `${baseUrl}${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`;
   
@@ -139,15 +139,15 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
           dangerouslySetInnerHTML={{ __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'PlaceOfWorship',
-            '@id': `https://bc-drab.vercel.app/temple/${temple.id}`,
+            '@id': `/temple/${temple.id}`,
             name: temple.name,
             description: temple.description,
             address: {
               '@type': 'PostalAddress',
               addressLocality: temple.location,
             },
-            image: `https://bc-drab.vercel.app${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`,
-            url: `https://bc-drab.vercel.app/temple/${temple.id}`,
+            image: `${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`,
+            url: `/temple/${temple.id}`,
             additionalProperty: [
               {
                 '@type': 'PropertyValue',
@@ -316,10 +316,10 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
             <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-2xl p-6 shadow-lg">
               <h3 className="text-xl font-semibold text-[#8676B6] mb-4">Share to Social Media</h3>
               <SocialShare 
-                imageUrl={`https://bc-drab.vercel.app${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`}
+                imageUrl={`${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`}
                 title={temple.name}
                 description={temple.description}
-                pageUrl={`https://bc-drab.vercel.app/temple/${temple.id}`}
+                pageUrl={`/temple/${temple.id}`}
               />
             </div>
           </div>

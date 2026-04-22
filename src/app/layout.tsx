@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     title: "Cyber Buddha",
     description: "Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples",
     type: "website",
-    url: "https://bc-drab.vercel.app/",
+    url: "/",
     siteName: "Cyber Buddha",
     images: [
       {
-        url: "https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png",
+        url: "/temple-images/赛博佛祖背景图.png",
         width: 1200,
         height: 630,
         alt: "Cyber Buddha",
@@ -27,15 +27,15 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cyber Buddha",
     description: "Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples",
-    images: ["https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png"],
+    images: ["/temple-images/赛博佛祖背景图.png"],
     creator: "@cyberbuddha",
   },
   alternates: {
-    canonical: "https://bc-drab.vercel.app/",
+    canonical: "/",
   },
   authors: [{
     name: "Cyber Buddha Team",
-    url: "https://bc-drab.vercel.app/",
+    url: "/",
   }],
   publisher: "Cyber Buddha",
   formatDetection: {
@@ -72,8 +72,8 @@ const organizationJsonLd = {
   '@type': 'Organization',
   name: 'Cyber Buddha',
   description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
-  url: 'https://bc-drab.vercel.app/',
-  logo: 'https://bc-drab.vercel.app/favicon.ico',
+  url: '/',
+  logo: '/favicon.ico',
   sameAs: [
     'https://twitter.com/cyberbuddha',
     'https://facebook.com/cyberbuddha',
@@ -90,7 +90,7 @@ const breadcrumbJsonLd = {
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: 'https://bc-drab.vercel.app/'
+      item: '/'
     }
   ]
 };
@@ -100,11 +100,11 @@ const websiteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'Cyber Buddha',
-  url: 'https://bc-drab.vercel.app/',
+  url: '/',
   description: 'Digital spiritual blessing service where users upload item photos and AI generates an animation of Buddha holding the item with chanting background music.',
   potentialAction: {
     '@type': 'SearchAction',
-    target: 'https://bc-drab.vercel.app/?q={search_term_string}',
+    target: '/?q={search_term_string}',
     'query-input': 'required name=search_term_string'
   }
 };
@@ -118,10 +118,10 @@ const generateDynamicJsonLd = () => {
     '@type': 'WebPage',
     name: 'Cyber Buddha - Digital Blessing Service',
     description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
-    url: 'https://bc-drab.vercel.app/',
+    url: '/',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': 'https://bc-drab.vercel.app/'
+      '@id': '/'
     },
     author: {
       '@type': 'Organization',

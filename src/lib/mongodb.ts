@@ -9,31 +9,34 @@ const MONGODB_URI = process.env.DATABASE_URL || 'mongodb://localhost:27017/cyber
 
 async function connectMongoDB() {
   // 如果已经连接，直接返回
-  if (conn) {
+  if (conn && conn.readyState === 1) {
     return conn;
   }
 
   // 如果正在连接，等待连接完成
   if (isConnecting) {
-    // 等待当前连接完成
+    // 等待当前连接完成，最多等待10秒
     await new Promise(resolve => {
+      let waited = 0;
       const checkConnection = setInterval(() => {
-        if (conn) {
+        if (conn && conn.readyState === 1) {
           clearInterval(checkConnection);
           resolve(conn);
+        } else if (waited >= 10000) {
+          clearInterval(checkConnection);
+          resolve(null);
         }
+        waited += 100;
       }, 100);
     });
-    return conn!;
+    return conn;
   }
 
   try {
     isConnecting = true;
 
-    // 连接到MongoDB - 新版mongoose不再需要useNewUrlParser和useUnifiedTopology选项
-    const mongooseInstance = await mongoose.connect(MONGODB_URI, {
-      bufferCommands: false
-    });
+    // 连接到MongoDB - 默认启用buffering以支持离线操作
+    const mongooseInstance = await mongoose.connect(MONGODB_URI);
 
     conn = mongooseInstance.connection;
     console.log('MongoDB connected successfully');
@@ -41,13 +44,10 @@ async function connectMongoDB() {
   } catch (error) {
     console.error('MongoDB connection error:', error);
     isConnecting = false;
-    // 不抛出错误，允许表单提交成功但不保存到数据库
-    // 这样用户体验更好，即使数据库连接失败也能提交表单
+    conn = null;
     return null;
   } finally {
-    if (conn) {
-      isConnecting = false;
-    }
+    isConnecting = false;
   }
 }
 

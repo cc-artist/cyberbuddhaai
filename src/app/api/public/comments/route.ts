@@ -5,7 +5,13 @@ import connectMongoDB from '../../../../lib/mongodb';
 export async function GET() {
   try {
     // 连接到数据库
-    await connectMongoDB();
+    const conn = await connectMongoDB();
+    
+    // 如果数据库连接失败，返回空数组
+    if (!conn) {
+      console.log('Database connection failed, returning empty array');
+      return NextResponse.json([], { status: 200 });
+    }
 
     // 从数据库获取已批准的评论
     const comments = await Comment.find({ approved: true }).sort({ createdAt: -1 });
