@@ -79,7 +79,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
       case 'comments':
         // 检查是否有完整的合成图
         if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'undefined' || imageUrl === 'null') {
-          alert('请先点击"Download Result"按钮下载Digital Blessing结果图片，然后再分享到评论区，以获得最佳效果！');
+          alert('Please click "Download Result" button to download the Digital Blessing result image first, then share to the comments section for the best effect!');
           return;
         }
         // 显示评论模态框
@@ -117,7 +117,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
       console.log('Checking imageUrl:', imageUrl);
       if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'undefined' || imageUrl === 'null') {
         console.log('No valid imageUrl provided');
-        alert('点击生成和下载DIGITAL BLESSING结果后才能分享完整的DIGITAL BLESSING结果图');
+        alert('Please generate and download the DIGITAL BLESSING result first before sharing the complete DIGITAL BLESSING result image');
         return;
       }
       
@@ -125,7 +125,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
       // 简单判断：如果imageUrl是data URL且长度较短，可能只是物品图，不是完整合成图
       if (imageUrl.startsWith('data:image/') && imageUrl.length < 10000) {
         console.log('Image URL appears to be just the item image, not the complete合成图');
-        alert('请先点击"Download Result"按钮生成包含赛博佛祖背景图的完整结果，然后再分享，以获得最佳效果！');
+        alert('Please click "Download Result" button first to generate the complete result with Cyber Buddha background, then share for the best effect!');
         return;
       }
 

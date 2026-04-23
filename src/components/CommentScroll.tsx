@@ -18,7 +18,7 @@ interface Comment {
 const CommentScroll: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
-  const commentsPerGroup = 3; // 每组显示的评论数量，根据需求改为3个
+  const commentsPerGroup = 5; // 每组显示的评论数量，根据需求改为5个
 
   // 从数据库和localStorage获取评论数据
   const loadComments = async () => {
@@ -212,7 +212,7 @@ const CommentScroll: React.FC = () => {
       <div className="relative overflow-hidden">
         {/* 当前显示的评论组 */}
         <div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-3 transition-all duration-500 ease-in-out transform"
+          className="grid grid-cols-1 md:grid-cols-5 gap-3 transition-all duration-500 ease-in-out transform"
           style={{
             opacity: 1,
             transform: 'translateY(0)',
