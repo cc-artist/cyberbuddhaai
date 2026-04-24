@@ -740,7 +740,7 @@ const Consecration: React.FC = () => {
                         
                         {/* 分享按钮 */}
                         <SocialShare 
-                          imageUrl={completeResultUrl || resultUrl} 
+                          imageUrl={completeResultUrl || ''} 
                           title="Cyber Buddha Digital Blessing Result" 
                           description="Check out my Cyber Buddha Digital Blessing result!" 
                           pageUrl={window.location.href} 
