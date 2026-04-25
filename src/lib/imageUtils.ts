@@ -3,8 +3,8 @@ export const getImageUrl = (path: string): string => {
   
   const trimmedPath = path.trim();
   
-  // 完整URL直接返回
-  if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://')) {
+  // 完整URL或data URL直接返回
+  if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://') || trimmedPath.startsWith('data:image/')) {
     return trimmedPath;
   }
   
