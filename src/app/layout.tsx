@@ -211,7 +211,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Google Search Console Verification */}
-        <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE_HERE" />
+        <meta name="google-site-verification" content="googleb225623b94ffa015" />
         
         {/* Structured Data - JSON-LD */}
         <script
