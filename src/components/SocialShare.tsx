@@ -7,6 +7,8 @@ interface SocialShareProps {
   title: string;
   description: string;
   pageUrl: string;
+  itemImageUrl?: string;
+  backgroundImageUrl?: string;
 }
 
 interface Comment {
@@ -21,7 +23,7 @@ interface Comment {
   userAvatar: string;
 }
 
-const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description, pageUrl }) => {
+const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description, pageUrl, itemImageUrl, backgroundImageUrl }) => {
   // 模态框状态
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   // 用户输入状态
@@ -29,6 +31,28 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
   const [userComment, setUserComment] = React.useState('');
   const [userAvatar, setUserAvatar] = React.useState<string>('https://ui-avatars.com/api/?name=Guest&background=random');
   const [avatarFile, setAvatarFile] = React.useState<File | null>(null);
+  // 预览图片状态
+  const [previewImageUrl, setPreviewImageUrl] = React.useState<string>('');
+  const [isGeneratingPreview, setIsGeneratingPreview] = React.useState(false);
+  
+  // 默认预览图（赛博佛祖风格）
+  const defaultPreviewUrl = '/temple-images/赛博佛祖背景图.jpg';
+
+  // 监听 props 变化，自动更新预览图
+  React.useEffect(() => {
+    console.log('Props changed - imageUrl:', !!imageUrl, 'length:', imageUrl?.length);
+    // 只要有 imageUrl 且长度大于10，就使用它
+    if (imageUrl && imageUrl.length > 10) {
+      console.log('Setting preview to imageUrl');
+      setPreviewImageUrl(imageUrl);
+    } else if (itemImageUrl && itemImageUrl.length > 10) {
+      console.log('Setting preview to itemImageUrl');
+      setPreviewImageUrl(itemImageUrl);
+    } else {
+      console.log('Setting preview to default');
+      setPreviewImageUrl(defaultPreviewUrl);
+    }
+  }, [imageUrl, itemImageUrl]);
 
   // 预设的像素头像选项
   const pixelAvatars = [
@@ -55,6 +79,213 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
     }
   };
 
+  // 生成带默认背景的预览图（备选方案）
+  const generateDefaultPreviewWithItem = async (itemUrl: string): Promise<void> => {
+    console.log('Generating default preview with item:', itemUrl);
+    
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        console.log('Canvas context is null in fallback');
+        return;
+      }
+
+      const width = 800;
+      const height = 600;
+      canvas.width = width;
+      canvas.height = height;
+
+      // 创建赛博佛祖风格的渐变背景
+      const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height)/2);
+      gradient.addColorStop(0, 'rgba(134, 118, 182, 0.6)');
+      gradient.addColorStop(0.3, 'rgba(255, 215, 0, 0.3)');
+      gradient.addColorStop(0.6, 'rgba(134, 118, 182, 0.4)');
+      gradient.addColorStop(1, 'rgba(29, 29, 31, 1)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+
+      // 添加赛博佛祖风格的文字标识
+      ctx.fillStyle = 'rgba(134, 118, 182, 0.5)';
+      ctx.font = 'bold 32px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('CYBER BUDDHA', width/2, height/2 - 30);
+      ctx.font = '18px Arial';
+      ctx.fillText('DIGITAL BLESSING', width/2, height/2 + 10);
+
+      // 添加金色光环效果
+      const centerX = width / 2;
+      const centerY = height / 2;
+      
+      const outerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 180);
+      outerGradient.addColorStop(0, 'rgba(255, 215, 0, 0.15)');
+      outerGradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.25)');
+      outerGradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+      ctx.fillStyle = outerGradient;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 180, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 加载并绘制物品图
+      const itemImg = new Image();
+      itemImg.crossOrigin = 'anonymous';
+      
+      await new Promise<void>((resolve, reject) => {
+        itemImg.onload = () => resolve();
+        itemImg.onerror = () => {
+          console.log('Failed to load item image, showing only background');
+          resolve();
+        };
+        itemImg.src = itemUrl;
+      });
+
+      if (itemImg.complete && itemImg.naturalHeight > 0) {
+        // 计算物品图尺寸（保持比例，最大高度为300px）
+        const maxItemHeight = 300;
+        let itemWidth = itemImg.naturalWidth;
+        let itemHeight = itemImg.naturalHeight;
+        
+        if (itemHeight > maxItemHeight) {
+          const scale = maxItemHeight / itemHeight;
+          itemWidth *= scale;
+          itemHeight *= scale;
+        }
+
+        // 绘制物品图在中央偏上位置
+        ctx.drawImage(itemImg, centerX - itemWidth/2, centerY - itemHeight/2 - 20, itemWidth, itemHeight);
+      }
+
+      // 生成最终的data URL
+      const dataUrl = canvas.toDataURL('image/png');
+      setPreviewImageUrl(dataUrl);
+      console.log('Default preview generated successfully');
+      
+    } catch (error) {
+      console.error('Error generating default preview:', error);
+      // 如果所有方法都失败，至少显示默认背景图
+      setPreviewImageUrl(defaultPreviewUrl);
+    }
+  };
+
+  // 生成预览图片
+  const generatePreviewImage = async (): Promise<string | null> => {
+    console.log('generatePreviewImage called with:', { itemImageUrl, backgroundImageUrl });
+    
+    if (!itemImageUrl) {
+      console.log('itemImageUrl is empty, returning null');
+      return null;
+    }
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        console.log('Canvas context is null');
+        return null;
+      }
+
+      const bgImage = new Image();
+      const itemImg = new Image();
+      const bgSrc = backgroundImageUrl || '/temple-images/赛博佛祖背景图.jpg';
+      console.log('Loading background image:', bgSrc);
+
+      const loadImage = (image: HTMLImageElement, src: string, isBackground: boolean = false): Promise<void> => {
+        return new Promise((resolve, reject) => {
+          image.crossOrigin = 'anonymous';
+          image.onload = () => {
+            console.log(`Image loaded successfully: ${src}`);
+            resolve();
+          };
+          image.onerror = () => {
+            console.error(`Failed to load image: ${src}`);
+            if (isBackground) {
+              console.log('Background image failed, using gradient fallback');
+              resolve();
+            } else {
+              reject(new Error(`无法加载图像: ${src}`));
+            }
+          };
+          image.src = src;
+        });
+      };
+
+      console.log('Starting to load background image...');
+      await loadImage(bgImage, bgSrc, true);
+      console.log('Background image load completed');
+
+      let width = 800, height = 600;
+      if (bgImage.complete && bgImage.naturalHeight > 0) {
+        const aspectRatio = bgImage.naturalWidth / bgImage.naturalHeight;
+        width = 800;
+        height = width / aspectRatio;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      await loadImage(itemImg, itemImageUrl);
+
+      ctx.fillStyle = '#1D1D1F';
+      ctx.fillRect(0, 0, width, height);
+
+      if (bgImage.complete && bgImage.naturalHeight > 0) {
+        console.log('Drawing background image:', bgImage.naturalWidth, 'x', bgImage.naturalHeight);
+        const scaleFactor = width / bgImage.naturalWidth;
+        ctx.drawImage(bgImage, 0, 0, bgImage.naturalWidth * scaleFactor, bgImage.naturalHeight * scaleFactor);
+      } else {
+        console.log('Background image not loaded, using gradient fallback');
+        const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height)/2);
+        gradient.addColorStop(0, 'rgba(134, 118, 182, 0.5)');
+        gradient.addColorStop(0.3, 'rgba(255, 215, 0, 0.2)');
+        gradient.addColorStop(0.6, 'rgba(134, 118, 182, 0.3)');
+        gradient.addColorStop(1, 'rgba(29, 29, 31, 1)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        // 添加赛博佛祖风格的文字标识
+        ctx.fillStyle = 'rgba(134, 118, 182, 0.3)';
+        ctx.font = 'bold 24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('CYBER BUDDHA', width/2, height/2 - 20);
+        ctx.font = '14px Arial';
+        ctx.fillText('DIGITAL BLESSING', width/2, height/2 + 10);
+      }
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      const outerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 200);
+      outerGradient.addColorStop(0, 'rgba(255, 215, 0, 0.1)');
+      outerGradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.2)');
+      outerGradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+      ctx.fillStyle = outerGradient;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 200, 0, Math.PI * 2);
+      ctx.fill();
+
+      const innerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 150);
+      innerGradient.addColorStop(0, 'rgba(255, 215, 0, 0.2)');
+      innerGradient.addColorStop(0.7, 'rgba(255, 215, 0, 0.1)');
+      innerGradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+      ctx.fillStyle = innerGradient;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 150, 0, Math.PI * 2);
+      ctx.fill();
+
+      const maxItemSize = 200;
+      const itemAspectRatio = itemImg.naturalWidth / itemImg.naturalHeight;
+      let itemWidth = itemAspectRatio > 1 ? maxItemSize : maxItemSize * itemAspectRatio;
+      let itemHeight = itemAspectRatio > 1 ? maxItemSize / itemAspectRatio : maxItemSize;
+
+      ctx.drawImage(itemImg, centerX - itemWidth/2, centerY - itemHeight/2, itemWidth, itemHeight);
+
+      return canvas.toDataURL('image/png', 0.9);
+    } catch (error) {
+      console.error('生成预览图片失败:', error);
+      return null;
+    }
+  };
+
   // 处理分享到平台
   const shareToPlatform = (platform: string) => {
     let shareUrl = '';
@@ -77,11 +308,20 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
         shareUrl = `https://servicewechat.com/share?url=${encodedUrl}&title=${encodedTitle}&desc=${encodedDesc}`;
         break;
       case 'comments':
-        // 检查是否有完整的合成图
-        if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'undefined' || imageUrl === 'null') {
-          alert('请先点击"Download Result"按钮下载Digital Blessing结果图片，然后再分享到评论区，以获得最佳效果！');
-          return;
+        console.log('shareToPlatform comments called - imageUrl:', !!imageUrl, 'length:', imageUrl?.length);
+        
+        // 重置生成状态
+        setIsGeneratingPreview(false);
+        
+        // 直接设置预览图（不依赖 useEffect）
+        if (imageUrl && imageUrl.length > 10) {
+          setPreviewImageUrl(imageUrl);
+        } else if (itemImageUrl && itemImageUrl.length > 10) {
+          setPreviewImageUrl(itemImageUrl);
+        } else {
+          setPreviewImageUrl(defaultPreviewUrl);
         }
+        
         // 显示评论模态框
         setIsModalOpen(true);
         return;
@@ -114,18 +354,19 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
       }
 
       // 检查是否有结果图 - 更严格的检查
-      console.log('Checking imageUrl:', imageUrl);
-      if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'undefined' || imageUrl === 'null') {
+      const finalImageUrl = previewImageUrl || imageUrl;
+      console.log('Checking imageUrl:', finalImageUrl);
+      if (!finalImageUrl || finalImageUrl.trim() === '' || finalImageUrl === 'undefined' || finalImageUrl === 'null') {
         console.log('No valid imageUrl provided');
-        alert('点击生成和下载DIGITAL BLESSING结果后才能分享完整的DIGITAL BLESSING结果图');
+        alert('Please generate and download the DIGITAL BLESSING result first before sharing the complete DIGITAL BLESSING result image');
         return;
       }
       
       // 检查是否为完整的合成图（包含背景图）
-      // 简单判断：如果imageUrl是data URL且长度较短，可能只是物品图，不是完整合成图
-      if (imageUrl.startsWith('data:image/') && imageUrl.length < 10000) {
+      // 简单判断：如果finalImageUrl是data URL且长度较短，可能只是物品图，不是完整合成图
+      if (finalImageUrl.startsWith('data:image/') && finalImageUrl.length < 10000) {
         console.log('Image URL appears to be just the item image, not the complete合成图');
-        alert('请先点击"Download Result"按钮生成包含赛博佛祖背景图的完整结果，然后再分享，以获得最佳效果！');
+        alert('Please click "Download Result" button first to generate the complete result with Cyber Buddha background, then share for the best effect!');
         return;
       }
 
@@ -140,7 +381,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
 
       const newComment: Comment = {
         id: Date.now().toString(),
-        imageUrl,
+        imageUrl: finalImageUrl,
         title,
         description,
         pageUrl,
@@ -294,11 +535,25 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
             <div className="overflow-y-auto flex-1 pr-2">
               {/* 预览图片 */}
               <div className="border border-[#8676B6]/30 rounded-lg overflow-hidden mb-4 relative w-full h-48">
-                <img 
-                  src={imageUrl} 
-                  alt="Preview" 
-                  className="absolute inset-0 w-full h-full object-cover" 
-                />
+                {isGeneratingPreview ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[#1D1D1F]/50">
+                    <div className="w-8 h-8 border-2 border-[#8676B6]/30 border-t-[#8676B6] rounded-full animate-spin"></div>
+                    <span className="ml-3 text-[#F5F5F5F7]/70">Generating preview...</span>
+                  </div>
+                ) : previewImageUrl ? (
+                  <img 
+                    src={previewImageUrl} 
+                    alt="Preview" 
+                    className="absolute inset-0 w-full h-full object-cover" 
+                  />
+                ) : (
+                  // 使用默认的赛博佛祖背景图作为后备
+                  <img 
+                    src={defaultPreviewUrl} 
+                    alt="Cyber Buddha Background" 
+                    className="absolute inset-0 w-full h-full object-cover" 
+                  />
+                )}
               </div>
               
               {/* 用户名输入 */}

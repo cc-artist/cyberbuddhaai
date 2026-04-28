@@ -1,5 +1,4 @@
 // 图片路径处理工具函数
-import { getMappedImageUrl } from './imageMap';
 
 /**
  * 获取完整的图片URL
@@ -12,8 +11,8 @@ export const getImageUrl = (path: string): string => {
   // 移除前后空白字符
   const trimmedPath = path.trim();
   
-  // 如果是完整URL，直接返回
-  if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://')) {
+  // 如果是完整URL或data URL，直接返回
+  if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://') || trimmedPath.startsWith('data:image/')) {
     return trimmedPath;
   }
   

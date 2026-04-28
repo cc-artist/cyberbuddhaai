@@ -9,7 +9,7 @@ export interface ImageMap {
 // 手动创建的图片映射表，包含所有寺庙图片
 export const imageMap: ImageMap = {
   // 赛博佛祖背景图
-  '/temple-images/赛博佛祖背景图.png': '/temple-images/赛博佛祖背景图.png',
+  '/temple-images/赛博佛祖背景图.jpg': '/temple-images/赛博佛祖背景图.jpg',
   
   // 寺庙图片
   '/temple-images/南华寺.webp': '/temple-images/南华寺.webp',
