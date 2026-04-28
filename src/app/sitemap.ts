@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { temples } from './data/TempleData';
+import { temples } from '../data/TempleData';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cyberbuddhaai.vercel.app';
