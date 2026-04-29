@@ -1,20 +1,51 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { getAppSession } from '../../lib/auth';
-import { redirect } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await getAppSession();
-  
-  if (!session?.user) {
-    redirect('/admin/login');
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<{ email: string } | null>(null);
+
+  useEffect(() => {
+    // 检查认证状态
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/session');
+        const data = await response.json();
+        
+        if (!data.user) {
+          router.push('/admin/login');
+          return;
+        }
+        
+        setUser(data.user);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        router.push('/admin/login');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#1D1D1F] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#8676B6]/30 border-t-[#8676B6] rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
-  const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  if (!user) {
+    return null;
+  }
 
   const navItems = [
     { name: '仪表盘', href: '/admin', icon: 'fas fa-tachometer-alt' },
@@ -70,7 +101,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </div>
             {isSidebarOpen && (
               <div className="ml-3">
-                <p className="text-white text-sm font-medium">{session.user.email}</p>
+                <p className="text-white text-sm font-medium">{user.email}</p>
                 <p className="text-[#86868B] text-xs">管理员</p>
               </div>
             )}
