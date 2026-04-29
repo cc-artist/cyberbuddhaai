@@ -6,7 +6,9 @@ const openai = new OpenAI({
   baseURL: process.env.OPENAI_API_BASE_URL || 'https://api.openai.com/v1'
 });
 
-export async function generateImage(prompt: string, size: string = '1024x1024'): Promise<string | null> {
+type ImageSize = '256x256' | '512x512' | '1024x1024' | '1536x1024' | '1024x1536' | '1792x1024' | '1024x1792';
+
+export async function generateImage(prompt: string, size: ImageSize = '1024x1024'): Promise<string | null> {
   try {
     if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.length < 10) {
       console.warn('OpenAI API key not configured');
@@ -50,7 +52,6 @@ export async function generateText(prompt: string, maxTokens: number = 500): Pro
 
 export async function generateBlessingAnimation(prompt: string): Promise<string | null> {
   try {
-    // 构建完整的加持动画提示词
     const fullPrompt = `Cyber Buddha blessing ${prompt}, digital art style, sacred golden light particles, serene purple ambiance, modern minimalist design, high quality, 8K, ultra detailed, Apple product launch style, Zen Buddhism aesthetic, ethereal atmosphere, soft glow effects, futuristic temple background`;
 
     return await generateImage(fullPrompt, '1024x1024');
