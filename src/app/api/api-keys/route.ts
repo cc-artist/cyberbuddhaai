@@ -46,7 +46,7 @@ export async function GET() {
 
     const keysWithStatus = apiKeys.map(key => ({
       ...key,
-      status: apiStatus[key.type] ? 'active' : 'inactive',
+      status: (apiStatus as Record<string, boolean>)[key.type as string] ? 'active' : 'inactive',
       lastChecked: new Date().toISOString()
     }));
 
