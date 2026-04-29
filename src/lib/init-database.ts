@@ -2,6 +2,7 @@ import connectMongoDB from './mongodb';
 import Payment from '../models/Payment';
 import Consultation from '../models/Consultation';
 import Comment from '../models/Comment';
+import APIKey from '../models/APIKey';
 
 // 示例支付数据
 const samplePayments = [
@@ -81,6 +82,31 @@ const sampleComments = [
   }
 ];
 
+// 示例API密钥数据
+const sampleAPIKeys = [
+  {
+    name: 'OpenAI API Key',
+    type: 'openai',
+    value: process.env.OPENAI_API_KEY ? 'sk-********************' : '未配置',
+    status: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 10 ? 'active' : 'inactive',
+    lastChecked: new Date()
+  },
+  {
+    name: 'PayPal API Key',
+    type: 'paypal',
+    value: process.env.PAYPAL_API_KEY ? '********************' : '未配置',
+    status: !!process.env.PAYPAL_API_KEY && process.env.PAYPAL_API_KEY.length > 10 ? 'active' : 'inactive',
+    lastChecked: new Date()
+  },
+  {
+    name: 'PingPong API Key',
+    type: 'pingpong',
+    value: process.env.PINGPONG_API_KEY ? '********************' : '未配置',
+    status: !!process.env.PINGPONG_API_KEY && process.env.PINGPONG_API_KEY.length > 10 ? 'active' : 'inactive',
+    lastChecked: new Date()
+  }
+];
+
 export async function initializeDatabase() {
   try {
     // 连接到数据库
@@ -112,6 +138,15 @@ export async function initializeDatabase() {
       console.log(`Initialized ${sampleComments.length} comment records`);
     } else {
       console.log(`Comment collection already has ${commentCount} records`);
+    }
+
+    // 检查并初始化APIKey集合
+    const apiKeyCount = await APIKey.countDocuments();
+    if (apiKeyCount === 0) {
+      await APIKey.insertMany(sampleAPIKeys);
+      console.log(`Initialized ${sampleAPIKeys.length} API key records`);
+    } else {
+      console.log(`APIKey collection already has ${apiKeyCount} records`);
     }
 
     return { success: true };
