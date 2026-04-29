@@ -118,3 +118,45 @@ export async function PUT(request: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    // 检查管理员是否已认证
+    const isAuthenticated = await isAdminAuthenticated();
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 连接到数据库
+    await connectMongoDB();
+
+    // 获取请求参数
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Missing consultation id' },
+        { status: 400 }
+      );
+    }
+
+    // 删除咨询记录
+    const deletedConsultation = await Consultation.findByIdAndDelete(id);
+
+    if (!deletedConsultation) {
+      return NextResponse.json(
+        { error: 'Consultation not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error('Error deleting consultation:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete consultation' },
+      { status: 500 }
+    );
+  }
+}
