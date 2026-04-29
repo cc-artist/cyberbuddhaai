@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import connectMongoDB from '../../../lib/mongodb';
-import Consultation from '../../../models/Consultation';
 
 interface ConsultationData {
   id: string;
@@ -33,25 +31,32 @@ const ConsultationsPage = () => {
     try {
       setLoading(true);
       setError('');
-      await connectMongoDB();
-      const docs = await Consultation.find().sort({ createdAt: -1 });
       
-      const data = docs.map(doc => ({
-        id: doc._id.toString(),
-        name: doc.name,
-        email: doc.email,
-        subject: doc.subject,
-        message: doc.message,
-        templeName: doc.templeName,
-        status: doc.status,
-        createdAt: doc.createdAt.toISOString(),
-        updatedAt: doc.updatedAt.toISOString()
+      // 通过API获取咨询数据
+      const response = await fetch('/api/contact');
+      if (!response.ok) {
+        throw new Error('获取咨询数据失败');
+      }
+      
+      const data = await response.json();
+      const filteredData = data || [];
+
+      const formattedData: ConsultationData[] = filteredData.map((item: any) => ({
+        id: item._id || item.id,
+        name: item.name,
+        email: item.email,
+        subject: item.subject,
+        message: item.message,
+        templeName: item.templeName || '未知寺庙',
+        status: (item.status || 'pending') as 'pending' | 'replied' | 'closed',
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt
       }));
 
       if (filterStatus !== 'all') {
-        setConsultations(data.filter(c => c.status === filterStatus));
+        setConsultations(formattedData.filter(c => c.status === filterStatus));
       } else {
-        setConsultations(data);
+        setConsultations(formattedData);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '获取咨询数据失败');
@@ -64,8 +69,14 @@ const ConsultationsPage = () => {
     if (!selectedConsultation || !newStatus) return;
 
     try {
-      await connectMongoDB();
-      await Consultation.findByIdAndUpdate(selectedConsultation.id, { status: newStatus });
+      const response = await fetch('/api/contact', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: selectedConsultation.id, status: newStatus })
+      });
+
+      if (!response.ok) throw new Error('更新状态失败');
+
       setConsultations(consultations.map(c => 
         c.id === selectedConsultation.id ? { ...c, status: newStatus as 'pending' | 'replied' | 'closed' } : c
       ));

@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import connectMongoDB from '../../../lib/mongodb';
-import Payment from '../../../models/Payment';
 
 interface PaymentData {
   id: string;
@@ -30,23 +28,20 @@ const PaymentsPage = () => {
     try {
       setLoading(true);
       setError('');
-      await connectMongoDB();
-      const docs = await Payment.find().sort({ createdAt: -1 });
       
-      const data = docs.map(doc => ({
-        id: doc._id.toString(),
-        user: doc.user,
-        amount: doc.amount,
-        status: doc.status,
-        paymentPlatform: doc.paymentPlatform,
-        createdAt: doc.createdAt.toISOString(),
-        updatedAt: doc.updatedAt.toISOString()
-      }));
+      // 通过API获取支付数据
+      const response = await fetch('/api/admin/payments');
+      if (!response.ok) {
+        throw new Error('获取支付数据失败');
+      }
+      
+      const data = await response.json();
+      const filteredData = data.payments || [];
 
       if (filterStatus !== 'all') {
-        setPayments(data.filter(p => p.status === filterStatus));
+        setPayments(filteredData.filter((p: PaymentData) => p.status === filterStatus));
       } else {
-        setPayments(data);
+        setPayments(filteredData);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '获取支付数据失败');

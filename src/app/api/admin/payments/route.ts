@@ -32,32 +32,52 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 连接到数据库
-    await connectMongoDB();
+    let payments: any[] = [];
+    let isUsingFallback = false;
 
-    // 从数据库获取真实支付数据
-    let payments = await Payment.find();
+    try {
+      // 连接到数据库
+      await connectMongoDB();
 
-    // 如果数据库为空，初始化示例数据
-    if (payments.length === 0) {
-      await Payment.insertMany(samplePayments);
+      // 从数据库获取真实支付数据
       payments = await Payment.find();
-      console.log('示例数据初始化成功');
+
+      // 如果数据库为空，初始化示例数据
+      if (payments.length === 0) {
+        await Payment.insertMany(samplePayments);
+        payments = await Payment.find();
+        console.log('示例数据初始化成功');
+      }
+    } catch (dbError) {
+      console.error('Database connection failed, using fallback data:', dbError);
+      // 如果数据库连接失败，使用示例数据作为降级方案
+      payments = samplePayments.map(p => ({ ...p, _id: p.id }));
+      isUsingFallback = true;
     }
 
     // 计算统计数据
-    const totalRevenue = payments.reduce((sum, payment) => sum + payment.amount, 0);
-    const completedCount = payments.filter(payment => payment.status === 'completed').length;
+    const totalRevenue = payments.reduce((sum, payment: any) => sum + payment.amount, 0);
+    const completedCount = payments.filter((payment: any) => payment.status === 'completed').length;
 
     // 返回支付数据
     return NextResponse.json({
       payments: payments,
       totalCount: payments.length,
       totalRevenue,
-      completedCount
+      completedCount,
+      isUsingFallback
     }, { status: 200 });
   } catch (error) {
     console.error('Error getting payments:', error);
-    return NextResponse.json({ error: 'Failed to fetch payments' }, { status: 500 });
+    // 最终降级：返回示例数据
+    const totalRevenue = samplePayments.reduce((sum, payment) => sum + payment.amount, 0);
+    const completedCount = samplePayments.filter(payment => payment.status === 'completed').length;
+    return NextResponse.json({
+      payments: samplePayments.map(p => ({ ...p, _id: p.id })),
+      totalCount: samplePayments.length,
+      totalRevenue,
+      completedCount,
+      isUsingFallback: true
+    }, { status: 200 });
   }
 }

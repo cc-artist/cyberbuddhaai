@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import connectMongoDB from '../../../lib/mongodb';
-import Comment from '../../../models/Comment';
 
 interface CommentData {
   id: string;
@@ -31,23 +29,30 @@ const CommentsPage = () => {
     try {
       setLoading(true);
       setError('');
-      await connectMongoDB();
-      const docs = await Comment.find().sort({ createdAt: -1 });
       
-      const data = docs.map(doc => ({
-        id: doc._id.toString(),
-        imageUrl: doc.imageUrl,
-        title: doc.title,
-        description: doc.description,
-        pageUrl: doc.pageUrl,
-        createdAt: doc.createdAt.toISOString(),
-        userName: doc.userName,
-        userComment: doc.userComment,
-        userAvatar: doc.userAvatar,
-        approved: doc.approved || true
+      // 通过API获取评论数据
+      const response = await fetch('/api/admin/comments');
+      if (!response.ok) {
+        throw new Error('获取评论数据失败');
+      }
+      
+      const data = await response.json();
+      const commentList = data.comments || [];
+
+      const formattedData: CommentData[] = commentList.map((item: any) => ({
+        id: item._id || item.id,
+        imageUrl: item.imageUrl,
+        title: item.title,
+        description: item.description,
+        pageUrl: item.pageUrl,
+        createdAt: item.createdAt,
+        userName: item.userName,
+        userComment: item.userComment,
+        userAvatar: item.userAvatar,
+        approved: item.approved || true
       }));
 
-      setComments(data);
+      setComments(formattedData);
     } catch (err) {
       setError(err instanceof Error ? err.message : '获取评论数据失败');
     } finally {
@@ -57,8 +62,14 @@ const CommentsPage = () => {
 
   const handleDelete = async (commentId: string) => {
     try {
-      await connectMongoDB();
-      await Comment.findByIdAndDelete(commentId);
+      const response = await fetch('/api/admin/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commentId, action: 'delete' })
+      });
+
+      if (!response.ok) throw new Error('删除评论失败');
+
       setComments(comments.filter(c => c.id !== commentId));
       setConfirmDeleteId(null);
     } catch (err) {
@@ -68,8 +79,17 @@ const CommentsPage = () => {
 
   const handleApprove = async (commentId: string, approved: boolean) => {
     try {
-      await connectMongoDB();
-      await Comment.findByIdAndUpdate(commentId, { approved });
+      const response = await fetch('/api/admin/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          commentId, 
+          action: approved ? 'approve' : 'reject' 
+        })
+      });
+
+      if (!response.ok) throw new Error('更新评论状态失败');
+
       setComments(comments.map(c => 
         c.id === commentId ? { ...c, approved } : c
       ));

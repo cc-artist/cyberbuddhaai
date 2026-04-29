@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import connectMongoDB from '../../../lib/mongodb';
-import Payment from '../../../models/Payment';
 
 interface PaymentData {
   id: string;
@@ -29,19 +27,17 @@ const BillingPage = () => {
     try {
       setLoading(true);
       setError('');
-      await connectMongoDB();
-      const docs = await Payment.find().sort({ createdAt: -1 });
       
-      const data = docs.map(doc => ({
-        id: doc._id.toString(),
-        user: doc.user,
-        amount: doc.amount,
-        status: doc.status,
-        paymentPlatform: doc.paymentPlatform,
-        createdAt: doc.createdAt.toISOString()
-      }));
+      // 通过API获取支付数据
+      const response = await fetch('/api/admin/payments');
+      if (!response.ok) {
+        throw new Error('获取账单数据失败');
+      }
+      
+      const data = await response.json();
+      const paymentList = data.payments || [];
 
-      setPayments(data);
+      setPayments(paymentList);
     } catch (err) {
       setError(err instanceof Error ? err.message : '获取账单数据失败');
     } finally {
@@ -105,10 +101,6 @@ const BillingPage = () => {
       case 'cancelled': return 'bg-gray-500/30 text-gray-300';
       default: return 'bg-gray-500/30 text-gray-300';
     }
-  };
-
-  const handleFilter = () => {
-    // Filtering is done inline
   };
 
   return (
@@ -184,14 +176,6 @@ const BillingPage = () => {
               <option value="paypal">PayPal</option>
               <option value="pingpong">PingPong</option>
             </select>
-          </div>
-          <div className="flex items-end">
-            <button
-              onClick={handleFilter}
-              className="bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              筛选
-            </button>
           </div>
         </div>
       </div>

@@ -1,13 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import connectMongoDB from '../../lib/mongodb';
-import Payment from '../../models/Payment';
-import Consultation from '../../models/Consultation';
-import Comment from '../../models/Comment';
+
+interface Stats {
+  totalRevenue: number;
+  totalPayments: number;
+  completedPayments: number;
+  pendingPayments: number;
+  totalConsultations: number;
+  pendingConsultations: number;
+  totalComments: number;
+  approvedComments: number;
+}
 
 const DashboardPage = () => {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<Stats>({
     totalRevenue: 0,
     totalPayments: 0,
     completedPayments: 0,
@@ -28,21 +35,26 @@ const DashboardPage = () => {
     try {
       setLoading(true);
       setError('');
-      await connectMongoDB();
 
-      // 获取支付数据
-      const payments = await Payment.find();
-      const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
-      const completedPayments = payments.filter(p => p.status === 'completed').length;
-      const pendingPayments = payments.filter(p => p.status === 'pending').length;
+      // 获取支付统计
+      const paymentResponse = await fetch('/api/admin/payments');
+      const paymentData = paymentResponse.ok ? await paymentResponse.json() : { payments: [] };
+      const payments = paymentData.payments || [];
+      
+      const totalRevenue = payments.reduce((sum: number, p: any) => sum + p.amount, 0);
+      const completedPayments = payments.filter((p: any) => p.status === 'completed').length;
+      const pendingPayments = payments.filter((p: any) => p.status === 'pending').length;
 
-      // 获取咨询数据
-      const consultations = await Consultation.find();
-      const pendingConsultations = consultations.filter(c => c.status === 'pending').length;
+      // 获取咨询统计
+      const consultationResponse = await fetch('/api/contact');
+      const consultations = consultationResponse.ok ? await consultationResponse.json() : [];
+      const pendingConsultations = consultations.filter((c: any) => c.status === 'pending').length;
 
-      // 获取评论数据
-      const comments = await Comment.find();
-      const approvedComments = comments.filter(c => c.approved).length;
+      // 获取评论统计
+      const commentResponse = await fetch('/api/admin/comments');
+      const commentData = commentResponse.ok ? await commentResponse.json() : { comments: [] };
+      const comments = commentData.comments || [];
+      const approvedComments = comments.filter((c: any) => c.approved).length;
 
       setStats({
         totalRevenue,

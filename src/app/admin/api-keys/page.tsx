@@ -9,6 +9,7 @@ interface ApiKey {
   value: string;
   createdAt: string;
   updatedAt: string;
+  status?: 'active' | 'inactive';
 }
 
 const ApiKeysPage = () => {
@@ -148,6 +149,7 @@ const ApiKeysPage = () => {
               <tr className="border-b border-[#48484A]">
                 <th className="text-[#86868B] py-4 px-6 text-left text-sm font-medium">名称</th>
                 <th className="text-[#86868B] py-4 px-6 text-left text-sm font-medium">类型</th>
+                <th className="text-[#86868B] py-4 px-6 text-left text-sm font-medium">状态</th>
                 <th className="text-[#86868B] py-4 px-6 text-left text-sm font-medium">密钥值</th>
                 <th className="text-[#86868B] py-4 px-6 text-left text-sm font-medium">创建时间</th>
                 <th className="text-[#86868B] py-4 px-6 text-left text-sm font-medium">操作</th>
@@ -156,14 +158,14 @@ const ApiKeysPage = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-[#86868B]">
+                  <td colSpan={6} className="py-8 text-center text-[#86868B]">
                     <i className="fas fa-spinner fa-spin text-xl mr-2"></i>
                     加载中...
                   </td>
                 </tr>
               ) : apiKeys.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-[#86868B]">
+                  <td colSpan={6} className="py-8 text-center text-[#86868B]">
                     暂无API密钥
                   </td>
                 </tr>
@@ -172,6 +174,11 @@ const ApiKeysPage = () => {
                   <tr key={key.id} className="border-b border-[#48484A] hover:bg-[#3A3A3C]">
                     <td className="text-white py-4 px-6">{key.name}</td>
                     <td className="text-[#86868B] py-4 px-6">{getTypeLabel(key.type)}</td>
+                    <td className="py-4 px-6">
+                      <span className={`px-3 py-1 rounded-full text-xs ${key.status === 'active' ? 'bg-green-500/30 text-green-300' : 'bg-red-500/30 text-red-300'}`}>
+                        {key.status === 'active' ? '已激活' : '未配置'}
+                      </span>
+                    </td>
                     <td className="text-[#86868B] py-4 px-6 font-mono text-sm">{key.value}</td>
                     <td className="text-[#86868B] py-4 px-6 text-sm">
                       {new Date(key.createdAt).toLocaleString('zh-CN')}
