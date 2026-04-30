@@ -1,10 +1,17 @@
 import OpenAI from 'openai';
 
-// 创建OpenAI客户端
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_API_BASE_URL || 'https://api.openai.com/v1'
-});
+// 延迟初始化OpenAI客户端
+let openai: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI {
+  if (!openai) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.OPENAI_API_BASE_URL || 'https://api.openai.com/v1'
+    });
+  }
+  return openai;
+}
 
 type ImageSize = '256x256' | '512x512' | '1024x1024' | '1536x1024' | '1024x1536' | '1792x1024' | '1024x1792';
 
@@ -15,7 +22,8 @@ export async function generateImage(prompt: string, size: ImageSize = '1024x1024
       return null;
     }
 
-    const response = await openai.images.generate({
+    const client = getOpenAIClient();
+    const response = await client.images.generate({
       model: 'dall-e-3',
       prompt: prompt,
       size: size,
@@ -42,7 +50,8 @@ export async function generateText(prompt: string, maxTokens: number = 500): Pro
       return null;
     }
 
-    const response = await openai.chat.completions.create({
+    const client = getOpenAIClient();
+    const response = await client.chat.completions.create({
       model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: maxTokens
@@ -74,5 +83,3 @@ export async function generateBlessingAnimation(prompt: string): Promise<string 
 export function isAIConfigured(): boolean {
   return !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 10;
 }
-
-export default openai;
