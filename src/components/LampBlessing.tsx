@@ -494,7 +494,7 @@ const LampBlessing: React.FC = () => {
         <div className="border border-[#8676B6]/30 rounded-xl p-6 bg-[#1D1D1F]/50 backdrop-blur-sm">
           <h3 className="text-md font-medium mb-4 text-[#F5F5F7]">Share Your Blessing Experience</h3>
           <SocialShare
-            imageUrl={generatedImage || ''}
+            imageUrl={generatedImage || '/temple-images/赛博佛祖背景图.png'}
             title="My Cyber Buddha Lamp Blessing"
             description={wishResult || ''}
             pageUrl="https://cyber-buddha.blessing"

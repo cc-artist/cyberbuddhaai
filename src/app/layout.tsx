@@ -142,10 +142,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en"> 
       <head>
         {/* Google Search Console Verification */}
-        <meta name="google-site-verification" content="googleb225623b94ffa015" />
+        <meta name="google-site-verification" content="bajCDE-i5PyEVAI2bVttLhAyAB0kCP9JnfS2dWGkE2A" />
         
         {/* Structured Data - JSON-LD */}
         <script

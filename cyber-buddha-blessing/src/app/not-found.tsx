@@ -15,7 +15,7 @@ export default function NotFound() {
         <div className="mb-8">
           <div className="relative w-48 h-48 mx-auto">
             <img
-              src="/temple-images/赛博佛祖背景图.png"
+              src="/temple-images/赛博佛祖背景图.jpg"
               alt="Cyber Buddha"
               className="absolute inset-0 w-full h-full object-contain opacity-50"
             />

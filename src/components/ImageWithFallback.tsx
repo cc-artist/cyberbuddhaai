@@ -13,7 +13,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src,
   alt,
   className = '',
-  fallbackSrc = '/temple-images/fHPlMoqxg.jpg',
+  fallbackSrc = '/temple-images/赛博佛祖背景图.png',
   onError,
   ...props
 }) => {
@@ -29,7 +29,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     
     // 确保路径是绝对路径
     let safeSrc = src;
-    if (safeSrc && !safeSrc.startsWith('http://') && !safeSrc.startsWith('https://') && !safeSrc.startsWith('/')) {
+    if (safeSrc && !safeSrc.startsWith('http://') && !safeSrc.startsWith('https://') && !safeSrc.startsWith('data:image/') && !safeSrc.startsWith('/')) {
       safeSrc = '/' + safeSrc;
     }
     
@@ -67,7 +67,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   }
   
   // 确保路径是绝对路径
-  if (displaySrc && !displaySrc.startsWith('http://') && !displaySrc.startsWith('https://') && !displaySrc.startsWith('/')) {
+  if (displaySrc && !displaySrc.startsWith('http://') && !displaySrc.startsWith('https://') && !displaySrc.startsWith('data:image/') && !displaySrc.startsWith('/')) {
     displaySrc = '/' + displaySrc;
   }
 

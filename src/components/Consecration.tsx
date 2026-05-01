@@ -594,11 +594,14 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                      <ImageWithFallback
-                        src="/temple-images/赛博佛祖背景图.png"
+                      <img
+                        src={getImageUrl('/temple-images/赛博佛祖背景图.png')}
                         alt="Cyber Buddha Background"
                         className="absolute inset-0 w-full h-full object-cover opacity-70"
-                        fallbackSrc="/temple-images/fHPlMoqxg.jpg"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
                       />
                        
                       {/* 佛光效果 - 外层光晕 */}
@@ -740,7 +743,7 @@ const Consecration: React.FC = () => {
                         
                         {/* 分享按钮 */}
                         <SocialShare 
-                          imageUrl={completeResultUrl || ''} 
+                          imageUrl={completeResultUrl || '/temple-images/赛博佛祖背景图.png'} 
                           title="Cyber Buddha Digital Blessing Result" 
                           description="Check out my Cyber Buddha Digital Blessing result!" 
                           pageUrl={window.location.href} 

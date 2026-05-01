@@ -1,3 +1,8 @@
+地址：https://cyberbuddhaai.vercel.app/admin/login
+账号：admin@example.com
+密码：admin123
+
+
 - 管理后台URL ： https://bc-drab.vercel.app/admin
 - 登录页面URL ： https://bc-drab.vercel.app/admin/login
 - 登录账号 ： admin@example.com

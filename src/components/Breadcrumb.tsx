@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -11,26 +11,37 @@ interface BreadcrumbProps {
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ currentPage }) => {
   // Get current pathname using Next.js hook
   const pathname = usePathname() || '';
-  const pathSegments = pathname.split('/').filter(segment => segment);
-  
-  // Generate breadcrumb items
-  const breadcrumbItems = [
+  // Server-side and initial client-side render only Home link
+  const [breadcrumbItems, setBreadcrumbItems] = useState([
     { name: 'Home', path: '/' }
-  ];
+  ]);
   
-  // Add dynamic segments
-  let currentPath = '';
-  for (const segment of pathSegments) {
-    currentPath += `/${segment}`;
-    // Capitalize first letter of each segment for display
-    const displayName = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
-    breadcrumbItems.push({ name: displayName, path: currentPath });
-  }
-  
-  // Use provided currentPage if available
-  if (currentPage && breadcrumbItems.length > 0) {
-    breadcrumbItems[breadcrumbItems.length - 1].name = currentPage;
-  }
+  // Use useEffect to update breadcrumb on client side after hydration
+  useEffect(() => {
+    // Only update breadcrumb if pathname is not empty
+    if (pathname) {
+      const pathSegments = pathname.split('/').filter(segment => segment);
+      const items = [
+        { name: 'Home', path: '/' }
+      ];
+      
+      // Add dynamic segments
+      let currentPath = '';
+      for (const segment of pathSegments) {
+        currentPath += `/${segment}`;
+        // Capitalize first letter of each segment for display
+        const displayName = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
+        items.push({ name: displayName, path: currentPath });
+      }
+      
+      // Use provided currentPage if available
+      if (currentPage && items.length > 0) {
+        items[items.length - 1].name = currentPage;
+      }
+      
+      setBreadcrumbItems(items);
+    }
+  }, [pathname, currentPage]);
   
   return (
     <nav aria-label="Breadcrumb" className="py-4 px-4 bg-[#1D1D1F] border-b border-[#8676B6]/30">
