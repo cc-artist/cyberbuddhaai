@@ -3,6 +3,13 @@ import { isAdminAuthenticated } from '../../../lib/auth';
 import APIKey from '../../../models/APIKey';
 import connectMongoDB from '../../../lib/mongodb';
 
+// 检查API密钥状态（从环境变量）
+const apiStatus = {
+  openai: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 10,
+  paypal: !!process.env.PAYPAL_API_KEY && process.env.PAYPAL_API_KEY.length > 10,
+  pingpong: !!process.env.PINGPONG_API_KEY && process.env.PINGPONG_API_KEY.length > 10
+};
+
 export async function GET() {
   try {
     // 检查管理员是否已认证
@@ -13,13 +20,6 @@ export async function GET() {
 
     // 连接到数据库
     await connectMongoDB();
-
-    // 检查API密钥状态（从环境变量）
-    const apiStatus = {
-      openai: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 10,
-      paypal: !!process.env.PAYPAL_API_KEY && process.env.PAYPAL_API_KEY.length > 10,
-      pingpong: !!process.env.PINGPONG_API_KEY && process.env.PINGPONG_API_KEY.length > 10
-    };
 
     // 从数据库获取API密钥
     let apiKeys = await APIKey.find();
@@ -64,7 +64,7 @@ export async function GET() {
     return NextResponse.json(keysWithStatus, { status: 200 });
   } catch (error) {
     console.error('Error fetching API keys:', error);
-    return NextResponse.json({ error: 'Failed to fetch API keys' }, { status: 500 });
+    return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
   }
 }
 

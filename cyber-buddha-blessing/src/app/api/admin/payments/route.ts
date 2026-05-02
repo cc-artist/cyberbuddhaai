@@ -31,7 +31,7 @@ export async function GET() {
     }, { status: 200 });
   } catch (error) {
     console.error('Error getting payments:', error);
-    return NextResponse.json({ error: 'Failed to get payments' }, { status: 500 });
+    return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
   }
 }
 
