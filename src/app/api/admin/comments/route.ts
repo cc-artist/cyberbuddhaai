@@ -25,7 +25,7 @@ export async function GET() {
     }, { status: 200 });
   } catch (error) {
     console.error('Error getting comments:', error);
-    return NextResponse.json({ error: 'Failed to get comments' }, { status: 500 });
+    return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
   }
 }
 

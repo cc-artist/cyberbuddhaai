@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -11,7 +12,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<{ email: string } | null>(null);
 
+  // 登录页面不显示侧边栏
+  const isLoginPage = pathname === '/admin/login';
+
   useEffect(() => {
+    // 如果是登录页面，不检查认证
+    if (isLoginPage) {
+      setIsLoading(false);
+      return;
+    }
+
     // 检查认证状态
     const checkAuth = async () => {
       try {
@@ -33,7 +43,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     checkAuth();
-  }, []);
+  }, [pathname, isLoginPage, router]);
+
+  if (isLoginPage) {
+    return children;
+  }
 
   if (isLoading) {
     return (
@@ -46,6 +60,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) {
     return null;
   }
+
+  // 退出登录处理函数
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/admin/login' });
+  };
 
   const navItems = [
     { name: '仪表盘', href: '/admin', icon: 'fas fa-tachometer-alt' },
@@ -107,13 +126,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
           </div>
           {isSidebarOpen && (
-            <Link
-              href="/api/auth/signout"
-              className="flex items-center px-4 py-3 mt-2 rounded-lg text-[#FF3B30] hover:bg-[#FF3B30]/10 transition-colors"
+            <button
+              onClick={handleSignOut}
+              className="flex items-center px-4 py-3 mt-2 rounded-lg text-[#FF3B30] hover:bg-[#FF3B30]/10 transition-colors w-full text-left"
             >
               <i className="fas fa-sign-out-alt mr-3"></i>
               退出登录
-            </Link>
+            </button>
           )}
         </div>
       </aside>

@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error saving consultation:', error);
     return NextResponse.json(
-      { error: 'Failed to save consultation' },
+      { error: 'Database connection failed' },
       { status: 500 }
     );
   }
@@ -66,7 +66,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error getting consultations:', error);
     return NextResponse.json(
-      { error: 'Failed to get consultations' },
+      { error: 'Database connection failed' },
       { status: 500 }
     );
   }
