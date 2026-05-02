@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Script from 'next/script';
 import { redirect } from 'next/navigation';
-import { Temple, temples as staticTemples } from '../../../data/TempleData';
+import { Temple, temples } from '../../../data/TempleData';
 import ContactFormWrapper from '../../../components/ContactFormWrapper';
 import SocialShare from '../../../components/SocialShare';
 import PayPalButton from '../../../components/PayPalButton';
@@ -10,7 +10,7 @@ import PayPalButton from '../../../components/PayPalButton';
 // Generate dynamic metadata for each temple page
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const { id } = params;
-  const temple = staticTemples.find(t => t.id === parseInt(id)) || null;
+  const temple = temples.find(t => t.id === parseInt(id)) || null;
   
   if (!temple) {
     return {
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     };
   }
   
-  const baseUrl = 'https://bc-drab.vercel.app';
+  const baseUrl = '';
   const pageUrl = `${baseUrl}/temple/${temple.id}`;
   const imageUrl = `${baseUrl}${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`;
   
@@ -51,9 +51,8 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-// ISR configuration for temple detail page
-export const dynamicParams = true;
-export const revalidate = 86400; // 24 hours
+// Dynamic rendering for temple detail page
+export const dynamic = 'force-dynamic';
 
 export default function TempleDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -66,7 +65,7 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
   }
   
   // 直接从静态数据中查找寺庙
-  const temple = staticTemples.find(t => t.id === parseInt(templeId)) || null;
+  const temple = temples.find(t => t.id === parseInt(templeId)) || null;
   
   if (!temple) {
     redirect('/');
@@ -140,15 +139,15 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
           dangerouslySetInnerHTML={{ __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'PlaceOfWorship',
-            '@id': `https://bc-drab.vercel.app/temple/${temple.id}`,
+            '@id': `/temple/${temple.id}`,
             name: temple.name,
             description: temple.description,
             address: {
               '@type': 'PostalAddress',
               addressLocality: temple.location,
             },
-            image: `https://bc-drab.vercel.app${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`,
-            url: `https://bc-drab.vercel.app/temple/${temple.id}`,
+            image: `${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`,
+            url: `/temple/${temple.id}`,
             additionalProperty: [
               {
                 '@type': 'PropertyValue',
@@ -170,7 +169,7 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
           })}}
         />
         {/* Temple Image and Basic Information */}
-        <div
+        <div 
           className="relative w-full h-[500px] mb-8 rounded-2xl overflow-hidden shadow-2xl"
         >
           <img
@@ -267,8 +266,6 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
                     <img 
                       src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" 
                       alt="cards" 
-                      width={200} 
-                      height={25}
                       className="h-6"
                     />
                   </div>
@@ -319,10 +316,10 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
             <div className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-2xl p-6 shadow-lg">
               <h3 className="text-xl font-semibold text-[#8676B6] mb-4">Share to Social Media</h3>
               <SocialShare 
-                imageUrl={`https://bc-drab.vercel.app${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`}
+                imageUrl={`${temple.image.startsWith('/') ? temple.image : `/${temple.image}`}`}
                 title={temple.name}
                 description={temple.description}
-                pageUrl={`https://bc-drab.vercel.app/temple/${temple.id}`}
+                pageUrl={`/temple/${temple.id}`}
               />
             </div>
           </div>

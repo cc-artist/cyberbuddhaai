@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { Temple, temples as staticTemples } from '../data/TempleData';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 // 动态导入组件，实现代码分割
 const TempleFilmStrip = React.lazy(() => import('../components/TempleFilmStrip'));
@@ -11,8 +12,7 @@ const DharmaForm = React.lazy(() => import('../components/DharmaForm'));
 const LampBlessing = React.lazy(() => import('../components/LampBlessing'));
 const CommentScroll = React.lazy(() => import('../components/CommentScroll'));
 
-// Static generation for homepage for better performance
-export const dynamic = 'force-static';
+
 
 export default function Home() {
   const [temples, setTemples] = useState<Temple[]>(staticTemples);
@@ -113,11 +113,14 @@ export default function Home() {
 
         {/* Cyber Buddha Background */}
         <div className="absolute inset-0 z-0 opacity-30">
-          <img
-            src="/temple-images/赛博佛祖背景图.png"
+          <ImageWithFallback
+            src="/temple-images/fHPlMoqxg.jpg"
             alt="Cyber Buddha meditating with golden light"
             className="w-full h-full object-cover"
             style={{ objectPosition: 'center 20%' }}
+            loading="eager"
+            fallbackSrc="/temple-images/fHPlMoqxg.jpg"
+            onError={() => console.log('Home page background image failed to load')}
           />
         </div>
 
@@ -263,9 +266,11 @@ export default function Home() {
       </section>
 
       {/* Community Shares Section */}
-      <section className="py-20 px-4 bg-gradient-to-b from-[#1D1D1F] to-[#1D1D1F]/90">
+      <section id="community-shares-section" className="py-20 px-4 bg-gradient-to-b from-[#1D1D1F] to-[#1D1D1F]/90">
         <div className="max-w-7xl mx-auto">
-          <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-[#F5F5F7]">Community Shares</h2>
+          <p className="text-[#F5F5F7]/70 text-center mb-8">Share your digital blessing experiences with our community</p>
+          <Suspense fallback={<div className="min-h-[200px] flex items-center justify-center">Loading comments...</div>}>
             <CommentScroll />
           </Suspense>
         </div>

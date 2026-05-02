@@ -15,16 +15,17 @@ export async function GET() {
     await connectMongoDB();
 
     // 从数据库获取所有评论
-    const comments = await Comment.find();
+    const comments = await Comment.find().sort({ createdAt: -1 });
 
     // 返回评论数据
     return NextResponse.json({
       comments: comments,
-      totalCount: comments.length
+      totalCount: comments.length,
+      isUsingFallback: false
     }, { status: 200 });
   } catch (error) {
     console.error('Error getting comments:', error);
-    return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 });
+    return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
   }
 }
 

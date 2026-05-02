@@ -15,37 +15,11 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
   },
+  // 禁用图片优化，避免通过 /_next/image 路由加载
   images: {
-    // 配置图片优化
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    formats: ['image/webp'],
-    minimumCacheTTL: 60,
-    // 允许本地图片加载，与 Vercel 环境兼容
-    unoptimized: true,
-    // 允许 SVG 图片
-    dangerouslyAllowSVG: true,
-    // 配置图片域名
-    domains: ['localhost', 'cyberbuddhaai.vercel.app', 'vercel.app'],
-    // 简化远程配置
-    remotePatterns: [
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cyberbuddhaai.vercel.app',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'vercel.app',
-        pathname: '/**',
-      },
-    ],
+    unoptimized: true
   },
+
   trailingSlash: false,
   reactStrictMode: true,
 };

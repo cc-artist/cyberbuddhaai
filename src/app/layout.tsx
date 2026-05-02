@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: "Cyber Buddha",
     images: [
       {
-        url: "https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png",
+        url: "https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg",
         width: 1200,
         height: 630,
         alt: "Cyber Buddha",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cyber Buddha",
     description: "Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples",
-    images: ["https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png"],
+    images: ["https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg"],
     creator: "@cyberbuddha",
   },
   alternates: {
@@ -129,7 +129,7 @@ const generateDynamicJsonLd = () => {
         addressCountry: 'CN'
       },
       url: `https://bc-drab.vercel.app${pathname}`,
-      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png',
+      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg',
       sameAs: [
         'https://twitter.com/cyberbuddha',
         'https://facebook.com/cyberbuddha',
@@ -186,7 +186,7 @@ const generateDynamicJsonLd = () => {
       },
       datePublished: '2023-01-01',
       dateModified: new Date().toISOString().split('T')[0],
-      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png',
+      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg',
       breadcrumb: {
         '@type': 'BreadcrumbList',
         itemListElement: [
@@ -210,6 +210,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Google Search Console Verification */}
+        <meta name="google-site-verification" content="googleb225623b94ffa015" />
+        
         {/* Structured Data - JSON-LD */}
         <script
           type="application/ld+json"

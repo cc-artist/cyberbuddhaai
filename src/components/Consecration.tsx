@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import SocialShare from './SocialShare';
+import ImageWithFallback from './ImageWithFallback';
 
 
 const Consecration: React.FC = () => {
@@ -60,7 +61,7 @@ const Consecration: React.FC = () => {
       };
 
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.png', true);
+      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.jpg', true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -262,7 +263,7 @@ const Consecration: React.FC = () => {
       setDownloadStatus('正在加载图像...');
       
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.png', true);
+      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.jpg', true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -462,14 +463,38 @@ const Consecration: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('File input change event:', e);
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      console.log('Selected file:', file);
+      
+      // 检查文件大小
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('File size exceeds 10MB limit. Please select a smaller file.');
+        return;
+      }
+      
+      // 检查文件类型
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid file type. Please select JPG, PNG, or WEBP image.');
+        return;
+      }
+      
       setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
+        console.log('File reader onloadend:', reader.result);
         setPreviewUrl(reader.result as string);
       };
+      reader.onerror = () => {
+        console.error('File reader error');
+        alert('Failed to read the file. Please try again.');
+      };
       reader.readAsDataURL(file);
+    } else {
+      console.log('No file selected');
     }
   };
 
@@ -477,12 +502,19 @@ const Consecration: React.FC = () => {
     if (!selectedFile) return;
     setIsProcessing(true);
     // 模拟开光处理过程
-    setTimeout(() => {
+    setTimeout(async () => {
       // 这里应该调用实际的开光API
       // 我们将在UI层面实现合成效果，所以只需要设置resultUrl为previewUrl即可
       setResultUrl(previewUrl);
-      // 清除之前的完整合成图，确保使用最新的下载设置生成
-      setCompleteResultUrl(null);
+      
+      // 立即生成完整合成图，确保分享时能显示完整的赛博佛祖背景图
+      console.log('Generating complete result for sharing...');
+      const completeImage = await generateCompleteResult();
+      if (completeImage) {
+        setCompleteResultUrl(completeImage);
+        console.log('Complete result generated successfully for sharing');
+      }
+      
       setIsProcessing(false);
     }, 2000);
   };
@@ -592,10 +624,12 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                    <img
-                      src="/temple-images/赛博佛祖背景图.png"
+                    <ImageWithFallback
+                      src="/temple-images/fHPlMoqxg.jpg"
                       alt="Cyber Buddha Background"
                       className="absolute inset-0 w-full h-full object-cover opacity-70"
+                      fallbackSrc="/temple-images/fHPlMoqxg.jpg"
+                      onError={() => console.log('Background image failed to load')}
                     />
                        
                       {/* 佛光效果 - 外层光晕 */}
@@ -715,17 +749,15 @@ const Consecration: React.FC = () => {
                     {resultUrl && (
                       <div className="space-y-3">
                         {/* 提示信息 */}
-                        {!completeResultUrl && (
-                          <div className="p-2 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg text-sm text-[#FFD700]/80">
-                            Tip: Click "Download Result" first to generate the complete blessing image with background, then share for best effect!
-                          </div>
-                        )}
+                        <div className="p-3 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg text-sm text-[#FFD700]/90 font-medium mb-3">
+                          Please click "Download Result" to generate the complete consecration image before sharing to comments!
+                        </div>
                         {/* 分享按钮 */}
                         <SocialShare 
-                          imageUrl={completeResultUrl || resultUrl} 
+                          imageUrl={completeResultUrl || resultUrl || ''}
                           title="Cyber Buddha Digital Blessing Result" 
                           description="Check out my Cyber Buddha Digital Blessing result!" 
-                          pageUrl={window.location.href} 
+                          pageUrl={typeof window !== 'undefined' ? window.location.href : ''} 
                         />
                       </div>
                     )}
