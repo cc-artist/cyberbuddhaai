@@ -8,6 +8,7 @@ import DharmaForm from '../components/DharmaForm';
 import LampBlessing from '../components/LampBlessing';
 import ImageWithFallback from '../components/ImageWithFallback';
 import CommentScroll from '../components/CommentScroll';
+import ParticleEffect from '../components/ParticleEffect';
 
 import { Temple, temples as staticTemples } from '../data/TempleData';
 
@@ -113,14 +114,36 @@ export default function Home() {
           />
         </div>
 
-        {/* Golden Particle Halo Background - Middle Layer */}
-        <div className="absolute inset-0 z-1">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-r from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '4s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-l from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-gradient-to-t from-[#FFD700]/20 via-[#8676B6]/20 to-transparent animate-pulse" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
+        {/* Dynamic Particle Effect */}
+        <ParticleEffect />
+
+        {/* Enhanced Golden Particle Halo Background - Middle Layer */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {/* Main Halo */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full bg-gradient-to-r from-[#FFD700]/15 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '4s' }}></div>
+          
+          {/* Secondary Halo - Counter Rotation */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-gradient-to-l from-[#FFD700]/12 via-[#8676B6]/8 to-transparent animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
+          
+          {/* Inner Halo - Brighter */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-t from-[#FFD700]/25 via-[#8676B6]/18 to-transparent animate-pulse" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
+
+          {/* Floating Orbs */}
+          <div className="absolute top-[20%] left-[15%] w-16 h-16 rounded-full bg-[#FFD700]/20 blur-xl animate-bounce" style={{ animationDuration: '3s' }}></div>
+          <div className="absolute top-[30%] right-[20%] w-20 h-20 rounded-full bg-[#8676B6]/20 blur-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
+          <div className="absolute bottom-[25%] left-[25%] w-14 h-14 rounded-full bg-[#FFD700]/25 blur-xl animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '1s' }}></div>
+          <div className="absolute bottom-[35%] right-[15%] w-18 h-18 rounded-full bg-[#8676B6]/18 blur-xl animate-bounce" style={{ animationDuration: '3.5s', animationDelay: '1.5s' }}></div>
+
+          {/* Radial Light Burst */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] rounded-full"
+               style={{
+                 background: 'radial-gradient(circle, rgba(255,215,0,0.08) 0%, transparent 50%)',
+                 animation: 'pulse 5s ease-in-out infinite'
+               }}>
+          </div>
         </div>
 
-        <div className="relative z-2 text-center max-w-4xl mx-auto px-4">
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F7] via-[#8676B6] to-[#FFD700] animate-pulse">
             Cyber Buddha
           </h1>
@@ -130,7 +153,6 @@ export default function Home() {
           <p className="text-xl mb-8 text-[#F5F5F7]/70">
             Experience the future of spiritual technology
           </p>
-
         </div>
       </section>
 

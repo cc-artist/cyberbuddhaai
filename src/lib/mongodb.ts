@@ -8,13 +8,17 @@ let isConnecting = false;
 const MONGODB_URI = process.env.DATABASE_URL || 'mongodb://localhost:27017/cyber-buddha';
 
 async function connectMongoDB() {
+  console.log('Attempting to connect to MongoDB...');
+  
   // 如果已经连接，直接返回
   if (conn && conn.readyState === 1) {
+    console.log('MongoDB already connected');
     return conn;
   }
 
   // 如果正在连接，等待连接完成
   if (isConnecting) {
+    console.log('MongoDB connection already in progress, waiting...');
     // 等待当前连接完成，最多等待10秒
     await new Promise(resolve => {
       let waited = 0;
@@ -35,14 +39,20 @@ async function connectMongoDB() {
   try {
     isConnecting = true;
 
-    // 连接到MongoDB - 默认启用buffering以支持离线操作
-    const mongooseInstance = await mongoose.connect(MONGODB_URI);
+    console.log('Connecting to MongoDB with URI:', MONGODB_URI.replace(/:([^:@]{10,})@/, ':***@'));
+
+    // 连接到MongoDB - 添加超时配置
+    const mongooseInstance = await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+    });
 
     conn = mongooseInstance.connection;
-    console.log('MongoDB connected successfully');
+    console.log('✅ MongoDB connected successfully');
     return conn;
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error('❌ MongoDB connection error:', error);
     isConnecting = false;
     conn = null;
     return null;

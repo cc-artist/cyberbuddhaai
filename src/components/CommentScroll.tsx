@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ImageWithFallback from './ImageWithFallback';
 
 interface Comment {
@@ -17,8 +17,10 @@ interface Comment {
 
 const CommentScroll: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
-  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
-  const commentsPerGroup = 5; // 每组显示的评论数量，根据需求改为5个
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const commentWidth = 180;
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // 从数据库和localStorage获取评论数据
   const loadComments = async () => {
@@ -47,15 +49,12 @@ const CommentScroll: React.FC = () => {
       }
     };
     
-    // 先从localStorage获取评论，确保页面能够快速显示评论
     const localComments = getLocalStorageComments();
     if (localComments.length > 0) {
       setComments(localComments);
-      setCurrentGroupIndex(0);
       console.log('Initial comments loaded from localStorage');
     }
     
-    // 然后尝试从数据库获取评论
     try {
       console.log('Fetching comments from database...');
       const response = await fetch('/api/public/comments', { cache: 'no-store' });
@@ -65,168 +64,108 @@ const CommentScroll: React.FC = () => {
         const dbComments = await response.json();
         console.log('Database comments:', dbComments);
         
-        // 转换createdAt字符串为Date对象
         const formattedComments = dbComments.map((comment: any) => ({
           ...comment,
           createdAt: new Date(comment.createdAt)
         }));
-        console.log('Formatted database comments:', formattedComments);
         
-        // 如果数据库有评论，使用数据库评论
         if (formattedComments.length > 0) {
           setComments(formattedComments);
-          setCurrentGroupIndex(0);
           console.log('Comments updated from database');
           return;
         }
-        
-        // 数据库评论为空，但localStorage有评论，保持localStorage的评论
-        if (localComments.length > 0) {
-          console.log('Database returned empty, keeping localStorage comments');
-          return;
-        }
-        
-        // 都没有评论，设置为空数组
-        setComments([]);
-        console.log('No comments found anywhere');
-        return;
-      } else {
-        console.error('Failed to fetch comments from database:', await response.text());
-        // 数据库请求失败，但localStorage有评论，保持localStorage的评论
-        if (localComments.length > 0) {
-          console.log('Database request failed, keeping localStorage comments');
-          return;
-        }
-        // 都没有评论，设置为空数组
-        setComments([]);
       }
     } catch (error) {
       console.error('Error fetching comments from database:', error);
-      // 数据库连接失败，但localStorage有评论，保持localStorage的评论
-      if (localComments.length > 0) {
-        console.log('Database error, keeping localStorage comments');
-        return;
-      }
-      // 都没有评论，设置为空数组
-      setComments([]);
     }
   };
   
-  // 将loadComments函数暴露到window对象上，方便其他组件调用
   useEffect(() => {
-    // 创建一个包装函数来处理异步调用
-    const loadCommentsWrapper = async () => {
-      await loadComments();
-    };
-    
-    // @ts-ignore
-    window.loadComments = loadCommentsWrapper;
-    console.log('loadComments function exposed to window');
-    
-    return () => {
-      // 清理window对象上的函数
-      // @ts-ignore
-      delete window.loadComments;
-      console.log('loadComments function removed from window');
-    };
-  }, []);
-
-  useEffect(() => {
-    // 立即加载评论
     loadComments();
     
-    // 监听localStorage变化
-    const handleStorageChange = () => {
-      loadComments();
-    };
-    
-    // 添加轮询机制，每30秒刷新一次评论
     const interval = setInterval(() => {
       loadComments();
     }, 30000);
 
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, []);
-
-  // 添加评论后手动刷新（通过自定义事件）
-  useEffect(() => {
-    const handleCommentAdded = () => {
-      loadComments();
-    };
-
-    window.addEventListener('commentAdded', handleCommentAdded);
-
-    return () => {
-      window.removeEventListener('commentAdded', handleCommentAdded);
-    };
-  }, []);
-
-  // 自动轮播评论组
-  useEffect(() => {
-    if (comments.length <= commentsPerGroup) return;
-
-    const interval = setInterval(() => {
-      setCurrentGroupIndex((prevIndex) => {
-        const totalGroups = Math.ceil(comments.length / commentsPerGroup);
-        return (prevIndex + 1) % totalGroups;
-      });
-    }, 5000); // 每5秒切换一次
-
     return () => clearInterval(interval);
-  }, [comments, commentsPerGroup]);
+  }, []);
 
-  // 添加默认评论，确保评论区域始终可见
   const defaultComments: Comment[] = [
-    {
-      id: 'default-1',
-      imageUrl: '/temple-images/灵隐寺.webp',
-      title: 'My First Blessing',
-      description: 'Received my digital blessing today!',
-      pageUrl: 'https://cyber-buddha.blessing',
-      createdAt: new Date(),
-      userName: 'Cyber Monk',
-      userComment: 'May peace and wisdom fill your heart',
-      userAvatar: 'https://ui-avatars.com/api/?name=Monk&background=random'
-    }
+    { id: 'default-1', imageUrl: '/temple-images/灵隐寺.webp', title: 'My First Blessing', description: 'Received my digital blessing today!', pageUrl: 'https://cyber-buddha.blessing', createdAt: new Date(), userName: 'Cyber Monk', userComment: 'May peace and wisdom fill your heart', userAvatar: 'https://ui-avatars.com/api/?name=Monk&background=random' },
+    { id: 'default-2', imageUrl: '/temple-images/少林寺.webp', title: 'Enlightenment', description: 'Feeling truly blessed', pageUrl: 'https://cyber-buddha.blessing', createdAt: new Date(), userName: 'Dharma Seeker', userComment: 'Amazing experience!', userAvatar: 'https://ui-avatars.com/api/?name=Seeker&background=random' },
+    { id: 'default-3', imageUrl: '/temple-images/塔尔寺.webp', title: 'Peaceful', description: 'Inner peace achieved', pageUrl: 'https://cyber-buddha.blessing', createdAt: new Date(), userName: 'Zen Master', userComment: 'Highly recommend', userAvatar: 'https://ui-avatars.com/api/?name=Zen&background=random' },
+    { id: 'default-4', imageUrl: '/temple-images/寒山寺.webp', title: 'Great Service', description: 'Wonderful blessing', pageUrl: 'https://cyber-buddha.blessing', createdAt: new Date(), userName: 'Happy User', userComment: 'Will come back again', userAvatar: 'https://ui-avatars.com/api/?name=User&background=random' },
+    { id: 'default-5', imageUrl: '/temple-images/大昭寺.png', title: 'Beautiful', description: 'Stunning animation', pageUrl: 'https://cyber-buddha.blessing', createdAt: new Date(), userName: 'Art Lover', userComment: 'Beautiful design', userAvatar: 'https://ui-avatars.com/api/?name=Art&background=random' },
+    { id: 'default-6', imageUrl: '/temple-images/白马寺.jpg', title: 'Incredible', description: 'Beyond expectations', pageUrl: 'https://cyber-buddha.blessing', createdAt: new Date(), userName: 'Pilgrim', userComment: 'Truly special', userAvatar: 'https://ui-avatars.com/api/?name=Pil&background=random' },
+    { id: 'default-7', imageUrl: '/temple-images/灵山大佛.jpg', title: 'Warm Blessings', description: 'Felt the warmth', pageUrl: 'https://cyber-buddha.blessing', createdAt: new Date(), userName: 'Warm Heart', userComment: 'Very comforting', userAvatar: 'https://ui-avatars.com/api/?name=WH&background=random' },
+    { id: 'default-8', imageUrl: '/temple-images/法门寺.jpg', title: 'Unique', description: 'One of a kind', pageUrl: 'https://cyber-buddha.blessing', createdAt: new Date(), userName: 'Explorer', userComment: 'Unique experience', userAvatar: 'https://ui-avatars.com/api/?name=Ex&background=random' }
   ];
 
-  // 使用实际评论或默认评论
   const displayComments = comments.length > 0 ? comments : defaultComments;
 
-  // 计算当前显示的评论组
-  const getCurrentComments = () => {
-    const startIndex = currentGroupIndex * commentsPerGroup;
-    return displayComments.slice(startIndex, startIndex + commentsPerGroup);
+  // 获取当前要显示的5个评论
+  const getVisibleComments = () => {
+    const result = [];
+    for (let i = 0; i < 5; i++) {
+      const index = (currentIndex + i) % displayComments.length;
+      result.push({
+        comment: displayComments[index],
+        index: i
+      });
+    }
+    return result;
   };
 
+  // 每1.5秒闪现更新评论
+  useEffect(() => {
+    console.log('useEffect called, displayComments length:', displayComments.length);
+    
+    if (displayComments.length <= 5) {
+      console.log('displayComments <= 5, skipping animation');
+      return;
+    }
+
+    const interval = setInterval(() => {
+      console.log('Starting flash animation...');
+      setIsAnimating(true);
+      
+      setTimeout(() => {
+        console.log('Updating currentIndex...');
+        setCurrentIndex(prev => (prev + 1) % displayComments.length);
+        
+        setTimeout(() => {
+          console.log('Finishing flash animation...');
+          setIsAnimating(false);
+        }, 300);
+      }, 200);
+    }, 1500);
+
+    return () => {
+      console.log('Clearing interval...');
+      clearInterval(interval);
+    };
+  }, [displayComments.length, displayComments]);
+
+  console.log('Rendering CommentScroll, currentIndex:', currentIndex, 'isAnimating:', isAnimating);
+
   return (
-    <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 overflow-hidden max-w-7xl mx-auto">
+    <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 max-w-7xl mx-auto">
       <h3 className="text-sm font-bold mb-3 text-center text-[#F5F5F7]">Community Shares</h3>
       
-      {/* 评论滚动容器 - 带平滑过渡动画 */}
-      <div className="relative overflow-hidden">
-        {/* 当前显示的评论组 */}
-        <div 
-          className="grid grid-cols-1 md:grid-cols-5 gap-3 transition-all duration-500 ease-in-out transform"
-          style={{
-            opacity: 1,
-            transform: 'translateY(0)',
-            position: 'relative',
-            zIndex: 10
-          }}
-        >
-          {getCurrentComments().map((comment) => (
+      <div ref={containerRef} className="relative overflow-hidden" style={{ height: '280px' }}>
+        <div className="flex gap-3">
+          {getVisibleComments().map(({ comment, index }) => (
             <div 
-              key={comment.id} 
-              className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-3 transition-all duration-300 hover:shadow-lg"
+              key={`${comment.id}-${currentIndex}`}
+              className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-3 hover:shadow-lg flex-shrink-0"
+              style={{ 
+                width: `${commentWidth}px`,
+                opacity: isAnimating ? 0 : 1,
+                transform: isAnimating ? 'scale(0.95)' : 'scale(1)',
+                transition: 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out'
+              }}
             >
-              {/* 分享的图片 */}
-              <div className="relative w-full h-16 overflow-hidden rounded-md border border-[#8676B6]/30 mb-2">
+              <div className="relative w-full h-32 overflow-hidden rounded-md border border-[#8676B6]/30 mb-3">
                 <ImageWithFallback
                   src={comment.imageUrl}
                   alt={comment.title}
@@ -234,36 +173,31 @@ const CommentScroll: React.FC = () => {
                 />
               </div>
               
-              {/* 评论内容和用户信息 */}
-              <div className="space-y-1">
-                {/* 用户信息和头像 */}
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="relative w-5 h-5 rounded-full overflow-hidden border border-[#8676B6]/30">
+                  <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#8676B6]/30 flex-shrink-0">
                     <ImageWithFallback 
                       src={comment.userAvatar} 
                       alt={comment.userName} 
-                      className="w-full h-full object-cover" 
+                      className="absolute inset-0 w-full h-full object-cover" 
                     />
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-medium text-[#F5F5F7]">{comment.userName}</span>
-                    <span className="text-[#F5F5F7]/50 text-[8px]">
+                  <div className="flex items-center gap-1 min-w-0">
+                    <span className="text-xs font-medium text-[#F5F5F7] truncate">{comment.userName}</span>
+                    <span className="text-[#F5F5F7]/50 text-[9px] flex-shrink-0">
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
                 
-                {/* 分享标题 */}
                 <h4 className="text-xs font-semibold text-[#8676B6] line-clamp-1">{comment.title}</h4>
                 
-                {/* 用户自定义评论 */}
                 {comment.userComment && (
-                  <div className="bg-[#1D1D1F]/70 border border-[#8676B6]/20 rounded-md p-1">
-                    <p className="text-[#F5F5F7]/80 italic text-[10px] line-clamp-1">"{comment.userComment}"</p>
+                  <div className="bg-[#1D1D1F]/70 border border-[#8676B6]/20 rounded-md p-2">
+                    <p className="text-[#F5F5F7]/80 italic text-[10px] line-clamp-2">"{comment.userComment}"</p>
                   </div>
                 )}
                 
-                {/* 原始描述 */}
                 <p className="text-[#F5F5F7]/70 text-[10px] line-clamp-1">{comment.description}</p>
               </div>
             </div>
@@ -271,24 +205,9 @@ const CommentScroll: React.FC = () => {
         </div>
       </div>
       
-      {/* 提示信息 */}
       {displayComments.length === 0 && (
         <div className="mt-4 text-center">
           <p className="text-[#F5F5F7]/70 text-sm">No comments yet. Be the first to share!</p>
-        </div>
-      )}
-      
-      {/* 指示器 - 显示当前评论组 */}
-      {displayComments.length > commentsPerGroup && (
-        <div className="flex justify-center gap-1 mt-3">
-          {Array(Math.ceil(displayComments.length / commentsPerGroup)).fill(0).map((_, index) => (
-            <button
-              key={index}
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentGroupIndex ? 'bg-[#8676B6] w-4' : 'bg-[#8676B6]/30'}`}
-              onClick={() => setCurrentGroupIndex(index)}
-              aria-label={`Go to comment group ${index + 1}`}
-            />
-          ))}
         </div>
       )}
     </div>
