@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import TempleFilmStrip from '../components/TempleFilmStrip';
 import TempleDetailModal from '../components/TempleDetailModal';
 import Consecration from '../components/Consecration';
@@ -236,7 +237,9 @@ export default function Home() {
             <div>
               <h3 className="text-lg font-semibold mb-4 text-[#F5F5F7]">Quick Links</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Home</a></li>
+                <li><Link href="/" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Home</Link></li>
+                <li><Link href="/terms" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Official Terms of Service</Link></li>
+                <li><Link href="/privacy" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Official Privacy Policy</Link></li>
                 <li><a href="#" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Cyber Buddha Digital Blessing</a></li>
                 <li><a href="#" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Request Dharma Form</a></li>
                 <li><a href="#" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Lamp Blessing</a></li>
