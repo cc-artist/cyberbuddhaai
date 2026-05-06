@@ -192,10 +192,7 @@ const CommentScroll: React.FC = () => {
                 {/* 闪烁光效 */}
                 {animationPhase === 2 && (
                   <div 
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FFD700]/20 to-transparent"
-                    style={{
-                      animation: 'shimmer 0.6s ease-in-out'
-                    }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FFD700]/20 to-transparent animate-pulse"
                   />
                 )}
               </div>
@@ -231,15 +228,6 @@ const CommentScroll: React.FC = () => {
           ))}
         </div>
       </div>
-      
-      {/* 添加动画样式 */}
-      <style jsx>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); opacity: 0; }
-          50% { opacity: 1; }
-          100% { transform: translateX(100%); opacity: 0; }
-        }
-      `}</style>
       
       {displayComments.length === 0 && (
         <div className="mt-4 text-center">
