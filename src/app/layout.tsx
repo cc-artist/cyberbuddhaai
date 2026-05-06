@@ -210,11 +210,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+         {/*Tiktok Developer Portal Verification*/}
+        <meta name="tiktok-developers-site-verification" content="D2Uvc2nvlZmVrZv18ca81lFZ5jcHIGCm"/>
+        
         {/* Google Search Console Verification */}
         <meta name="google-site-verification" content="googleb225623b94ffa015" />
-        
-        {/* Tiktok Developer Portal Verification */}
-        <meta name="tiktok-developers-site-verification" content="D2Uvc2nvlZmVrZv18ca81lFZ5jcHIGCm" />
         
         {/* Structured Data - JSON-LD */}
         <script
