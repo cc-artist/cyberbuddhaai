@@ -116,10 +116,10 @@ const CommentScroll: React.FC = () => {
 
   const displayComments = comments.length > 0 ? comments : defaultComments;
 
-  // 获取当前要显示的10个评论，确保更丰富的展示
+  // 获取当前要显示的7个评论，确保更丰富的展示
   const getVisibleComments = () => {
     const result = [];
-    const displayCount = Math.min(10, displayComments.length);
+    const displayCount = Math.min(7, displayComments.length);
     for (let i = 0; i < displayCount; i++) {
       const index = (currentIndex + i) % displayComments.length;
       result.push({
@@ -134,8 +134,8 @@ const CommentScroll: React.FC = () => {
   useEffect(() => {
     console.log('useEffect called, displayComments length:', displayComments.length);
     
-    if (displayComments.length <= 10) {
-      console.log('displayComments <= 10, skipping automatic animation');
+    if (displayComments.length <= 7) {
+      console.log('displayComments <= 7, skipping automatic animation');
       return;
     }
 
