@@ -1,18 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { Temple, temples as staticTemples } from '../data/TempleData';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import TempleFilmStrip from '../components/TempleFilmStrip';
+import TempleDetailModal from '../components/TempleDetailModal';
+import Consecration from '../components/Consecration';
+import DharmaForm from '../components/DharmaForm';
+import LampBlessing from '../components/LampBlessing';
 import ImageWithFallback from '../components/ImageWithFallback';
+import CommentScroll from '../components/CommentScroll';
+import ParticleEffect from '../components/ParticleEffect';
 
-// 动态导入组件，实现代码分割
-const TempleFilmStrip = React.lazy(() => import('../components/TempleFilmStrip'));
-const TempleDetailModal = React.lazy(() => import('../components/TempleDetailModal'));
-const Consecration = React.lazy(() => import('../components/Consecration'));
-const DharmaForm = React.lazy(() => import('../components/DharmaForm'));
-const LampBlessing = React.lazy(() => import('../components/LampBlessing'));
-const CommentScroll = React.lazy(() => import('../components/CommentScroll'));
+import { Temple, temples as staticTemples } from '../data/TempleData';
 
-
+// Client component for interactive functionality
 
 export default function Home() {
   const [temples, setTemples] = useState<Temple[]>(staticTemples);
@@ -102,177 +103,119 @@ export default function Home() {
     <div className="min-h-screen bg-[#1D1D1F] text-[#F5F5F7] font-sans overflow-x-hidden">
 
 
-      {/* Hero Section */}
-      <header className="relative h-[80vh] md:h-screen flex items-center justify-center overflow-hidden">
-        {/* Golden Particle Halo Background */}
+      {/* Hero Section - Updated to trigger deployment - 2026-04-07 */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Cyber Buddha Background - Bottom Layer */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full bg-gradient-to-r from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '4s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] md:w-[600px] md:h-[600px] rounded-full bg-gradient-to-l from-[#FFD700]/10 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full bg-gradient-to-t from-[#FFD700]/20 via-[#8676B6]/20 to-transparent animate-pulse" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
-        </div>
-
-        {/* Cyber Buddha Background */}
-        <div className="absolute inset-0 z-0 opacity-30">
           <ImageWithFallback
             src="/temple-images/fHPlMoqxg.jpg"
-            alt="Cyber Buddha meditating with golden light"
-            className="w-full h-full object-cover"
+            alt="Cyber Buddha"
+            className="w-full h-full object-cover opacity-30"
             style={{ objectPosition: 'center 20%' }}
-            loading="eager"
-            fallbackSrc="/temple-images/fHPlMoqxg.jpg"
-            onError={() => console.log('Home page background image failed to load')}
           />
         </div>
 
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F7] via-[#8676B6] to-[#FFD700] animate-pulse">
-            Cyber Buddha
-          </h1>
-          <p className="text-base md:text-xl lg:text-3xl mb-8 md:mb-10 text-[#F5F5F7]/90">
-            Cyber Buddha Digital Blessing · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples
-          </p>
-          <a 
-            href="#features" 
-            className="inline-block bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-8 py-4 rounded-full font-medium text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-            aria-label="Begin your digital blessing journey"
-          >
-            Begin Your Blessing
-          </a>
-        </div>
-      </header>
+        {/* Dynamic Particle Effect */}
+        <ParticleEffect />
 
-      {/* Core Features Module */}
-      <section id="features" className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          {/* Function Tabs */}
-        <div className="mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-[#F5F5F7]">Core Features</h2>
-          <div className="flex flex-wrap justify-center gap-3 md:gap-4" role="tablist" aria-label="Core Features">
-            <button
-              className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'blessing' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-              onClick={() => setActiveTab('blessing')} // 移动端使用点击事件代替悬停
-              onMouseEnter={() => setActiveTab('blessing')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setActiveTab('blessing');
-                }
-              }}
-              role="tab"
-              aria-selected={activeTab === 'blessing'}
-              aria-controls="blessing-panel"
-              id="blessing-tab"
-              tabIndex={activeTab === 'blessing' ? 0 : -1}
-            >
-              Digital Blessing
-            </button>
-            <button
-              className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'dharma' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-              onClick={() => setActiveTab('dharma')}
-              onMouseEnter={() => setActiveTab('dharma')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setActiveTab('dharma');
-                }
-              }}
-              role="tab"
-              aria-selected={activeTab === 'dharma'}
-              aria-controls="dharma-panel"
-              id="dharma-tab"
-              tabIndex={activeTab === 'dharma' ? 0 : -1}
-            >
-              Dharma Form
-            </button>
-            <button
-              className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'lamp' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-              onClick={() => setActiveTab('lamp')}
-              onMouseEnter={() => setActiveTab('lamp')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setActiveTab('lamp');
-                }
-              }}
-              role="tab"
-              aria-selected={activeTab === 'lamp'}
-              aria-controls="lamp-panel"
-              id="lamp-tab"
-              tabIndex={activeTab === 'lamp' ? 0 : -1}
-            >
-              Lamp Blessing
-            </button>
-            <button
-              className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-300 text-sm md:text-base ${activeTab === 'temple' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
-              onClick={() => setActiveTab('temple')}
-              onMouseEnter={() => setActiveTab('temple')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setActiveTab('temple');
-                }
-              }}
-              role="tab"
-              aria-selected={activeTab === 'temple'}
-              aria-controls="temple-panel"
-              id="temple-tab"
-              tabIndex={activeTab === 'temple' ? 0 : -1}
-            >
-              Temple Tours
-            </button>
+        {/* Enhanced Golden Particle Halo Background - Middle Layer */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {/* Main Halo */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full bg-gradient-to-r from-[#FFD700]/15 via-[#8676B6]/10 to-transparent animate-pulse" style={{ animationDuration: '4s' }}></div>
+          
+          {/* Secondary Halo - Counter Rotation */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-gradient-to-l from-[#FFD700]/12 via-[#8676B6]/8 to-transparent animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
+          
+          {/* Inner Halo - Brighter */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-t from-[#FFD700]/25 via-[#8676B6]/18 to-transparent animate-pulse" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
+
+          {/* Floating Orbs */}
+          <div className="absolute top-[20%] left-[15%] w-16 h-16 rounded-full bg-[#FFD700]/20 blur-xl animate-bounce" style={{ animationDuration: '3s' }}></div>
+          <div className="absolute top-[30%] right-[20%] w-20 h-20 rounded-full bg-[#8676B6]/20 blur-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
+          <div className="absolute bottom-[25%] left-[25%] w-14 h-14 rounded-full bg-[#FFD700]/25 blur-xl animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '1s' }}></div>
+          <div className="absolute bottom-[35%] right-[15%] w-18 h-18 rounded-full bg-[#8676B6]/18 blur-xl animate-bounce" style={{ animationDuration: '3.5s', animationDelay: '1.5s' }}></div>
+
+          {/* Radial Light Burst */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] rounded-full"
+               style={{
+                 background: 'radial-gradient(circle, rgba(255,215,0,0.08) 0%, transparent 50%)',
+                 animation: 'pulse 5s ease-in-out infinite'
+               }}>
           </div>
         </div>
 
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F7] via-[#8676B6] to-[#FFD700] animate-pulse">
+            Cyber Buddha
+          </h1>
+          <p className="text-2xl md:text-3xl mb-10 text-[#F5F5F7]/90">
+            Cyber Buddha Digital Blessing · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples
+          </p>
+          <p className="text-xl mb-8 text-[#F5F5F7]/70">
+            Experience the future of spiritual technology
+          </p>
+        </div>
+      </section>
+
+      {/* Core Features Module */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Function Tabs */}
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold mb-6 text-center text-[#F5F5F7]">Core Features</h2>
+            <div className="flex flex-wrap justify-center gap-4">
+              <button
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'blessing' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
+                onMouseEnter={() => setActiveTab('blessing')}
+              >
+                Cyber Buddha Digital Blessing
+              </button>
+              <button
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'dharma' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
+                onMouseEnter={() => setActiveTab('dharma')}
+              >
+                Request Dharma Form
+              </button>
+              <button
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'lamp' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
+                onMouseEnter={() => setActiveTab('lamp')}
+              >
+                Lamp Blessing
+              </button>
+              <button
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === 'temple' ? 'bg-[#8676B6] text-white shadow-lg' : 'bg-[#1D1D1F]/50 border border-[#8676B6]/30 text-[#8676B6] hover:border-[#8676B6]/60'}`}
+                onMouseEnter={() => setActiveTab('temple')}
+              >
+                Custom Temple Tours
+              </button>
+            </div>
+          </div>
+
           {/* Feature Content */}
           <div className="space-y-10">
-            {activeTab === 'blessing' && (
-              <div id="blessing-panel" role="tabpanel" aria-labelledby="blessing-tab" tabIndex={0}>
-                <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
-                  <Consecration />
-                </Suspense>
-              </div>
-            )}
-            {activeTab === 'dharma' && (
-              <div id="dharma-panel" role="tabpanel" aria-labelledby="dharma-tab" tabIndex={0}>
-                <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
-                  <DharmaForm />
-                </Suspense>
-              </div>
-            )}
-            {activeTab === 'lamp' && (
-              <div id="lamp-panel" role="tabpanel" aria-labelledby="lamp-tab" tabIndex={0}>
-                <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
-                  <LampBlessing />
-                </Suspense>
-              </div>
-            )}
+            {activeTab === 'blessing' && <Consecration />}
+            {activeTab === 'dharma' && <DharmaForm />}
+            {activeTab === 'lamp' && <LampBlessing />}
             {activeTab === 'temple' && (
-              <div id="temple-panel" role="tabpanel" aria-labelledby="temple-tab" tabIndex={0}>
-                <div>
-                  <div className="text-center mb-12">
-                    <h3 className="text-2xl font-bold mb-2 text-[#F5F5F7]">Custom Tours of Famous Chinese Temples</h3>
-                    <p className="text-[#F5F5F7]/70">Explore Chinese Buddhist cultural sites and customize your exclusive meditation journey</p>
-                  </div>
-                  <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Loading...</div>}>
-                    <TempleFilmStrip 
-                      temples={temples} 
-                    />
-                  </Suspense>
+              <div>
+                <div className="text-center mb-12">
+                  <h3 className="text-2xl font-bold mb-2 text-[#F5F5F7]">Custom Tours of Famous Chinese Temples</h3>
+                  <p className="text-[#F5F5F7]/70">Explore Chinese Buddhist cultural sites and customize your exclusive meditation journey</p>
                 </div>
+                <TempleFilmStrip 
+                  temples={temples} 
+                />
               </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* Community Shares Section */}
-      <section id="community-shares-section" className="py-20 px-4 bg-gradient-to-b from-[#1D1D1F] to-[#1D1D1F]/90">
+      {/* User Experiences Section */}
+      <section className="py-20 px-4 bg-[#1D1D1F]/50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-[#F5F5F7]">Community Shares</h2>
-          <p className="text-[#F5F5F7]/70 text-center mb-8">Share your digital blessing experiences with our community</p>
-          <Suspense fallback={<div className="min-h-[200px] flex items-center justify-center">Loading comments...</div>}>
-            <CommentScroll />
-          </Suspense>
+          <h2 className="text-3xl font-bold mb-10 text-center text-[#F5F5F7]">User Experiences</h2>
+          <CommentScroll />
         </div>
       </section>
 
@@ -294,7 +237,9 @@ export default function Home() {
             <div>
               <h3 className="text-lg font-semibold mb-4 text-[#F5F5F7]">Quick Links</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Home</a></li>
+                <li><Link href="/" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Home</Link></li>
+                <li><Link href="/terms" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Official Terms of Service</Link></li>
+                <li><Link href="/privacy" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Official Privacy Policy</Link></li>
                 <li><a href="#" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Cyber Buddha Digital Blessing</a></li>
                 <li><a href="#" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Request Dharma Form</a></li>
                 <li><a href="#" className="text-[#F5F5F7]/70 hover:text-[#8676B6] transition-colors duration-300">Lamp Blessing</a></li>
@@ -313,18 +258,16 @@ export default function Home() {
       </footer>
 
       {/* Temple Detail Modal */}
-      <Suspense fallback={<div></div>}>
-        <TempleDetailModal 
-          temple={selectedTemple} 
-          isOpen={isModalOpen} 
-          onClose={handleCloseModal} 
-          onPayment={handlePayment} 
-          isContactFormOpen={isContactFormOpen}
-          onOpenContactForm={handleOpenContactForm}
-          onCloseContactForm={handleCloseContactForm}
-          isPaying={isPaying}
-        />
-      </Suspense>
+      <TempleDetailModal 
+        temple={selectedTemple} 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal} 
+        onPayment={handlePayment} 
+        isContactFormOpen={isContactFormOpen}
+        onOpenContactForm={handleOpenContactForm}
+        onCloseContactForm={handleCloseContactForm}
+        isPaying={isPaying}
+      />
     </div>
   );
 }
