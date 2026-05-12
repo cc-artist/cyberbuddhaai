@@ -46,6 +46,10 @@ const SimpleLoginPage = () => {
           </div>
         )}
 
+        <div className="bg-blue-900/30 border border-blue-500 text-blue-300 rounded-lg p-3 mb-4 text-sm">
+          默认账号: admin / 密码: password
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
