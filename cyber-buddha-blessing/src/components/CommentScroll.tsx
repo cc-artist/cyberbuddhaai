@@ -130,12 +130,13 @@ const CommentScroll: React.FC = () => {
     return result;
   };
 
-  // 改进的动画效果：每2秒平滑滚动
+  // 改进的动画效果：每2秒平滑滚动，确保不停地滚动展示
   useEffect(() => {
     console.log('useEffect called, displayComments length:', displayComments.length);
     
-    if (displayComments.length <= 7) {
-      console.log('displayComments <= 7, skipping automatic animation');
+    // 确保至少有足够的评论可以滚动
+    if (displayComments.length < 2) {
+      console.log('Not enough comments to animate, skipping automatic animation');
       return;
     }
 
