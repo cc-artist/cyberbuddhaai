@@ -134,8 +134,8 @@ const CommentScroll: React.FC = () => {
   useEffect(() => {
     console.log('useEffect called, displayComments length:', displayComments.length);
     
-    if (displayComments.length <= 7) {
-      console.log('displayComments <= 7, skipping automatic animation');
+    if (displayComments.length <= 1) {
+      console.log('displayComments <= 1, skipping automatic animation');
       return;
     }
 

@@ -23,12 +23,14 @@
 # misc
 .DS_Store
 *.pem
+*.lnk
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+debug.log
 
 # env files (can opt-in for committing if needed)
 .env*
@@ -40,12 +42,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.vercel
 
-.vercel
-.env*.local
+# Trae IDE workspace
+.trae/
 
-.vercel
-.env*.local
-
-.vercel
+# Duplicate directories
+cyber-buddha-blessing/
+backend/
