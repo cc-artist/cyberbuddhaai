@@ -83,56 +83,120 @@ const AdminDashboard = async () => {
   let paymentsData: PaymentsResponse | null = null;
   let consultationsData: ConsultationsResponse | null = null;
   let error = null;
+  let isUsingMockData = false;
 
   try {
-    // 连接到数据库
-    await connectMongoDB();
+    // 尝试连接到数据库
+    const db = await connectMongoDB();
 
-    // 从数据库获取真实支付数据
-    let payments = await Payment.find();
+    if (db) {
+      // 数据库连接成功，从数据库获取真实支付数据
+      let payments = await Payment.find();
 
-    // 如果数据库为空，初始化示例数据
-    if (payments.length === 0) {
-      await Payment.insertMany(samplePayments);
-      payments = await Payment.find();
+      // 如果数据库为空，初始化示例数据
+      if (payments.length === 0) {
+        await Payment.insertMany(samplePayments);
+        payments = await Payment.find();
+      }
+
+      // 计算统计数据
+      const totalRevenue = payments.reduce((sum, payment) => sum + payment.amount, 0);
+      const completedCount = payments.filter(payment => payment.status === 'completed').length;
+
+      // 设置支付数据，转换Date对象为string
+      paymentsData = {
+        payments: payments.map(payment => ({
+          ...payment.toObject(),
+          id: payment.id,
+          createdAt: payment.createdAt.toISOString(),
+          updatedAt: payment.updatedAt.toISOString()
+        })),
+        totalCount: payments.length,
+        totalRevenue,
+        completedCount
+      };
+
+      // 获取咨询数据
+      const consultations = await Consultation.find().sort({ createdAt: -1 });
+      const pendingCount = consultations.filter(c => c.status === 'pending').length;
+      const repliedCount = consultations.filter(c => c.status === 'replied').length;
+
+      // 设置咨询数据，转换Date对象为string
+      consultationsData = {
+        consultations: consultations.map(consultation => ({
+          ...consultation.toObject(),
+          id: consultation.id,
+          createdAt: consultation.createdAt.toISOString(),
+          updatedAt: consultation.updatedAt.toISOString()
+        })),
+        totalCount: consultations.length,
+        pendingCount,
+        repliedCount
+      };
+    } else {
+      // 数据库连接失败，使用模拟数据
+      isUsingMockData = true;
+      console.log('⚠️ MongoDB unavailable, using mock data');
+
+      // 使用模拟支付数据
+      paymentsData = {
+        payments: samplePayments.map(p => ({
+          ...p,
+          id: p.id,
+          createdAt: p.createdAt.toISOString(),
+          updatedAt: p.createdAt.toISOString()
+        })),
+        totalCount: samplePayments.length,
+        totalRevenue: samplePayments.reduce((sum, p) => sum + p.amount, 0),
+        completedCount: samplePayments.filter(p => p.status === 'completed').length
+      };
+
+      // 使用模拟咨询数据
+      const sampleConsultations = [
+        { id: 'CONS001', name: '张三', email: 'zhangsan@example.com', subject: '关于开光服务的咨询', message: '我想了解一下开光服务的详细流程', templeName: '灵隐寺', status: 'pending' as const, createdAt: new Date('2026-02-07T10:30:00.000Z'), updatedAt: new Date('2026-02-07T10:30:00.000Z') },
+        { id: 'CONS002', name: '李四', email: 'lisi@example.com', subject: '法相定制咨询', message: '法相定制需要多长时间？', templeName: '少林寺', status: 'replied' as const, createdAt: new Date('2026-02-06T15:20:00.000Z'), updatedAt: new Date('2026-02-06T16:00:00.000Z') },
+        { id: 'CONS003', name: '王五', email: 'wangwu@example.com', subject: '供灯祈福价格', message: '供灯祈福有几种套餐？', templeName: '白马寺', status: 'pending' as const, createdAt: new Date('2026-02-05T09:15:00.000Z'), updatedAt: new Date('2026-02-05T09:15:00.000Z') }
+      ];
+
+      consultationsData = {
+        consultations: sampleConsultations,
+        totalCount: sampleConsultations.length,
+        pendingCount: sampleConsultations.filter(c => c.status === 'pending').length,
+        repliedCount: sampleConsultations.filter(c => c.status === 'replied').length
+      };
     }
-
-    // 计算统计数据
-    const totalRevenue = payments.reduce((sum, payment) => sum + payment.amount, 0);
-    const completedCount = payments.filter(payment => payment.status === 'completed').length;
-
-    // 设置支付数据，转换Date对象为string
-    paymentsData = {
-      payments: payments.map(payment => ({
-        ...payment.toObject(),
-        id: payment.id,
-        createdAt: payment.createdAt.toISOString(),
-        updatedAt: payment.updatedAt.toISOString()
-      })),
-      totalCount: payments.length,
-      totalRevenue,
-      completedCount
-    };
-
-    // 获取咨询数据
-    const consultations = await Consultation.find().sort({ createdAt: -1 });
-    const pendingCount = consultations.filter(c => c.status === 'pending').length;
-    const repliedCount = consultations.filter(c => c.status === 'replied').length;
-
-    // 设置咨询数据，转换Date对象为string
-    consultationsData = {
-      consultations: consultations.map(consultation => ({
-        ...consultation.toObject(),
-        id: consultation.id,
-        createdAt: consultation.createdAt.toISOString(),
-        updatedAt: consultation.updatedAt.toISOString()
-      })),
-      totalCount: consultations.length,
-      pendingCount,
-      repliedCount
-    };
   } catch (err) {
+    // 发生错误时也使用模拟数据
+    isUsingMockData = true;
+    console.error('❌ Error fetching data, using mock data:', err);
     error = err instanceof Error ? err.message : 'Failed to fetch data';
+
+    // 使用模拟支付数据
+    paymentsData = {
+      payments: samplePayments.map(p => ({
+        ...p,
+        id: p.id,
+        createdAt: p.createdAt.toISOString(),
+        updatedAt: p.createdAt.toISOString()
+      })),
+      totalCount: samplePayments.length,
+      totalRevenue: samplePayments.reduce((sum, p) => sum + p.amount, 0),
+      completedCount: samplePayments.filter(p => p.status === 'completed').length
+    };
+
+    // 使用模拟咨询数据
+    const sampleConsultations = [
+      { id: 'CONS001', name: '张三', email: 'zhangsan@example.com', subject: '关于开光服务的咨询', message: '我想了解一下开光服务的详细流程', templeName: '灵隐寺', status: 'pending' as const, createdAt: new Date('2026-02-07T10:30:00.000Z'), updatedAt: new Date('2026-02-07T10:30:00.000Z') },
+      { id: 'CONS002', name: '李四', email: 'lisi@example.com', subject: '法相定制咨询', message: '法相定制需要多长时间？', templeName: '少林寺', status: 'replied' as const, createdAt: new Date('2026-02-06T15:20:00.000Z'), updatedAt: new Date('2026-02-06T16:00:00.000Z') },
+      { id: 'CONS003', name: '王五', email: 'wangwu@example.com', subject: '供灯祈福价格', message: '供灯祈福有几种套餐？', templeName: '白马寺', status: 'pending' as const, createdAt: new Date('2026-02-05T09:15:00.000Z'), updatedAt: new Date('2026-02-05T09:15:00.000Z') }
+    ];
+
+    consultationsData = {
+      consultations: sampleConsultations,
+      totalCount: sampleConsultations.length,
+      pendingCount: sampleConsultations.filter(c => c.status === 'pending').length,
+      repliedCount: sampleConsultations.filter(c => c.status === 'replied').length
+    };
   }
 
   return (
@@ -142,7 +206,9 @@ const AdminDashboard = async () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-white">赛博佛祖管理后台</h1>
-            <span className="ml-3 text-sm text-[#86868B]">Production Environment</span>
+            <span className="ml-3 text-sm text-[#86868B]">
+              {isUsingMockData ? 'Demo Mode' : 'Production Environment'}
+            </span>
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-[#86868B]">
@@ -161,6 +227,19 @@ const AdminDashboard = async () => {
 
       {/* 主内容 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 数据库状态提示 */}
+        {isUsingMockData && (
+          <div className="bg-[#FFCC00]/10 border border-[#FFCC00]/30 rounded-xl p-4 mb-6">
+            <div className="flex items-center">
+              <i className="fas fa-exclamation-triangle text-[#FFCC00] text-xl mr-3"></i>
+              <div>
+                <h3 className="text-[#FFCC00] font-medium">演示模式</h3>
+                <p className="text-[#86868B] text-sm">MongoDB 数据库未连接，当前使用模拟数据。如需使用真实数据，请启动 MongoDB 服务。</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 统计卡片 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* 总收入 */}
@@ -194,7 +273,7 @@ const AdminDashboard = async () => {
                 {paymentsData?.completedCount || 0}
               </div>
               <div className="text-sm text-[#86868B]">
-                完成率: {(paymentsData && paymentsData.totalCount > 0 ? Math.round((paymentsData.completedCount / paymentsData.totalCount) * 100) : 0)}%
+                完成率: {(paymentsData && paymentsData.totalCount > 0 ? Math.round((paymentsData.completedCount / paymentsData.totalCount) * 100) : 0}%
               </div>
             </div>
           </div>
@@ -400,15 +479,23 @@ const AdminDashboard = async () => {
 
         {/* API信息 */}
         <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A]">
-          <h2 className="text-xl font-semibold text-white mb-4">API信息</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">系统信息</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-[#1D1D1F]/50 rounded-xl p-4">
+              <h3 className="text-[#86868B] text-sm mb-1">数据库状态</h3>
+              <p className="text-white">{isUsingMockData ? '未连接' : '已连接'}</p>
+            </div>
+            <div className="bg-[#1D1D1F]/50 rounded-xl p-4">
+              <h3 className="text-[#86868B] text-sm mb-1">数据来源</h3>
+              <p className="text-white">{isUsingMockData ? '模拟数据' : '真实数据'}</p>
+            </div>
             <div className="bg-[#1D1D1F]/50 rounded-xl p-4">
               <h3 className="text-[#86868B] text-sm mb-1">支付API</h3>
               <p className="text-white font-mono text-sm">/api/admin/payments</p>
             </div>
             <div className="bg-[#1D1D1F]/50 rounded-xl p-4">
-              <h3 className="text-[#86868B] text-sm mb-1">状态</h3>
-              <p className="text-white">{paymentsData ? '正常' : '异常'}</p>
+              <h3 className="text-[#86868B] text-sm mb-1">咨询API</h3>
+              <p className="text-white font-mono text-sm">/api/admin/consultations</p>
             </div>
           </div>
         </div>
