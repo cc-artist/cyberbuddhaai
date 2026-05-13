@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ContactFormProps {
   isOpen: boolean;
@@ -31,8 +32,15 @@ const ContactForm: React.FC<ContactFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const portalRef = useRef<HTMLDivElement | null>(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const validateForm = (): boolean => {
     const newErrors: Partial<ContactFormData> = {};
@@ -128,12 +136,12 @@ const ContactForm: React.FC<ContactFormProps> = ({
     }
   };
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-[#1D1D1F]/80 backdrop-blur-sm">
-      <div className="relative w-full max-w-2xl bg-[#1D1D1F] border border-[#8676B6]/30 rounded-2xl overflow-hidden shadow-2xl">
+      <div className="relative w-full max-w-2xl bg-[#1D1D1F] border border-[#8676B6]/30 rounded-2xl overflow-hidden shadow-2xl z-[1000000]">
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 bg-[#8676B6]/20 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-[#8676B6]/30 transition-colors duration-300 z-10 focus:outline-none focus:ring-2 focus:ring-[#8676B6]"
+          className="absolute top-4 right-4 bg-[#8676B6]/20 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-[#8676B6]/30 transition-colors duration-300 z-[1000001] focus:outline-none focus:ring-2 focus:ring-[#8676B6]"
           onClick={onClose}
           aria-label="Close contact form"
           type="button"
@@ -224,7 +232,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                   <option value={`Pricing for ${templeName} tour`}>
                     Pricing for {templeName} tour
                   </option>
-                  <option value={`Availability for ${templeName} tour`}>
+                  <option value={`Availability for {templeName} tour`}>
                     Availability for {templeName} tour
                   </option>
                   <option value="Other">Other</option>
@@ -283,6 +291,8 @@ const ContactForm: React.FC<ContactFormProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default ContactForm;
