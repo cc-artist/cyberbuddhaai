@@ -289,19 +289,38 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
   // 处理分享到平台
   const shareToPlatform = (platform: string) => {
     let shareUrl = '';
-    const encodedUrl = encodeURIComponent(pageUrl);
+    
+    // 构建完整的URL
+    const getFullUrl = () => {
+      if (typeof window !== 'undefined') {
+        const baseUrl = `${window.location.protocol}//${window.location.host}`;
+        // 如果pageUrl已经是完整URL，直接使用
+        if (pageUrl.startsWith('http://') || pageUrl.startsWith('https://')) {
+          return pageUrl;
+        }
+        // 否则构建完整URL
+        return `${baseUrl}${pageUrl.startsWith('/') ? pageUrl : `/${pageUrl}`}`;
+      }
+      return pageUrl;
+    };
+    
+    const fullUrl = getFullUrl();
+    const encodedUrl = encodeURIComponent(fullUrl);
     const encodedTitle = encodeURIComponent(title);
     const encodedDesc = encodeURIComponent(description);
+    
+    console.log('Sharing to', platform, 'with URL:', fullUrl);
     
     switch (platform) {
       case 'x':
         shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
         break;
       case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        // 使用Facebook的新分享API格式
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`;
         break;
       case 'whatsapp':
-        shareUrl = `https://wa.me/?text=${encodeURIComponent(`${title} - ${pageUrl}`)}`;
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(`${title} - ${fullUrl}`)}`;
         break;
       case 'instagram':
         // Instagram不支持直接分享URL，需要引导用户下载图片后手动分享
@@ -333,7 +352,8 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
     }
     
     if (shareUrl) {
-      window.open(shareUrl, '_blank', 'width=600,height=400');
+      console.log('Opening share URL:', shareUrl);
+      window.open(shareUrl, '_blank', 'width=600,height=400,noopener,noreferrer');
     }
   };
 
