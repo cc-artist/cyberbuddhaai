@@ -18,6 +18,7 @@ interface Comment {
 const CommentScroll: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationPhase, setAnimationPhase] = useState(0);
   const commentWidth = 180;
@@ -116,10 +117,10 @@ const CommentScroll: React.FC = () => {
 
   const displayComments = comments.length > 0 ? comments : defaultComments;
 
-  // 获取当前要显示的7个评论，确保更丰富的展示
+  // 获取当前要显示的7个评论
   const getVisibleComments = () => {
     const result = [];
-    const displayCount = Math.min(7, displayComments.length);
+    const displayCount = 7;
     for (let i = 0; i < displayCount; i++) {
       const index = (currentIndex + i) % displayComments.length;
       result.push({
@@ -130,7 +131,7 @@ const CommentScroll: React.FC = () => {
     return result;
   };
 
-  // 改进的动画效果：每2秒平滑滚动
+  // 改进的动画效果：向上滚动和向下滚动轮换
   useEffect(() => {
     console.log('useEffect called, displayComments length:', displayComments.length);
     
@@ -140,7 +141,7 @@ const CommentScroll: React.FC = () => {
     }
 
     const interval = setInterval(() => {
-      console.log('Starting animation sequence...');
+      console.log('Starting animation sequence, direction:', scrollDirection);
       setAnimationPhase(1);
       setIsAnimating(true);
       
@@ -153,9 +154,11 @@ const CommentScroll: React.FC = () => {
           console.log('Finishing animation...');
           setIsAnimating(false);
           setAnimationPhase(0);
+          // 切换滚动方向
+          setScrollDirection(prev => prev === 'up' ? 'down' : 'up');
         }, 400);
       }, 300);
-    }, 2000);
+    }, 3000);
 
     return () => {
       console.log('Clearing interval...');
@@ -163,7 +166,7 @@ const CommentScroll: React.FC = () => {
     };
   }, [displayComments.length, displayComments]);
 
-  console.log('Rendering CommentScroll, currentIndex:', currentIndex, 'isAnimating:', isAnimating, 'animationPhase:', animationPhase);
+  console.log('Rendering CommentScroll, currentIndex:', currentIndex, 'isAnimating:', isAnimating, 'animationPhase:', animationPhase, 'direction:', scrollDirection);
 
   return (
     <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 max-w-7xl mx-auto">
@@ -178,7 +181,11 @@ const CommentScroll: React.FC = () => {
               style={{ 
                 width: `${commentWidth}px`,
                 opacity: animationPhase === 1 ? 0.3 : 1,
-                transform: animationPhase === 1 ? 'scale(0.95)' : animationPhase === 2 ? 'scale(1.02)' : 'scale(1)',
+                transform: animationPhase === 1 
+                  ? (scrollDirection === 'up' ? 'translateY(-10px) scale(0.95)' : 'translateY(10px) scale(0.95)')
+                  : animationPhase === 2 
+                  ? (scrollDirection === 'up' ? 'translateY(0) scale(1.02)' : 'translateY(0) scale(1.02)')
+                  : 'translateY(0) scale(1)',
                 transition: 'opacity 0.3s ease-in-out, transform 0.4s ease-in-out, box-shadow 0.3s ease-in-out',
                 boxShadow: animationPhase === 2 ? '0 0 20px rgba(134, 118, 182, 0.3)' : 'none'
               }}
