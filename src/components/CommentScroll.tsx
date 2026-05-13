@@ -17,36 +17,29 @@ interface Comment {
 
 const CommentScroll: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [animationPhase, setAnimationPhase] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
   const commentWidth = 180;
+  const gap = 12;
+  const totalItemWidth = commentWidth + gap;
   const containerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const lastTimestampRef = useRef<number>(0);
 
   // 从数据库和localStorage获取评论数据
   const loadComments = async () => {
-    console.log('loadComments function called');
-    
     // 首先尝试从localStorage获取评论，作为备用
     const getLocalStorageComments = () => {
-      console.log('Fetching comments from localStorage...');
       try {
         const storedComments = localStorage.getItem('cyberBuddhaComments');
         if (storedComments) {
           const parsedComments = JSON.parse(storedComments);
-          const formattedComments = parsedComments.map((comment: any) => ({
+          return parsedComments.map((comment: any) => ({
             ...comment,
             createdAt: new Date(comment.createdAt)
           }));
-          console.log('LocalStorage comments:', formattedComments);
-          return formattedComments;
-        } else {
-          console.log('No comments found in localStorage');
-          return [];
         }
+        return [];
       } catch (error) {
-        console.error('Error reading from localStorage:', error);
         return [];
       }
     };
@@ -54,18 +47,13 @@ const CommentScroll: React.FC = () => {
     const localComments = getLocalStorageComments();
     if (localComments.length > 0) {
       setComments(localComments);
-      console.log('Initial comments loaded from localStorage');
     }
     
     try {
-      console.log('Fetching comments from database...');
       const response = await fetch('/api/public/comments', { cache: 'no-store' });
-      console.log('Response status:', response.status);
       
       if (response.ok) {
         const dbComments = await response.json();
-        console.log('Database comments:', dbComments);
-        
         const formattedComments = dbComments.map((comment: any) => ({
           ...comment,
           createdAt: new Date(comment.createdAt)
@@ -73,12 +61,10 @@ const CommentScroll: React.FC = () => {
         
         if (formattedComments.length > 0) {
           setComments(formattedComments);
-          console.log('Comments updated from database');
-          return;
         }
       }
     } catch (error) {
-      console.error('Error fetching comments from database:', error);
+      // 静默处理错误
     }
   };
   
@@ -116,78 +102,95 @@ const CommentScroll: React.FC = () => {
   ];
 
   const displayComments = comments.length > 0 ? comments : defaultComments;
+  const displayCount = 7;
 
-  // 获取当前要显示的7个评论
-  const getVisibleComments = () => {
+  // 获取要显示的评论（复制两份以实现无缝循环）
+  const getDisplayComments = () => {
     const result = [];
-    const displayCount = 7;
-    for (let i = 0; i < displayCount; i++) {
-      const index = (currentIndex + i) % displayComments.length;
+    // 显示双倍数量的评论以实现无缝循环
+    for (let i = 0; i < displayCount * 2; i++) {
+      const index = i % displayComments.length;
       result.push({
         comment: displayComments[index],
-        index: i
+        originalIndex: index
       });
     }
     return result;
   };
 
-  // 改进的动画效果：向上滚动和向下滚动轮换
+  // 平滑滚动动画
   useEffect(() => {
-    console.log('useEffect called, displayComments length:', displayComments.length);
-    
-    if (displayComments.length <= 1) {
-      console.log('displayComments <= 1, skipping automatic animation');
-      return;
-    }
+    if (displayComments.length < 2) return;
 
-    const interval = setInterval(() => {
-      console.log('Starting animation sequence, direction:', scrollDirection);
-      setAnimationPhase(1);
-      setIsAnimating(true);
+    const animate = (timestamp: number) => {
+      if (!lastTimestampRef.current) {
+        lastTimestampRef.current = timestamp;
+      }
       
-      setTimeout(() => {
-        console.log('Updating currentIndex...');
-        setCurrentIndex(prev => (prev + 1) % displayComments.length);
-        setAnimationPhase(2);
+      const elapsed = timestamp - lastTimestampRef.current;
+      // 调整滚动速度（像素/毫秒）
+      const speed = 0.05;
+      const delta = elapsed * speed;
+      
+      setScrollPosition(prev => {
+        const newPosition = prev + delta;
+        const totalScrollWidth = displayCount * totalItemWidth;
         
-        setTimeout(() => {
-          console.log('Finishing animation...');
-          setIsAnimating(false);
-          setAnimationPhase(0);
-          // 切换滚动方向
-          setScrollDirection(prev => prev === 'up' ? 'down' : 'up');
-        }, 400);
-      }, 300);
-    }, 3000);
+        // 当滚动到一半时重置位置，实现无缝循环
+        if (newPosition >= totalScrollWidth) {
+          return 0;
+        }
+        return newPosition;
+      });
+      
+      lastTimestampRef.current = timestamp;
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
 
     return () => {
-      console.log('Clearing interval...');
-      clearInterval(interval);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, [displayComments.length, displayComments]);
-
-  console.log('Rendering CommentScroll, currentIndex:', currentIndex, 'isAnimating:', isAnimating, 'animationPhase:', animationPhase, 'direction:', scrollDirection);
+  }, [displayComments.length]);
 
   return (
     <div className="bg-[#1D1D1F] border border-[#8676B6]/30 rounded-xl p-4 max-w-7xl mx-auto">
       <h3 className="text-sm font-bold mb-3 text-center text-[#F5F5F7]">Community Shares</h3>
       
-      <div ref={containerRef} className="relative overflow-hidden" style={{ height: '280px' }}>
-        <div className="flex gap-3">
-          {getVisibleComments().map(({ comment, index }) => (
+      <div className="relative overflow-hidden" style={{ height: '280px' }}>
+        {/* 渐变遮罩 - 左侧 */}
+        <div 
+          className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to right, #1D1D1F 0%, transparent 100%)'
+          }}
+        />
+        
+        {/* 渐变遮罩 - 右侧 */}
+        <div 
+          className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to left, #1D1D1F 0%, transparent 100%)'
+          }}
+        />
+        
+        <div 
+          className="flex gap-3 absolute"
+          style={{ 
+            transform: `translateX(-${scrollPosition}px)`,
+            willChange: 'transform'
+          }}
+        >
+          {getDisplayComments().map(({ comment, originalIndex }, i) => (
             <div 
-              key={`${comment.id}-${currentIndex}`}
-              className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-3 hover:shadow-lg flex-shrink-0"
+              key={`${comment.id}-${i}`}
+              className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-3 flex-shrink-0 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-[#8676B6]/60"
               style={{ 
                 width: `${commentWidth}px`,
-                opacity: animationPhase === 1 ? 0.3 : 1,
-                transform: animationPhase === 1 
-                  ? (scrollDirection === 'up' ? 'translateY(-10px) scale(0.95)' : 'translateY(10px) scale(0.95)')
-                  : animationPhase === 2 
-                  ? (scrollDirection === 'up' ? 'translateY(0) scale(1.02)' : 'translateY(0) scale(1.02)')
-                  : 'translateY(0) scale(1)',
-                transition: 'opacity 0.3s ease-in-out, transform 0.4s ease-in-out, box-shadow 0.3s ease-in-out',
-                boxShadow: animationPhase === 2 ? '0 0 20px rgba(134, 118, 182, 0.3)' : 'none'
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)'
               }}
             >
               <div className="relative w-full h-32 overflow-hidden rounded-md border border-[#8676B6]/30 mb-3">
@@ -196,12 +199,10 @@ const CommentScroll: React.FC = () => {
                   alt={comment.title}
                   className="absolute inset-0 w-full h-full object-contain"
                 />
-                {/* 闪烁光效 */}
-                {animationPhase === 2 && (
-                  <div 
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FFD700]/20 to-transparent animate-pulse"
-                  />
-                )}
+                {/* 微光效果 */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-br from-[#8676B6]/10 to-transparent pointer-events-none"
+                />
               </div>
               
               <div className="space-y-2">
