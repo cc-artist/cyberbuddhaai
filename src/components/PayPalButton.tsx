@@ -171,12 +171,16 @@ const PayPalButton: React.FC<PayPalButtonProps> = ({
   }, [amount, description, name]);
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full ${className}`} style={{ position: 'relative', zIndex: 1 }}>
       {/* Always render the container div with ref, regardless of loading or error state */}
       <div 
         ref={containerRef} 
         className="w-full"
-        style={{ minHeight: '48px' }} // 设置最小高度，确保按钮有足够空间
+        style={{ 
+          minHeight: '48px',
+          position: 'relative',
+          zIndex: 1
+        }}
       >
         {/* Show loading state if still loading */}
         {isLoading && (
