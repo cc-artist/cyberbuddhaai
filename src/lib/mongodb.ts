@@ -39,6 +39,7 @@ async function connectMongoDB() {
   try {
     isConnecting = true;
 
+<<<<<<< Updated upstream
     console.log('Connecting to MongoDB with URI:', MONGODB_URI.replace(/:([^:@]{10,})@/, ':***@'));
 
     // 连接到MongoDB - 添加超时配置
@@ -46,6 +47,15 @@ async function connectMongoDB() {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 10000,
       connectTimeoutMS: 10000,
+=======
+    // 连接到MongoDB - 新版mongoose不再需要useNewUrlParser和useUnifiedTopology选项
+    // 增加超时设置以适应MongoDB Atlas
+    const mongooseInstance = await mongoose.connect(MONGODB_URI, {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 10000, // 10秒服务器选择超时
+      socketTimeoutMS: 45000, // 45秒套接字超时
+      connectTimeoutMS: 10000, // 10秒连接超时
+>>>>>>> Stashed changes
     });
 
     conn = mongooseInstance.connection;

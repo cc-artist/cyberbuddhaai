@@ -4,6 +4,7 @@ import connectMongoDB from '../../../../lib/mongodb';
 
 export async function GET() {
   try {
+<<<<<<< Updated upstream
     // 连接到数据库
     const conn = await connectMongoDB();
     
@@ -15,6 +16,16 @@ export async function GET() {
 
     // 从数据库获取已批准的评论
     const comments = await Comment.find({ approved: true }).sort({ createdAt: -1 });
+=======
+    // 连接到数据库，设置10秒超时
+    await withTimeout(connectMongoDB(), 10000);
+
+    // 从数据库获取已批准的评论，设置5秒超时
+    const comments = await withTimeout(
+      Comment.find({ approved: true }).sort({ createdAt: -1 }),
+      5000
+    );
+>>>>>>> Stashed changes
 
     // 返回评论数据
     return NextResponse.json(comments, { status: 200 });
