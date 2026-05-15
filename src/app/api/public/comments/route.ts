@@ -2,15 +2,7 @@ import { NextResponse } from 'next/server';
 import Comment from '../../../../models/Comment';
 import connectMongoDB from '../../../../lib/mongodb';
 
-// 辅助函数：带超时的数据库操作
-async function withTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => reject(new Error('Database operation timeout')), timeout);
-  });
-  return Promise.race([promise, timeoutPromise]) as Promise<T>;
-}
-
-// 默认评论数据
+// 默认评论数据 - 提供足够的评论数据
 const defaultComments = [
   {
     id: 'default-1',
@@ -71,31 +63,63 @@ const defaultComments = [
     userComment: 'Work with purpose and peace',
     userAvatar: 'https://ui-avatars.com/api/?name=Zen&background=random',
     approved: true
-  }
+  },
+  {
+    id: 'default-6',
+    imageUrl: '/temple-images/白马寺.webp',
+    title: 'Digital Dharma',
+    description: 'The future of spiritual practice',
+    pageUrl: 'https://cyber-buddha.blessing',
+    createdAt: new Date(Date.now() - 432000000),
+    userName: 'Modern Monk',
+    userComment: 'Bridging ancient wisdom with modern technology',
+    userAvatar: 'https://ui-avatars.com/api/?name=Monk2&background=random',
+    approved: true
+  },
+  {
+    id: 'default-7',
+    imageUrl: '/temple-images/法门寺.jpg',
+    title: 'Blessed Journey',
+    description: 'A wonderful digital spiritual experience',
+    pageUrl: 'https://cyber-buddha.blessing',
+    createdAt: new Date(Date.now() - 518400000),
+    userName: 'Enlightened User',
+    userComment: 'Highly recommend to everyone seeking digital blessings!',
+    userAvatar: 'https://ui-avatars.com/api/?name=User&background=random',
+    approved: true
+  },
 ];
 
 export async function GET() {
   try {
-    // 连接到数据库，设置3秒超时
-    await withTimeout(connectMongoDB(), 3000);
+    console.log('Fetching comments from database...');
+    // 连接到数据库
+    await connectMongoDB();
 
-    // 从数据库获取已批准的评论，设置2秒超时
-    const comments = await withTimeout(
-      Comment.find({ approved: true }).sort({ createdAt: -1 }),
-      2000
-    );
+    // 从数据库获取已批准的评论
+    const comments = await Comment.find({ approved: true }).sort({ createdAt: -1 });
 
-    // 返回评论数据
-    return NextResponse.json(comments, { status: 200 });
+    console.log(`Found ${comments.length} comments in database`);
+
+    // 如果数据库有数据，返回数据库数据，否则返回默认数据
+    if (comments && comments.length > 0) {
+      return NextResponse.json(comments, { status: 200 });
+    } else {
+      console.log('No comments in database, returning default comments');
+      return NextResponse.json(defaultComments, { status: 200 });
+    }
   } catch (error) {
-    console.error('Error getting comments:', error);
-    // 返回默认评论，而不是错误
+    console.error('Error getting comments, using fallback data:', error);
+    // 返回默认评论，确保前端始终有数据显示
     return NextResponse.json(defaultComments, { status: 200 });
   }
 }
 
 export async function POST(request: Request) {
   try {
+    // 连接到数据库
+    await connectMongoDB();
+
     // 获取请求体
     const body = await request.json();
     const { imageUrl, title, description, pageUrl, userName, userComment, userAvatar } = body;
@@ -105,28 +129,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 连接到数据库，设置3秒超时
-    await withTimeout(connectMongoDB(), 3000);
-
-    // 创建新评论，设置2秒超时
-    const newComment = await withTimeout(
-      Comment.create({
-        imageUrl,
-        title,
-        description,
-        pageUrl,
-        userName,
-        userComment,
-        userAvatar,
-        approved: true // 默认批准评论
-      }),
-      2000
-    );
+    // 创建新评论
+    const newComment = await Comment.create({
+      imageUrl,
+      title,
+      description,
+      pageUrl,
+      userName,
+      userComment,
+      userAvatar,
+      approved: true // 默认批准评论
+    });
 
     return NextResponse.json(newComment, { status: 201 });
   } catch (error) {
     console.error('Error saving comment:', error);
-    // 快速返回错误，不阻塞请求
-    return NextResponse.json({ error: 'Failed to save comment' }, { status: 500 });
+    // 返回友好的错误信息
+    return NextResponse.json({ error: 'Failed to save comment. Please try again later.' }, { status: 500 });
   }
 }
