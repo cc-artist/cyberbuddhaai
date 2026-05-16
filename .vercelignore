@@ -3,6 +3,9 @@
 temp-cyberbuddhaai/
 *.pdf
 *.txt
+backend/
+cyber-buddha-blessing/
+*.html
 !src/
 !public/
 !package.json

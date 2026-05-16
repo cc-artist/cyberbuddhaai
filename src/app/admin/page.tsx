@@ -6,40 +6,40 @@ import Payment from '../../models/Payment';
 import Consultation from '../../models/Consultation';
 import connectMongoDB from '../../lib/mongodb';
 
-// Sample payment data for initialization
-const samplePayments = [
-  { id: 'PAY20260207001', user: '张三', amount: 100, status: 'completed', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 10:30:00') },
-  { id: 'PAY20260207002', user: '李四', amount: 200, status: 'completed', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 11:15:00') },
-  { id: 'PAY20260207005', user: '孙七', amount: 250, status: 'completed', paymentPlatform: 'pingpong', createdAt: new Date('2026-02-07 15:10:00') },
-  { id: 'PAY20260207007', user: '吴九', amount: 400, status: 'completed', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 17:45:00') },
-  { id: 'PAY20260207008', user: '郑十', amount: 120, status: 'completed', paymentPlatform: 'pingpong', createdAt: new Date('2026-02-07 18:20:00') },
-  { id: 'PAY20260207009', user: '陈一', amount: 50, status: 'completed', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 19:00:00') },
-  { id: 'PAY20260207010', user: '林二', amount: 350, status: 'completed', paymentPlatform: 'pingpong', createdAt: new Date('2026-02-07 19:30:00') },
-  { id: 'PAY20260207011', user: '黄三', amount: 80, status: 'completed', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 20:00:00') },
-  { id: 'PAY20260207003', user: '王五', amount: 150, status: 'pending', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 12:45:00') },
-  { id: 'PAY20260207006', user: '周八', amount: 180, status: 'pending', paymentPlatform: 'pingpong', createdAt: new Date('2026-02-07 16:30:00') },
-  { id: 'PAY20260207012', user: '刘四', amount: 220, status: 'pending', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 20:30:00') },
-  { id: 'PAY20260207013', user: '杨五', amount: 130, status: 'pending', paymentPlatform: 'pingpong', createdAt: new Date('2026-02-07 21:00:00') },
-  { id: 'PAY20260207004', user: '赵六', amount: 300, status: 'failed', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 14:20:00') },
-  { id: 'PAY20260207014', user: '朱六', amount: 90, status: 'failed', paymentPlatform: 'pingpong', createdAt: new Date('2026-02-07 21:30:00') },
-  { id: 'PAY20260207015', user: '秦七', amount: 170, status: 'cancelled', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 22:00:00') },
-  { id: 'PAY20260207016', user: '尤八', amount: 240, status: 'cancelled', paymentPlatform: 'pingpong', createdAt: new Date('2026-02-07 22:30:00') },
-  { id: 'PAY20260207017', user: '许九', amount: 0, status: 'completed', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 23:00:00') }
-];
-
 // Explicitly set runtime for server components
 export const runtime = 'nodejs';
 
 // Set dynamic rendering
 export const dynamic = 'force-dynamic';
 
+// 货币符号映射
+const currencySymbols: Record<string, string> = {
+  'USD': '$',
+  'EUR': '€',
+  'GBP': '£',
+  'CNY': '¥',
+  'JPY': '¥'
+};
+
+// 格式化金额
+const formatCurrency = (amount: number, currency: string = 'USD') => {
+  const symbol = currencySymbols[currency] || currency + ' ';
+  return `${symbol}${amount.toLocaleString()}`;
+};
+
 // 定义API响应类型
 interface Payment {
-  id: string;
+  _id: string;
+  orderNumber: string;
   user: string;
+  userEmail?: string;
   amount: number;
+  currency: string;
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  platformTransactionId?: string;
+  serviceType?: string;
+  templeName?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,13 +47,13 @@ interface Payment {
 interface PaymentsResponse {
   payments: Payment[];
   totalCount: number;
-  totalRevenue: number;
+  totalRevenueByCurrency: Record<string, number>;
   completedCount: number;
 }
 
 // 定义咨询数据类型
 interface Consultation {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   subject: string;
@@ -71,15 +71,60 @@ interface ConsultationsResponse {
   repliedCount: number;
 }
 
+// 模拟支付数据
+const mockPayments = [
+  {
+    _id: 'mock1',
+    orderNumber: 'ORD001',
+    user: '张三',
+    userEmail: 'zhangsan@example.com',
+    amount: 100,
+    currency: 'USD',
+    status: 'completed' as const,
+    paymentPlatform: 'paypal' as const,
+    templeName: '灵隐寺',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    _id: 'mock2',
+    orderNumber: 'ORD002',
+    user: '李四',
+    userEmail: 'lisi@example.com',
+    amount: 200,
+    currency: 'USD',
+    status: 'completed' as const,
+    paymentPlatform: 'pingpong' as const,
+    templeName: '少林寺',
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000).toISOString()
+  }
+];
+
+// 模拟咨询数据
+const mockConsultations = [
+  {
+    _id: 'mock1',
+    name: '张三',
+    email: 'zhangsan@example.com',
+    subject: '关于数字加持的疑问',
+    message: '请问数字加持的效果能持续多久？',
+    templeName: '赛博佛祖殿',
+    status: 'pending' as const,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
+
 const AdminDashboard = async () => {
-  // 添加认证检查
+  // 认证检查
   const session = await getAppSession();
   
   if (!session?.user) {
     redirect('/admin/login');
   }
 
-  // 获取支付数据 - 直接在服务器端获取，不需要通过fetch请求
+  // 获取支付数据 - 只使用真实数据库
   let paymentsData: PaymentsResponse | null = null;
   let consultationsData: ConsultationsResponse | null = null;
   let error = null;
@@ -89,28 +134,30 @@ const AdminDashboard = async () => {
     await connectMongoDB();
 
     // 从数据库获取真实支付数据
-    let payments = await Payment.find();
+    const payments = await Payment.find().sort({ createdAt: -1 });
 
-    // 如果数据库为空，初始化示例数据
-    if (payments.length === 0) {
-      await Payment.insertMany(samplePayments);
-      payments = await Payment.find();
-    }
-
-    // 计算统计数据
-    const totalRevenue = payments.reduce((sum, payment) => sum + payment.amount, 0);
+    // 计算统计数据 - 按货币分类
+    const totalRevenueByCurrency: Record<string, number> = {};
+    payments.forEach(payment => {
+      if (!totalRevenueByCurrency[payment.currency]) {
+        totalRevenueByCurrency[payment.currency] = 0;
+      }
+      if (payment.status === 'completed') {
+        totalRevenueByCurrency[payment.currency] += payment.amount;
+      }
+    });
     const completedCount = payments.filter(payment => payment.status === 'completed').length;
 
     // 设置支付数据，转换Date对象为string
     paymentsData = {
       payments: payments.map(payment => ({
         ...payment.toObject(),
-        id: payment.id,
+        _id: payment._id.toString(),
         createdAt: payment.createdAt.toISOString(),
         updatedAt: payment.updatedAt.toISOString()
       })),
       totalCount: payments.length,
-      totalRevenue,
+      totalRevenueByCurrency,
       completedCount
     };
 
@@ -123,7 +170,7 @@ const AdminDashboard = async () => {
     consultationsData = {
       consultations: consultations.map(consultation => ({
         ...consultation.toObject(),
-        id: consultation.id,
+        _id: consultation._id.toString(),
         createdAt: consultation.createdAt.toISOString(),
         updatedAt: consultation.updatedAt.toISOString()
       })),
@@ -132,7 +179,21 @@ const AdminDashboard = async () => {
       repliedCount
     };
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to fetch data';
+    console.error('Database connection error:', err);
+    error = err instanceof Error ? err.message : 'Failed to connect to database';
+    // 如果数据库连接失败，显示空数据而不是模拟数据
+    paymentsData = {
+      payments: [],
+      totalCount: 0,
+      totalRevenueByCurrency: {},
+      completedCount: 0
+    };
+    consultationsData = {
+      consultations: [],
+      totalCount: 0,
+      pendingCount: 0,
+      repliedCount: 0
+    };
   }
 
   return (
@@ -161,9 +222,22 @@ const AdminDashboard = async () => {
 
       {/* 主内容 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 数据库错误提示 */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-8">
+            <div className="flex items-center">
+              <i className="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
+              <div>
+                <h3 className="text-red-400 font-medium">数据库连接失败</h3>
+                <p className="text-[#86868B] text-sm">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 统计卡片 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* 总收入 */}
+          {/* 总收入 - 按货币显示 */}
           <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A]">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">总收入</h3>
@@ -172,8 +246,10 @@ const AdminDashboard = async () => {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-3xl font-bold text-white">
-                ¥{paymentsData?.totalRevenue.toLocaleString() || '0'}
+              <div className="text-2xl font-bold text-white">
+                {paymentsData ? Object.entries(paymentsData.totalRevenueByCurrency).map(([currency, amount]) => (
+                  <div key={currency}>{formatCurrency(amount, currency)}</div>
+                )) : '0'}
               </div>
               <div className="text-sm text-[#86868B]">
                 总订单数: {paymentsData?.totalCount || 0}
@@ -271,7 +347,9 @@ const AdminDashboard = async () => {
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">订单号</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">用户</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">金额</th>
+                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">货币</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">支付平台</th>
+                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">寺庙</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">状态</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">创建时间</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">操作</th>
@@ -280,18 +358,23 @@ const AdminDashboard = async () => {
               <tbody>
                 {paymentsData && paymentsData.payments.length > 0 ? (
                   paymentsData.payments.slice(0, 10).map((payment) => (
-                    <tr key={payment.id} className="border-b border-[#48484A] hover:bg-[#3A3A3C] transition-colors">
-                      <td className="text-white py-4 px-4">{payment.id}</td>
-                      <td className="text-[#86868B] py-4 px-4">{payment.user}</td>
-                      <td className="text-white font-medium py-4 px-4">¥{payment.amount}</td>
+                    <tr key={payment._id} className="border-b border-[#48484A] hover:bg-[#3A3A3C] transition-colors">
+                      <td className="text-white py-4 px-4">{payment.orderNumber || payment._id.slice(-8)}</td>
+                      <td className="text-[#86868B] py-4 px-4">
+                        <div>{payment.user}</div>
+                        {payment.userEmail && <div className="text-xs opacity-70">{payment.userEmail}</div>}
+                      </td>
+                      <td className="text-white font-medium py-4 px-4">{formatCurrency(payment.amount, payment.currency)}</td>
+                      <td className="text-[#86868B] py-4 px-4">{payment.currency}</td>
                       <td className="py-4 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs ${payment.paymentPlatform === 'paypal' ? 'bg-blue-500/30 text-blue-300' : payment.paymentPlatform === 'pingpong' ? 'bg-green-500/30 text-green-300' : 'bg-gray-500/30 text-gray-300'}`}>
                           {payment.paymentPlatform === 'paypal' ? 'PayPal' : payment.paymentPlatform === 'pingpong' ? 'PingPong' : '未知平台'}
                         </span>
                       </td>
+                      <td className="text-[#86868B] py-4 px-4">{payment.templeName || '-'}</td>
                       <td className="py-4 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs ${payment.status === 'completed' ? 'bg-green-500/30 text-green-300' : payment.status === 'pending' ? 'bg-yellow-500/30 text-yellow-300' : payment.status === 'failed' ? 'bg-red-500/30 text-red-300' : 'bg-gray-500/30 text-gray-300'}`}>
-                          {payment.status === 'completed' ? '已完成' : payment.status === 'pending' ? '待处理' : payment.status === 'failed' ? '失败' : '已取消'}
+                          {payment.status === 'completed' ? '已完成' : payment.status === 'pending' ? '待处理' : payment.status === 'failed' ? '失败' : payment.status === 'refunded' ? '已退款' : '已取消'}
                         </span>
                       </td>
                       <td className="text-[#86868B] py-4 px-4 text-sm">{new Date(payment.createdAt).toLocaleString('zh-CN')}</td>
@@ -307,7 +390,7 @@ const AdminDashboard = async () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="text-[#86868B] py-8 text-center">
+                    <td colSpan={9} className="text-[#86868B] py-8 text-center">
                       {error ? (
                         <div>
                           <i className="fas fa-exclamation-circle text-4xl mb-2 text-[#FF3B30]"></i>
@@ -354,7 +437,7 @@ const AdminDashboard = async () => {
               <tbody>
                 {consultationsData && consultationsData.consultations.length > 0 ? (
                   consultationsData.consultations.slice(0, 10).map((consultation) => (
-                    <tr key={consultation.id} className="border-b border-[#48484A] hover:bg-[#3A3A3C] transition-colors">
+                    <tr key={consultation._id} className="border-b border-[#48484A] hover:bg-[#3A3A3C] transition-colors">
                       <td className="text-white py-4 px-4">{consultation.name}</td>
                       <td className="text-[#86868B] py-4 px-4">{consultation.email}</td>
                       <td className="text-[#86868B] py-4 px-4 text-sm max-w-[200px] truncate">{consultation.subject}</td>

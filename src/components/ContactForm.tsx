@@ -82,18 +82,12 @@ const ContactForm: React.FC<ContactFormProps> = ({
       return;
     }
     
-    // 立即显示成功状态，提高用户体验
-    setIsSubmitting(true);
-    setSubmitSuccess(false);
-    setSubmitError(false);
-    
     try {
-      console.log('[ContactForm] Submitting form data:', { ...formData, templeName });
+      setIsSubmitting(true);
+      setSubmitSuccess(false);
+      setSubmitError(false);
       
-      // Call API endpoint with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
+      // Call actual API endpoint
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -103,58 +97,43 @@ const ContactForm: React.FC<ContactFormProps> = ({
           ...formData,
           templeName
         }),
-        signal: controller.signal,
       });
       
-      clearTimeout(timeoutId);
+      if (!response.ok) {
+        throw new Error('Failed to submit message');
+      }
       
-      // 不管API返回什么，都显示成功
-      console.log('[ContactForm] API response received, status:', response.status);
+      const data = await response.json();
+      console.log('[API] Contact form submitted:', data);
+      
+      setSubmitSuccess(true);
+      
+      // Reset form after successful submission
+      setTimeout(() => {
+        onClose();
+        setFormData({
+          name: '',
+          email: '',
+          subject: `Consultation about ${templeName} tour`,
+          message: ''
+        });
+        setSubmitSuccess(false);
+      }, 2000);
       
     } catch (error) {
-      console.error('[ContactForm] Submission error (but will still show success):', error);
-      // 即使出错也不显示错误，总是显示成功
+      console.error('Contact form submission failed:', error);
+      setSubmitError(true);
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    // 总是显示成功
-    setSubmitSuccess(true);
-    setIsSubmitting(false);
-    
-    // Reset form after successful submission
-    setTimeout(() => {
-      onClose();
-      setFormData({
-        name: '',
-        email: '',
-        subject: `Consultation about ${templeName} tour`,
-        message: ''
-      });
-      setSubmitSuccess(false);
-    }, 2000);
   };
 
   return (
-    <div 
-      className="fixed inset-0 flex items-center justify-center bg-[#1D1D1F]/80 backdrop-blur-sm"
-      style={{ 
-        zIndex: 2147483647, // 最大可能的z-index值
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      }}
-    >
-      <div 
-        className="relative w-full max-w-2xl bg-[#1D1D1F] border border-[#8676B6]/30 rounded-2xl overflow-hidden shadow-2xl"
-        style={{ 
-          zIndex: 2147483646,
-          position: 'relative'
-        }}
-      >
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#1D1D1F]/80 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl bg-[#1D1D1F] border border-[#8676B6]/30 rounded-2xl overflow-hidden shadow-2xl z-[10000]">
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 bg-[#8676B6]/20 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-[#8676B6]/30 transition-colors duration-300 z-10 focus:outline-none focus:ring-2 focus:ring-[#8676B6]"
+          className="absolute top-4 right-4 bg-[#8676B6]/20 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-[#8676B6]/30 transition-colors duration-300 z-[10001] focus:outline-none focus:ring-2 focus:ring-[#8676B6]"
           onClick={onClose}
           aria-label="Close contact form"
           type="button"

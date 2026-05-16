@@ -1,10 +1,22 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
+import { getAppSession } from '../../lib/auth';
+import AdminClientWrapper from './AdminClientWrapper';
 
 // Admin Layout Component for all admin routes
-const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
+  // 在layout级别进行认证检查，保护所有admin子路由
+  const session = await getAppSession();
+  
+  if (!session?.user) {
+    redirect('/admin/login');
+  }
+
   return (
     <div className="admin-layout">
-      {children}
+      <AdminClientWrapper>
+        {children}
+      </AdminClientWrapper>
     </div>
   );
 };

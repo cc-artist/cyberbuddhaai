@@ -15,37 +15,41 @@ export async function POST(request: Request) {
       );
     }
 
-    // 立即返回成功响应，不等待数据库连接
-    // 数据库保存操作在后台进行
-    setImmediate(async () => {
+    // 尝试连接到数据库并保存咨询记录
+    const conn = await connectMongoDB();
+    let consultation = null;
+    
+    if (conn) {
       try {
-        const conn = await connectMongoDB();
-        if (conn) {
-          await Consultation.create({
-            name,
-            email,
-            subject,
-            message,
-            templeName,
-            status: 'pending'
-          });
-        }
+        // 创建新的咨询记录
+        consultation = await Consultation.create({
+          name,
+          email,
+          subject,
+          message,
+          templeName,
+          status: 'pending'
+        });
       } catch (dbError) {
-        console.error('Background database save error:', dbError);
+        console.error('Database error:', dbError);
+        // 数据库错误不影响表单提交
       }
-    });
+    }
 
-    // 立即返回成功响应，大幅缩短等待时间
+    // 无论数据库是否连接成功，都返回成功响应
+    // 这样用户体验更好，即使数据库连接失败也能提交表单
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Message sent successfully'
+        message: 'Message sent successfully',
+        consultation 
       },
       { status: 201 }
     );
   } catch (error) {
     console.error('Error processing consultation:', error);
-    // 即使发生错误，也返回成功响应
+    // 即使发生其他错误，也返回成功响应
+    // 确保用户表单提交体验不受影响
     return NextResponse.json(
       { 
         success: true, 
