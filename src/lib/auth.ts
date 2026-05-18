@@ -5,8 +5,8 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || 'default-secret-for-development-only';
 
 // 这里我们使用简单的密码认证，实际项目中应该从数据库获取管理员信息
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'password';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 // 定义完整的认证选项
 export const authOptions: NextAuthOptions = {
@@ -17,12 +17,12 @@ export const authOptions: NextAuthOptions = {
         email: {
           label: '用户名',
           type: 'text',
-          placeholder: 'admin'
+          placeholder: 'admin@example.com'
         },
         password: {
           label: '密码',
           type: 'password',
-          placeholder: 'password'
+          placeholder: 'admin123'
         }
       },
       async authorize(credentials) {
