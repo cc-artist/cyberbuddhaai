@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import RequireAuth from '../../../components/RequireAuth';
 
 interface PaymentData {
   id: string;
@@ -281,4 +282,10 @@ const PaymentsPage = () => {
   );
 };
 
-export default PaymentsPage;
+export default function PaymentsPageWrapper() {
+  return (
+    <RequireAuth>
+      <PaymentsPage />
+    </RequireAuth>
+  );
+}

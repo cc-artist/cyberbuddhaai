@@ -5,6 +5,7 @@ interface PaymentDocument extends Document {
   id: string;
   user: string;
   amount: number;
+  currency: string;
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
   createdAt: Date;
@@ -24,6 +25,11 @@ const PaymentSchema = new mongoose.Schema<PaymentDocument>({
   amount: {
     type: Number,
     required: true
+  },
+  currency: {
+    type: String,
+    required: true,
+    default: 'USD'
   },
   status: {
     type: String,

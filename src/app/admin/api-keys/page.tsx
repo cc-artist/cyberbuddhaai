@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import RequireAuth from '../../../components/RequireAuth';
 
 interface ApiKey {
   id: number;
@@ -375,4 +376,10 @@ const ApiKeysPage = () => {
   );
 };
 
-export default ApiKeysPage;
+export default function ApiKeysPageWrapper() {
+  return (
+    <RequireAuth>
+      <ApiKeysPage />
+    </RequireAuth>
+  );
+}

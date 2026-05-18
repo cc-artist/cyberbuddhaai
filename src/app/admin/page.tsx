@@ -30,7 +30,8 @@ const formatCurrency = (amount: number, currency: string = 'USD') => {
 // 定义API响应类型
 interface Payment {
   _id: string;
-  orderNumber: string;
+  orderNumber?: string; // 可选字段
+  id?: string;
   user: string;
   userEmail?: string;
   amount: number;
@@ -54,6 +55,7 @@ interface PaymentsResponse {
 // 定义咨询数据类型
 interface Consultation {
   _id: string;
+  id?: string;
   name: string;
   email: string;
   subject: string;
@@ -140,11 +142,12 @@ const AdminDashboard = async () => {
     // 计算统计数据 - 按货币分类
     const totalRevenueByCurrency: Record<string, number> = {};
     payments.forEach(payment => {
-      if (!totalRevenueByCurrency[payment.currency]) {
-        totalRevenueByCurrency[payment.currency] = 0;
+      const currency = (payment as any).currency || 'USD'; // 处理可能缺少currency字段的历史数据
+      if (!totalRevenueByCurrency[currency]) {
+        totalRevenueByCurrency[currency] = 0;
       }
       if (payment.status === 'completed') {
-        totalRevenueByCurrency[payment.currency] += payment.amount;
+        totalRevenueByCurrency[currency] += payment.amount;
       }
     });
     const completedCount = payments.filter(payment => payment.status === 'completed').length;
@@ -154,6 +157,7 @@ const AdminDashboard = async () => {
       payments: payments.map(payment => ({
         ...payment.toObject(),
         _id: payment._id.toString(),
+        currency: (payment as any).currency || 'USD', // 确保currency字段存在
         createdAt: payment.createdAt.toISOString(),
         updatedAt: payment.updatedAt.toISOString()
       })),
@@ -439,7 +443,7 @@ const AdminDashboard = async () => {
               <tbody>
                 {consultationsData && consultationsData.consultations.length > 0 ? (
                   consultationsData.consultations.slice(0, 10).map((consultation) => (
-                    <tr key={consultation.id} className="border-b border-[#48484A] hover:bg-[#3A3A3C] transition-colors">
+                    <tr key={consultation._id} className="border-b border-[#48484A] hover:bg-[#3A3A3C] transition-colors">
                       <td className="text-white py-4 px-4">{consultation.name}</td>
                       <td className="text-[#86868B] py-4 px-4">{consultation.email}</td>
                       <td className="text-[#86868B] py-4 px-4 text-sm max-w-[200px] truncate">{consultation.subject}</td>

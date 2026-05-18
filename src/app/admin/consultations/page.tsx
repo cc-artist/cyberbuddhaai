@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import RequireAuth from '../../../components/RequireAuth';
 
 interface ConsultationData {
   id: string;
@@ -300,4 +301,10 @@ const ConsultationsPage = () => {
   );
 };
 
-export default ConsultationsPage;
+export default function ConsultationsPageWrapper() {
+  return (
+    <RequireAuth>
+      <ConsultationsPage />
+    </RequireAuth>
+  );
+}

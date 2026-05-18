@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import RequireAuth from '../../../components/RequireAuth';
 
 interface CommentData {
   id: string;
@@ -228,4 +229,10 @@ const CommentsPage = () => {
   );
 };
 
-export default CommentsPage;
+export default function CommentsPageWrapper() {
+  return (
+    <RequireAuth>
+      <CommentsPage />
+    </RequireAuth>
+  );
+}

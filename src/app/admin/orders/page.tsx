@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import RequireAuth from '../../../components/RequireAuth';
 
 interface OrderData {
   id: string;
@@ -266,4 +267,10 @@ const OrdersPage = () => {
   );
 };
 
-export default OrdersPage;
+export default function OrdersPageWrapper() {
+  return (
+    <RequireAuth>
+      <OrdersPage />
+    </RequireAuth>
+  );
+}

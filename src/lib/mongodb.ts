@@ -5,7 +5,7 @@ let conn: mongoose.Connection | null = null;
 let isConnecting = false;
 
 // 数据库连接URL - 必须使用云数据库
-const MONGODB_URI = process.env.DATABASE_URL;
+const MONGODB_URI = process.env.DATABASE_URL as string;
 
 if (!MONGODB_URI) {
   throw new Error('Please define the DATABASE_URL environment variable inside .env.local');
