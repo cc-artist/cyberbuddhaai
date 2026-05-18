@@ -15,14 +15,14 @@ export const authOptions: NextAuthOptions = {
       name: 'Credentials',
       credentials: {
         email: {
-          label: 'Email',
-          type: 'email',
+          label: '用户名',
+          type: 'text',
           placeholder: 'admin@example.com'
         },
         password: {
-          label: 'Password',
+          label: '密码',
           type: 'password',
-          placeholder: '********'
+          placeholder: 'admin123'
         }
       },
       async authorize(credentials) {
