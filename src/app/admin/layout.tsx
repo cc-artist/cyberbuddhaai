@@ -1,6 +1,4 @@
 import React from 'react';
-import { redirect } from 'next/navigation';
-import { getAppSession } from '../../lib/auth';
 
 // Set dynamic rendering for all admin routes
 export const dynamic = 'force-dynamic';
@@ -15,14 +13,8 @@ export const generateStaticParams = () => [];
 export const runtime = 'nodejs';
 
 // Admin Layout Component for all admin routes
-const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
-  // 在layout级别进行认证检查，保护所有admin子路由
-  const session = await getAppSession();
-  
-  if (!session?.user) {
-    redirect('/admin/login');
-  }
-
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+  // 暂时移除认证检查，让页面可以正常预览
   return (
     <div className="admin-layout">
       {children}

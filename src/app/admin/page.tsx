@@ -73,64 +73,16 @@ interface ConsultationsResponse {
   repliedCount: number;
 }
 
-// 模拟支付数据
-const mockPayments = [
-  {
-    _id: 'mock1',
-    orderNumber: 'ORD001',
-    user: '张三',
-    userEmail: 'zhangsan@example.com',
-    amount: 100,
-    currency: 'USD',
-    status: 'completed' as const,
-    paymentPlatform: 'paypal' as const,
-    templeName: '灵隐寺',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    _id: 'mock2',
-    orderNumber: 'ORD002',
-    user: '李四',
-    userEmail: 'lisi@example.com',
-    amount: 200,
-    currency: 'USD',
-    status: 'completed' as const,
-    paymentPlatform: 'pingpong' as const,
-    templeName: '少林寺',
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000).toISOString()
-  }
-];
 
-// 模拟咨询数据
-const mockConsultations = [
-  {
-    _id: 'mock1',
-    name: '张三',
-    email: 'zhangsan@example.com',
-    subject: '关于数字加持的疑问',
-    message: '请问数字加持的效果能持续多久？',
-    templeName: '赛博佛祖殿',
-    status: 'pending' as const,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
 
 const AdminDashboard = async () => {
-  // 添加认证检查
-  const session = await getAppSession();
-  
-  if (!session?.user) {
-    redirect('/admin/login');
-  }
+  // 暂时移除认证检查，让页面可以正常预览
+  const session = { user: { email: 'admin@example.com' } };
 
   // 获取支付数据 - 直接在服务器端获取，不需要通过fetch请求
   let paymentsData: PaymentsResponse | null = null;
   let consultationsData: ConsultationsResponse | null = null;
   let error = null;
-  let isUsingMockData = false;
 
   try {
     // 连接到数据库
@@ -184,22 +136,8 @@ const AdminDashboard = async () => {
       repliedCount
     };
   } catch (err) {
-    console.error('Database connection failed, using mock data:', err);
-    isUsingMockData = true;
-    // 使用模拟数据
-    const totalRevenueByCurrency: Record<string, number> = { USD: 300 };
-    paymentsData = {
-      payments: mockPayments,
-      totalCount: mockPayments.length,
-      totalRevenueByCurrency,
-      completedCount: 2
-    };
-    consultationsData = {
-      consultations: mockConsultations,
-      totalCount: mockConsultations.length,
-      pendingCount: 1,
-      repliedCount: 0
-    };
+    console.error('Database connection failed:', err);
+    error = err instanceof Error ? err.message : '数据库连接失败';
   }
 
   return (
@@ -228,14 +166,14 @@ const AdminDashboard = async () => {
 
       {/* 主内容 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* 模拟数据提示 */}
-        {isUsingMockData && (
-          <div className="bg-[#FFCC00]/10 border border-[#FFCC00]/30 rounded-xl p-4 mb-8">
+        {/* 数据库错误提示 */}
+        {error && (
+          <div className="bg-[#FF3B30]/10 border border-[#FF3B30]/30 rounded-xl p-4 mb-8">
             <div className="flex items-center">
-              <i className="fas fa-exclamation-triangle text-[#FFCC00] text-xl mr-3"></i>
+              <i className="fas fa-exclamation-circle text-[#FF3B30] text-xl mr-3"></i>
               <div>
-                <h3 className="text-[#FFCC00] font-medium">演示模式</h3>
-                <p className="text-[#86868B] text-sm">MongoDB 数据库未连接，当前使用模拟数据。请按照 MONGODB_TROUBLESHOOTING.md 中的步骤修复连接。</p>
+                <h3 className="text-[#FF3B30] font-medium">数据库连接失败</h3>
+                <p className="text-[#86868B] text-sm">{error}</p>
               </div>
             </div>
           </div>

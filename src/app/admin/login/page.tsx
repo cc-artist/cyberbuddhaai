@@ -56,7 +56,6 @@ const SimpleLoginPage = () => {
               type="text"
               required
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="admin@example.com"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -71,7 +70,6 @@ const SimpleLoginPage = () => {
               type="password"
               required
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="admin123"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
