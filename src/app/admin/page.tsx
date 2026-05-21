@@ -273,7 +273,7 @@ const AdminDashboard = async () => {
                 {paymentsData?.completedCount || 0}
               </div>
               <div className="text-sm text-[#86868B]">
-                完成率: {(paymentsData && paymentsData.totalCount > 0 ? Math.round((paymentsData.completedCount / paymentsData.totalCount) * 100) : 0}%
+                完成率: {(paymentsData && paymentsData.totalCount > 0 ? Math.round((paymentsData.completedCount / paymentsData.totalCount) * 100) : 0)}%
               </div>
             </div>
           </div>
