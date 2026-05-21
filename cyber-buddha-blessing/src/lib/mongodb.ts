@@ -36,12 +36,16 @@ async function connectMongoDB() {
   try {
     isConnecting = true;
 
+    // 检查是否有环境变量
+    console.log('MongoDB URI:', MONGODB_URI ? '已配置' : '未配置');
+    console.log('MongoDB URI 前20字符:', MONGODB_URI ? MONGODB_URI.substring(0, 20) + '...' : 'N/A');
+
     // 连接到MongoDB - 新版mongoose不再需要useNewUrlParser和useUnifiedTopology选项
     // 添加超时设置
     const mongooseInstance = await mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 3000, // 3秒服务器选择超时
-      socketTimeoutMS: 3000, // 3秒套接字超时
+      serverSelectionTimeoutMS: 5000, // 5秒服务器选择超时
+      socketTimeoutMS: 5000, // 5秒套接字超时
     });
 
     conn = mongooseInstance.connection;
@@ -49,6 +53,8 @@ async function connectMongoDB() {
     return conn;
   } catch (error) {
     console.error('MongoDB connection error:', error);
+    console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
     isConnecting = false;
     throw error;
   } finally {

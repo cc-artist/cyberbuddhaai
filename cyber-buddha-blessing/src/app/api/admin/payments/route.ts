@@ -31,7 +31,11 @@ export async function GET() {
     }, { status: 200 });
   } catch (error) {
     console.error('Error getting payments:', error);
-    return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ 
+      error: 'Database connection failed', 
+      details: errorMessage 
+    }, { status: 500 });
   }
 }
 
