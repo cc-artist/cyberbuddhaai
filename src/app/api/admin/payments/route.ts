@@ -3,6 +3,8 @@ import { isAdminAuthenticated } from '../../../../lib/auth';
 import Payment from '../../../../models/Payment';
 import connectMongoDB from '../../../../lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // 检查管理员是否已认证

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getApiSession } from '../../../lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // 从环境变量获取支付配置（实际项目中应该从数据库获取）

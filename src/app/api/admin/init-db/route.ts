@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '../../../../lib/auth';
 import { initializeDatabase } from '../../../../lib/init-database';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     // 检查管理员是否已认证

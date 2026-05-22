@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { generateImage, generateText, generateBlessingAnimation, isAIConfigured } from '../../../../lib/ai-service';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     // 检查AI是否配置

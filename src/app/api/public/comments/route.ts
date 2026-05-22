@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import Comment from '../../../../models/Comment';
 import connectMongoDB from '../../../../lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+
 // 辅助函数：带超时的数据库操作
 async function withTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
   const timeoutPromise = new Promise<never>((_, reject) => {

@@ -3,6 +3,8 @@ import Consultation from '../../../models/Consultation';
 import connectMongoDB from '../../../lib/mongodb';
 import { isAdminAuthenticated } from '../../../lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     // 连接到数据库
