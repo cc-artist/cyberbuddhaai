@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+// 定义全局类型扩展
+declare global {
+  var mongoose: {
+    conn: mongoose.Connection | null;
+    promise: Promise<mongoose.Connection> | null;
+  };
+}
+
 // 全局连接缓存
 let cached = global.mongoose;
 
@@ -9,13 +17,13 @@ if (!cached) {
 
 async function connectMongoDB() {
   // 如果已有连接，直接返回
-  if (cached.conn) {
+  if (cached?.conn) {
     console.log('Using existing MongoDB connection');
     return cached.conn;
   }
 
   // 如果正在连接，等待连接完成
-  if (!cached.promise) {
+  if (!cached?.promise) {
     const MONGODB_URI = process.env.DATABASE_URL;
 
     if (!MONGODB_URI) {
@@ -32,24 +40,32 @@ async function connectMongoDB() {
       connectTimeoutMS: 10000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
-      console.log('MongoDB connected successfully');
-      return mongooseInstance.connection;
-    }).catch((error) => {
-      console.error('MongoDB connection error:', error);
-      cached.promise = null;
-      throw error;
-    });
+    if (cached) {
+      cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
+        console.log('MongoDB connected successfully');
+        return mongooseInstance.connection;
+      }).catch((error) => {
+        console.error('MongoDB connection error:', error);
+        if (cached) {
+          cached.promise = null;
+        }
+        throw error;
+      });
+    }
   }
 
   try {
-    cached.conn = await cached.promise;
+    if (cached?.promise) {
+      cached.conn = await cached.promise;
+    }
   } catch (e) {
-    cached.promise = null;
+    if (cached) {
+      cached.promise = null;
+    }
     throw e;
   }
 
-  return cached.conn;
+  return cached?.conn;
 }
 
 export default connectMongoDB;

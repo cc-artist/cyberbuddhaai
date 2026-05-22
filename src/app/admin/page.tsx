@@ -30,7 +30,7 @@ const formatCurrency = (amount: number, currency: string = 'USD') => {
 // 定义API响应类型
 interface Payment {
   _id: string;
-  orderNumber: string;
+  orderNumber?: string;
   user: string;
   userEmail?: string;
   amount: number;

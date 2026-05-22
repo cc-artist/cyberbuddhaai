@@ -3,10 +3,16 @@ import mongoose, { Document } from 'mongoose';
 // 定义Payment文档类型
 interface PaymentDocument extends Document {
   id: string;
+  orderNumber?: string;
   user: string;
+  userEmail?: string;
   amount: number;
+  currency: string;
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  platformTransactionId?: string;
+  serviceType?: string;
+  templeName?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,13 +23,24 @@ const PaymentSchema = new mongoose.Schema<PaymentDocument>({
     required: true,
     unique: true
   },
+  orderNumber: {
+    type: String
+  },
   user: {
     type: String,
     required: true
   },
+  userEmail: {
+    type: String
+  },
   amount: {
     type: Number,
     required: true
+  },
+  currency: {
+    type: String,
+    required: true,
+    default: 'USD'
   },
   status: {
     type: String,
@@ -35,6 +52,15 @@ const PaymentSchema = new mongoose.Schema<PaymentDocument>({
     type: String,
     enum: ['paypal', 'pingpong', 'unknown'],
     default: 'unknown'
+  },
+  platformTransactionId: {
+    type: String
+  },
+  serviceType: {
+    type: String
+  },
+  templeName: {
+    type: String
   },
   createdAt: {
     type: Date,
