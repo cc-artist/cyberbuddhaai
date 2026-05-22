@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import SocialShare from './SocialShare';
+import { getImageUrl } from '../lib/imageUtils';
 
 
 
@@ -761,7 +762,7 @@ const DharmaForm: React.FC = () => {
                 <img
                   src={resultData.imageUrl}
                   alt="Generated Dharma Form"
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
             </div>
@@ -818,7 +819,7 @@ const DharmaForm: React.FC = () => {
                 <style>{`.pp-KWCN3QN74N4X4{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:Helvetica Neue,Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}`}</style>
                 <form action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" method="post" target="_blank" style={{display:'inline-grid',justifyItems:'center',alignContent:'start',gap:'0.5rem'}}>
                   <input className="pp-KWCN3QN74N4X4" type="submit" value="Click to Pay" />
-                  <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
+                  <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" width={200} height={25} />
                   <section style={{fontSize: '0.75rem', color: '#1a56db', fontWeight: 'bold'}}>PayPal</section>
                 </form>
               </div>

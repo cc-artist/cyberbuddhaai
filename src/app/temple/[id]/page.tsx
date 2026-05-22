@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import Script from 'next/script';
 import { redirect } from 'next/navigation';
-import { Temple, temples as staticTemples } from '../../../data/TempleData';
+import { Temple, temples } from '../../../data/TempleData';
 import ContactFormWrapper from '../../../components/ContactFormWrapper';
 import SocialShare from '../../../components/SocialShare';
 import PayPalButton from '../../../components/PayPalButton';
@@ -10,7 +10,7 @@ import PayPalButton from '../../../components/PayPalButton';
 // Generate dynamic metadata for each temple page
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const { id } = params;
-  const temple = staticTemples.find(t => t.id === parseInt(id)) || null;
+  const temple = temples.find(t => t.id === parseInt(id)) || null;
   
   if (!temple) {
     return {
@@ -65,7 +65,7 @@ export default function TempleDetailPage({ params }: { params: { id: string } })
   }
   
   // 直接从静态数据中查找寺庙
-  const temple = staticTemples.find(t => t.id === parseInt(templeId)) || null;
+  const temple = temples.find(t => t.id === parseInt(templeId)) || null;
   
   if (!temple) {
     redirect('/');

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 
 interface ImageWithFallbackProps {
@@ -13,66 +15,40 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src,
   alt,
   className = '',
-  fallbackSrc = '/temple-images/赛博佛祖背景图.png',
+  fallbackSrc = '/temple-images/fHPlMoqxg.jpg',
   onError,
   ...props
 }) => {
-  const [isError, setIsError] = useState(false);
-  const [finalSrc, setFinalSrc] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasFallbackError, setHasFallbackError] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState<string>(src);
+  const [errorCount, setErrorCount] = useState<number>(0);
 
+  // 当src变化时，重置状态
   useEffect(() => {
-    setIsError(false);
-    setHasFallbackError(false);
-    setIsLoading(true);
-    
-    // 确保路径是绝对路径
-    let safeSrc = src;
-    if (safeSrc && !safeSrc.startsWith('http://') && !safeSrc.startsWith('https://') && !safeSrc.startsWith('data:image/') && !safeSrc.startsWith('/')) {
-      safeSrc = '/' + safeSrc;
-    }
-    
-    setFinalSrc(safeSrc);
+    setCurrentSrc(src);
+    setErrorCount(0);
   }, [src]);
 
-  // 添加日志来调试图片加载
-  useEffect(() => {
-    console.log('ImageWithFallback props:', { src, fallbackSrc });
-  }, [src, fallbackSrc]);
-
   const handleError = () => {
-    if (!isError) {
-      setIsError(true);
-      setIsLoading(false);
-      if (onError) {
-        onError();
+    setErrorCount(prevErrorCount => {
+      const newErrorCount = prevErrorCount + 1;
+      
+      if (prevErrorCount === 0 && fallbackSrc) {
+        // 主图片加载失败，尝试使用fallback图片
+        setCurrentSrc(fallbackSrc);
+        if (onError) {
+          onError();
+        }
+      } else if (prevErrorCount >= 1) {
+        // fallback图片也加载失败，显示占位符
+        setCurrentSrc('');
       }
-    } else {
-      // 防止fallback图片也加载失败时的无限循环
-      setHasFallbackError(true);
-    }
+      
+      return newErrorCount;
+    });
   };
-
-  const handleLoad = () => {
-    setIsLoading(false);
-  };
-
-  // 处理fallback路径
-  let displaySrc = '';
-  if (!isError && !hasFallbackError) {
-    displaySrc = finalSrc;
-  } else if (isError && !hasFallbackError) {
-    displaySrc = fallbackSrc;
-  }
-  
-  // 确保路径是绝对路径
-  if (displaySrc && !displaySrc.startsWith('http://') && !displaySrc.startsWith('https://') && !displaySrc.startsWith('data:image/') && !displaySrc.startsWith('/')) {
-    displaySrc = '/' + displaySrc;
-  }
 
   // 如果所有图片都加载失败，显示一个占位符
-  if (!displaySrc) {
+  if (!currentSrc) {
     return (
       <div className={`${className} flex items-center justify-center bg-[#1D1D1F]`} style={{ minHeight: '200px' }}>
         <div className="text-[#8676B6] text-sm">Image not available</div>
@@ -82,11 +58,14 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 
   return (
     <img
-      src={displaySrc}
+      src={currentSrc}
       alt={alt}
       className={className}
       onError={handleError}
-      onLoad={handleLoad}
+      loading={props.loading || 'eager'}
+      style={{
+        ...props.style
+      }}
       {...props}
     />
   );

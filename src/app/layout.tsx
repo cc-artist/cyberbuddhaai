@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     title: "Cyber Buddha",
     description: "Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples",
     type: "website",
-    url: "/",
+    url: "https://bc-drab.vercel.app/",
     siteName: "Cyber Buddha",
     images: [
       {
-        url: "/temple-images/赛博佛祖背景图.png",
+        url: "https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg",
         width: 1200,
         height: 630,
         alt: "Cyber Buddha",
@@ -27,15 +27,15 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cyber Buddha",
     description: "Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples",
-    images: ["/temple-images/赛博佛祖背景图.png"],
+    images: ["https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg"],
     creator: "@cyberbuddha",
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://bc-drab.vercel.app/",
   },
   authors: [{
     name: "Cyber Buddha Team",
-    url: "/",
+    url: "https://bc-drab.vercel.app/",
   }],
   publisher: "Cyber Buddha",
   formatDetection: {
@@ -72,8 +72,8 @@ const organizationJsonLd = {
   '@type': 'Organization',
   name: 'Cyber Buddha',
   description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
-  url: '/',
-  logo: '/favicon.ico',
+  url: 'https://bc-drab.vercel.app/',
+  logo: 'https://bc-drab.vercel.app/favicon.ico',
   sameAs: [
     'https://twitter.com/cyberbuddha',
     'https://facebook.com/cyberbuddha',
@@ -90,7 +90,7 @@ const breadcrumbJsonLd = {
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: '/'
+      item: 'https://bc-drab.vercel.app/'
     }
   ]
 };
@@ -100,40 +100,106 @@ const websiteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'Cyber Buddha',
-  url: '/',
+  url: 'https://bc-drab.vercel.app/',
   description: 'Digital spiritual blessing service where users upload item photos and AI generates an animation of Buddha holding the item with chanting background music.',
   potentialAction: {
     '@type': 'SearchAction',
-    target: '/?q={search_term_string}',
+    target: 'https://bc-drab.vercel.app/?q={search_term_string}',
     'query-input': 'required name=search_term_string'
   }
 };
 
 // Helper function to generate dynamic structured data based on page type
 const generateDynamicJsonLd = () => {
-  // Always return home page structured data for server-side rendering
-  // Client-side path detection is handled in individual pages if needed
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'Cyber Buddha - Digital Blessing Service',
-    description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
-    url: '/',
-    mainEntityOfPage: {
+  // Get current pathname
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  
+  // Generate structured data based on path
+  if (pathname.startsWith('/temple/')) {
+    // Temple page structured data
+    const templeId = pathname.split('/').pop();
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'PlaceOfWorship',
+      name: `Cyber Buddha Temple - ${templeId}`,
+      description: 'A famous Buddhist temple in China with custom meditation tours',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'China',
+        addressCountry: 'CN'
+      },
+      url: `https://bc-drab.vercel.app${pathname}`,
+      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg',
+      sameAs: [
+        'https://twitter.com/cyberbuddha',
+        'https://facebook.com/cyberbuddha',
+        'https://instagram.com/cyberbuddha'
+      ]
+    };
+  } else if (pathname === '/admin') {
+    // Admin page - no specific structured data needed
+    return null;
+  } else if (pathname.startsWith('/api/')) {
+    // API endpoints - no structured data needed
+    return null;
+  } else if (pathname === '/blessing' || pathname === '/dharma' || pathname === '/lamp') {
+    // Service pages structured data
+    const serviceName = pathname === '/blessing' ? 'Digital Blessing' : 
+                        pathname === '/dharma' ? 'Dharma Form' : 'Lamp Blessing';
+    
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: `Cyber Buddha ${serviceName}`,
+      description: `Cyber Buddha ${serviceName} service - experience digital spiritual blessing`,
+      provider: {
+        '@type': 'Organization',
+        name: 'Cyber Buddha'
+      },
+      url: `https://bc-drab.vercel.app${pathname}`,
+      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png'
+    };
+  } else {
+    // Home page and other pages - add general content structured data
+    return {
+      '@context': 'https://schema.org',
       '@type': 'WebPage',
-      '@id': '/'
-    },
-    author: {
-      '@type': 'Organization',
-      name: 'Cyber Buddha Team'
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Cyber Buddha'
-    },
-    datePublished: '2023-01-01',
-    dateModified: new Date().toISOString().split('T')[0]
-  };
+      name: 'Cyber Buddha - Digital Blessing Service',
+      description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
+      url: 'https://bc-drab.vercel.app/',
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': 'https://bc-drab.vercel.app/'
+      },
+      author: {
+        '@type': 'Organization',
+        name: 'Cyber Buddha Team',
+        url: 'https://bc-drab.vercel.app/'
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Cyber Buddha',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://bc-drab.vercel.app/favicon.ico'
+        }
+      },
+      datePublished: '2023-01-01',
+      dateModified: new Date().toISOString().split('T')[0],
+      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg',
+      breadcrumb: {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://bc-drab.vercel.app/'
+          }
+        ]
+      }
+    };
+  }
 };
 
 export default function RootLayout({
@@ -142,10 +208,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en"> 
+    <html lang="en">
       <head>
         {/* Google Search Console Verification */}
-        <meta name="google-site-verification" content="bajCDE-i5PyEVAI2bVttLhAyAB0kCP9JnfS2dWGkE2A" />
+        <meta name="google-site-verification" content="googleb225623b94ffa015" />
         
         {/* Structured Data - JSON-LD */}
         <script
@@ -161,15 +227,22 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         {/* Dynamic structured data based on page type */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateDynamicJsonLd()) }}
-        />
+        {(() => {
+          const dynamicJsonLd = generateDynamicJsonLd();
+          return dynamicJsonLd ? (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(dynamicJsonLd) }}
+            />
+          ) : null;
+        })()}
       </head>
       <body className="antialiased">
         <SessionProviderClient>
           <Breadcrumb />
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <main>
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </main>
         </SessionProviderClient>
       </body>
     </html>

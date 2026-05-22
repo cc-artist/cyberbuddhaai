@@ -8,57 +8,63 @@ let isConnecting = false;
 const MONGODB_URI = process.env.DATABASE_URL || 'mongodb://localhost:27017/cyber-buddha';
 
 async function connectMongoDB() {
-  console.log('Attempting to connect to MongoDB...');
-  
   // 如果已经连接，直接返回
-  if (conn && conn.readyState === 1) {
-    console.log('MongoDB already connected');
+  if (conn) {
     return conn;
   }
 
   // 如果正在连接，等待连接完成
   if (isConnecting) {
-    console.log('MongoDB connection already in progress, waiting...');
-    // 等待当前连接完成，最多等待10秒
-    await new Promise(resolve => {
-      let waited = 0;
+    // 等待当前连接完成，但设置超时
+    await new Promise((resolve, reject) => {
       const checkConnection = setInterval(() => {
-        if (conn && conn.readyState === 1) {
+        if (conn) {
           clearInterval(checkConnection);
           resolve(conn);
-        } else if (waited >= 10000) {
-          clearInterval(checkConnection);
-          resolve(null);
         }
-        waited += 100;
       }, 100);
+      
+      // 5秒超时
+      setTimeout(() => {
+        clearInterval(checkConnection);
+        reject(new Error('MongoDB connection timeout'));
+      }, 5000);
     });
-    return conn;
+    return conn!;
   }
 
   try {
     isConnecting = true;
 
-    console.log('Connecting to MongoDB with URI:', MONGODB_URI.replace(/:([^:@]{10,})@/, ':***@'));
+    // 检查是否有环境变量
+    console.log('MongoDB URI:', MONGODB_URI ? '已配置' : '未配置');
+    console.log('MongoDB URI 前20字符:', MONGODB_URI ? MONGODB_URI.substring(0, 20) + '...' : 'N/A');
 
-    // 连接到MongoDB - 添加超时配置
+    // 连接到MongoDB - 新版mongoose不再需要useNewUrlParser和useUnifiedTopology选项
+    // 添加超时设置
     const mongooseInstance = await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 10000,
-      connectTimeoutMS: 10000,
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000, // 5秒服务器选择超时
+      socketTimeoutMS: 5000, // 5秒套接字超时
     });
 
     conn = mongooseInstance.connection;
-    console.log('✅ MongoDB connected successfully');
+    console.log('MongoDB connected successfully');
     return conn;
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
+    console.error('MongoDB connection error:', error);
+    console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
     isConnecting = false;
-    conn = null;
-    return null;
+    throw error;
   } finally {
-    isConnecting = false;
+    if (conn) {
+      isConnecting = false;
+    }
   }
 }
+
+// 初始化数据库连接 - 不要在模块加载时自动连接，避免启动时阻塞
+// connectMongoDB();
 
 export default connectMongoDB;

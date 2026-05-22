@@ -443,16 +443,16 @@ const LampBlessing: React.FC = () => {
           </div>
         ) : wishResult ? (
           <div className="border border-[#8676B6]/30 rounded-xl p-8 bg-[#1D1D1F]/50 backdrop-blur-sm">
-            {/* Generated Image Preview - Responsive height */}
+            {/* Generated Image Preview */}
             {generatedImage && (
               <div className="mt-6 space-y-4">
                 <h4 className="text-md font-medium text-[#F5F5F7]">Blessing Image (9:16)</h4>
-                <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden">
+                <div className="border border-[#8676B6]/30 rounded-xl overflow-hidden flex justify-center items-center bg-[#1D1D1F]">
                   <img 
-                    src={generatedImage} 
+                    src={generatedImage || ''} 
                     alt="Blessing Image" 
-                    className="w-full max-w-md mx-auto rounded-xl object-contain"
-                    style={{ maxHeight: '400px' }} // 限制图片最大高度，避免遮挡下方内容
+                    className="max-w-md mx-auto rounded-xl object-contain" 
+                    style={{ maxHeight: '500px' }}
                   />
                 </div>
                 
@@ -469,6 +469,17 @@ const LampBlessing: React.FC = () => {
                   </button>
                 </div>
                 
+                {/* Social Share Buttons */}
+                <div id="unique-share-section" className="w-full mt-6">
+                  <h3 className="text-md font-medium mb-4 text-[#F5F5F7]">Share Your Blessing Experience</h3>
+                  <SocialShare
+                    imageUrl={generatedImage || ''}
+                    title="My Cyber Buddha Lamp Blessing"
+                    description={wishResult || ''}
+                    pageUrl="https://cyber-buddha.blessing"
+                  />
+                </div>
+                
                 {/* Offer Oil Button - Moved below Download Image */}
                 <div className="w-full mt-6">
                   <div className="text-center mb-2">
@@ -480,7 +491,7 @@ const LampBlessing: React.FC = () => {
                     <style>{`.pp-KWCN3QN74N4X4{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:Helvetica Neue,Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}`}</style>
                     <form action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" method="post" target="_blank" style={{display:'inline-grid',justifyItems:'center',alignContent:'start',gap:'0.5rem'}}>
                       <input className="pp-KWCN3QN74N4X4" type="submit" value="Click to Pay" />
-                      <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
+                      <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" width={200} height={25} />
                       <section style={{fontSize: '0.75rem', color: '#1a56db', fontWeight: 'bold'}}>PayPal</section>
                     </form>
                   </div>
@@ -490,16 +501,7 @@ const LampBlessing: React.FC = () => {
           </div>
         ) : null}
 
-        {/* Social Share Buttons - Always Visible */}
-        <div className="border border-[#8676B6]/30 rounded-xl p-6 bg-[#1D1D1F]/50 backdrop-blur-sm">
-          <h3 className="text-md font-medium mb-4 text-[#F5F5F7]">Share Your Blessing Experience</h3>
-          <SocialShare
-            imageUrl={generatedImage || '/temple-images/赛博佛祖背景图.png'}
-            title="My Cyber Buddha Lamp Blessing"
-            description={wishResult || ''}
-            pageUrl="https://cyber-buddha.blessing"
-          />
-        </div>
+
       </div>
     </div>
   );

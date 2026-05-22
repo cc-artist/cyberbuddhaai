@@ -3,7 +3,6 @@
 import React, { useState, useRef } from 'react';
 import SocialShare from './SocialShare';
 import ImageWithFallback from './ImageWithFallback';
-import { getImageUrl } from '../lib/imageUtils';
 
 
 const Consecration: React.FC = () => {
@@ -62,7 +61,7 @@ const Consecration: React.FC = () => {
       };
 
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.png', true);
+      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.jpg', true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -264,7 +263,7 @@ const Consecration: React.FC = () => {
       setDownloadStatus('正在加载图像...');
       
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.png', true);
+      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.jpg', true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -464,14 +463,38 @@ const Consecration: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('File input change event:', e);
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      console.log('Selected file:', file);
+      
+      // 检查文件大小
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('File size exceeds 10MB limit. Please select a smaller file.');
+        return;
+      }
+      
+      // 检查文件类型
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid file type. Please select JPG, PNG, or WEBP image.');
+        return;
+      }
+      
       setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
+        console.log('File reader onloadend:', reader.result);
         setPreviewUrl(reader.result as string);
       };
+      reader.onerror = () => {
+        console.error('File reader error');
+        alert('Failed to read the file. Please try again.');
+      };
       reader.readAsDataURL(file);
+    } else {
+      console.log('No file selected');
     }
   };
 
@@ -479,12 +502,19 @@ const Consecration: React.FC = () => {
     if (!selectedFile) return;
     setIsProcessing(true);
     // 模拟开光处理过程
-    setTimeout(() => {
+    setTimeout(async () => {
       // 这里应该调用实际的开光API
       // 我们将在UI层面实现合成效果，所以只需要设置resultUrl为previewUrl即可
       setResultUrl(previewUrl);
-      // 清除之前的完整合成图，确保使用最新的下载设置生成
-      setCompleteResultUrl(null);
+      
+      // 立即生成完整合成图，确保分享时能显示完整的赛博佛祖背景图
+      console.log('Generating complete result for sharing...');
+      const completeImage = await generateCompleteResult();
+      if (completeImage) {
+        setCompleteResultUrl(completeImage);
+        console.log('Complete result generated successfully for sharing');
+      }
+      
       setIsProcessing(false);
     }, 2000);
   };
@@ -542,22 +572,22 @@ const Consecration: React.FC = () => {
       
       <div className="space-y-6">
         {/* Upload Area */}
-        <div className="border border-[#8676B6]/30 rounded-xl p-8 text-center bg-[#1D1D1F]/50 backdrop-blur-sm">
-          <svg className="w-16 h-16 text-[#8676B6] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="border border-[#8676B6]/30 rounded-xl p-6 md:p-8 text-center bg-[#1D1D1F]/50 backdrop-blur-sm">
+          <svg className="w-12 md:w-16 h-12 md:h-16 text-[#8676B6] mx-auto mb-3 md:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
-          <h3 className="text-lg font-medium mb-2 text-[#F5F5F7]">Upload Item Photo</h3>
-          <p className="text-sm text-[#F5F5F7]/70 mb-4">Select a photo of the item you want to consecrate. Cyber Buddha will infuse it with digital spirituality.</p>
+          <h3 className="text-base md:text-lg font-medium mb-2 text-[#F5F5F7]">Upload Item Photo</h3>
+          <p className="text-xs md:text-sm text-[#F5F5F7]/70 mb-3 md:mb-4">Select a photo of the item you want to consecrate. Cyber Buddha will infuse it with digital spirituality.</p>
           
-          <div className="flex flex-col items-center gap-4">
-            <label className="cursor-pointer">
+          <div className="flex flex-col items-center gap-3 md:gap-4">
+            <label className="cursor-pointer w-full max-w-xs">
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
                 className="hidden"
               />
-              <span className="inline-block bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+              <span className="inline-block w-full bg-[#8676B6] hover:bg-[#8676B6]/90 text-white px-4 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
                 Choose Image
               </span>
             </label>
@@ -594,15 +624,13 @@ const Consecration: React.FC = () => {
                     {/* 合成结果容器 */}
                     <div className="relative w-full h-96 overflow-hidden">
                       {/* Cyber Buddha Background */}
-                      <img
-                        src={getImageUrl('/temple-images/赛博佛祖背景图.png')}
-                        alt="Cyber Buddha Background"
-                        className="absolute inset-0 w-full h-full object-cover opacity-70"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                        }}
-                      />
+                    <ImageWithFallback
+                      src="/temple-images/fHPlMoqxg.jpg"
+                      alt="Cyber Buddha Background"
+                      className="absolute inset-0 w-full h-full object-cover opacity-70"
+                      fallbackSrc="/temple-images/fHPlMoqxg.jpg"
+                      onError={() => console.log('Background image failed to load')}
+                    />
                        
                       {/* 佛光效果 - 外层光晕 */}
                       <div className="absolute inset-0 bg-gradient-to-center from-transparent via-[#FFD700]/10 to-transparent animate-pulse"></div>
@@ -619,7 +647,7 @@ const Consecration: React.FC = () => {
                           <img
                             src={resultUrl}
                             alt="开光物品"
-                            className="relative z-10 w-40 h-40 object-contain shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                            className="relative z-10 w-[200px] h-[200px] object-contain shadow-[0_0_20px_rgba(255,215,0,0.5)]"
                           />
                           
                           
@@ -721,32 +749,15 @@ const Consecration: React.FC = () => {
                     {resultUrl && (
                       <div className="space-y-3">
                         {/* 提示信息 */}
-                        {!completeResultUrl && (
-                          <div className="p-2 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg text-sm text-[#FFD700]/80">
-                            Tip: Click "Download Result" first to generate the complete blessing image with background, then share for best effect!
-                          </div>
-                        )}
-                        {/* 生成完整合成图按钮 */}
-                        {!completeResultUrl && (
-                          <button
-                            className="w-full bg-[#FFD700] hover:bg-[#FFD700]/90 text-[#1D1D1F] py-2 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 mb-3"
-                            onClick={async () => {
-                              const completeUrl = await generateCompleteResult();
-                              if (completeUrl) {
-                                setCompleteResultUrl(completeUrl);
-                              }
-                            }}
-                          >
-                            Generate Complete Blessing Image with Background
-                          </button>
-                        )}
-                        
+                        <div className="p-3 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg text-sm text-[#FFD700]/90 font-medium mb-3">
+                          Please click "Download Result" to generate the complete consecration image before sharing to comments!
+                        </div>
                         {/* 分享按钮 */}
                         <SocialShare 
-                          imageUrl={completeResultUrl || '/temple-images/赛博佛祖背景图.png'} 
+                          imageUrl={completeResultUrl || resultUrl || ''}
                           title="Cyber Buddha Digital Blessing Result" 
                           description="Check out my Cyber Buddha Digital Blessing result!" 
-                          pageUrl={window.location.href} 
+                          pageUrl={typeof window !== 'undefined' ? window.location.href : ''} 
                         />
                       </div>
                     )}
@@ -763,7 +774,7 @@ const Consecration: React.FC = () => {
                       <style>{`.pp-KWCN3QN74N4X4{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:Helvetica Neue,Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}`}</style>
                       <form action="https://www.paypal.com/ncp/payment/KWCN3QN74N4X4" method="post" target="_blank" style={{display:'inline-grid',justifyItems:'center',alignContent:'start',gap:'0.5rem'}}>
                         <input className="pp-KWCN3QN74N4X4" type="submit" value="Click to Pay" />
-                        <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
+                        <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" width={200} height={25} />
                         <section style={{fontSize: '0.75rem', color: '#1a56db', fontWeight: 'bold'}}>PayPal</section>
                       </form>
                     </div>
