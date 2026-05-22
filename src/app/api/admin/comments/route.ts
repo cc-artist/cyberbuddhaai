@@ -3,6 +3,9 @@ import { isAdminAuthenticated } from '../../../../lib/auth';
 import Comment from '../../../../models/Comment';
 import connectMongoDB from '../../../../lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     // 检查管理员是否已认证

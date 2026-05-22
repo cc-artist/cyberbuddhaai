@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import Comment from '../../../../models/Comment';
 import connectMongoDB from '../../../../lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // 默认评论数据 - 提供足够的评论数据
 const defaultComments = [
   {

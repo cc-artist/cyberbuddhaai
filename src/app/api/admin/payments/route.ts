@@ -3,6 +3,9 @@ import { isAdminAuthenticated } from '../../../../lib/auth';
 import Payment from '../../../../models/Payment';
 import connectMongoDB from '../../../../lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // 示例支付数据
 const samplePayments = [
   { id: 'PAY20260207001', user: '张三', amount: 100, status: 'completed', paymentPlatform: 'paypal', createdAt: new Date('2026-02-07 10:30:00') },

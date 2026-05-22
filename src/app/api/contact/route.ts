@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import Consultation from '../../../models/Consultation';
 import connectMongoDB from '../../../lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   try {
     // 获取请求体数据

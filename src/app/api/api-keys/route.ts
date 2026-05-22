@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getApiSession } from '../../../lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET() {
   // 检查管理员是否已登录
   const session = await getApiSession();
