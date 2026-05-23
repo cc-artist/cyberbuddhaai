@@ -11,10 +11,10 @@ const nextConfig = {
       transform: '@mui/icons-material/{{member}}',
     },
   },
-  // 移除未使用的 CSS
-  experimental: {
-    optimizeCss: true,
-  },
+  // 移除未使用的 CSS（暂时禁用以避免构建错误）
+  // experimental: {
+  //   optimizeCss: true,
+  // },
   // 禁用图片优化，避免通过 /_next/image 路由加载
   images: {
     unoptimized: true
