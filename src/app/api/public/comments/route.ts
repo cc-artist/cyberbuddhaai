@@ -4,6 +4,8 @@ import connectMongoDB from '../../../../lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 // 默认评论数据 - 提供足够的评论数据
 const defaultComments = [
