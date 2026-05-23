@@ -6,11 +6,13 @@ import Payment from '../../models/Payment';
 import Consultation from '../../models/Consultation';
 import connectMongoDB from '../../lib/mongodb';
 
-// Explicitly set runtime for server components
-export const runtime = 'nodejs';
-
-// Set dynamic rendering
+// Full dynamic rendering configuration to prevent build-time pre-rendering
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+export const dynamicParams = true;
+export const generateStaticParams = () => [];
 
 // 货币符号映射
 const currencySymbols: Record<string, string> = {
