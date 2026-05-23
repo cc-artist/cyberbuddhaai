@@ -1,19 +1,21 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+export const dynamicParams = true;
+export const generateStaticParams = () => [];
+
 import { NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '../../../lib/auth';
 import APIKey from '../../../models/APIKey';
 import connectMongoDB from '../../../lib/mongodb';
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
-export const revalidate = 0;
-export const fetchCache = 'force-no-store';
-
-// 检查API密钥状态（从环境变量）
-const apiStatus = {
+// 检查API密钥状态（从环境变量）- 移到函数内部避免构建时执行
+const getApiStatus = () => ({
   openai: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 10,
   paypal: !!process.env.PAYPAL_API_KEY && process.env.PAYPAL_API_KEY.length > 10,
   pingpong: !!process.env.PINGPONG_API_KEY && process.env.PINGPONG_API_KEY.length > 10
-};
+});
 
 export async function GET() {
   try {
@@ -30,6 +32,7 @@ export async function GET() {
     let apiKeys = await APIKey.find();
 
     // 如果数据库为空，初始化默认密钥记录
+    const apiStatus = getApiStatus();
     if (apiKeys.length === 0) {
       const defaultKeys = [
         {
@@ -62,7 +65,7 @@ export async function GET() {
     // 更新状态并返回
     const keysWithStatus = apiKeys.map(key => ({
       ...key.toObject(),
-      status: (apiStatus as Record<string, boolean>)[key.type as string] ? 'active' : 'inactive',
+      status: (apiStatus as any)[key.type as string] ? 'active' : 'inactive',
       lastChecked: new Date()
     }));
 

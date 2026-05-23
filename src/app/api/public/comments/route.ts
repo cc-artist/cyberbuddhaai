@@ -1,11 +1,13 @@
-import { NextResponse } from 'next/server';
-import Comment from '../../../../models/Comment';
-import connectMongoDB from '../../../../lib/mongodb';
-
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
+export const dynamicParams = true;
+export const generateStaticParams = () => [];
+
+import { NextResponse } from 'next/server';
+import connectMongoDB from '../../../../lib/mongodb';
+import Comment from '../../../../models/Comment';
 
 // 默认评论数据 - 提供足够的评论数据
 const defaultComments = [

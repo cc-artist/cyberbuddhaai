@@ -1,11 +1,13 @@
-import { NextResponse } from 'next/server';
-import { getApiSession } from '../../../lib/auth';
-import { temples as mockTemples } from '../../../data/TempleData';
-
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
+export const dynamicParams = true;
+export const generateStaticParams = () => [];
+
+import { NextResponse } from 'next/server';
+import { getApiSession } from '../../../lib/auth';
+import { temples as mockTemples } from '../../../data/TempleData';
 
 export async function GET() {
   // 检查管理员是否已登录
