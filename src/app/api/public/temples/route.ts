@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { temples as mockTemples } from '../../../../data/TempleData';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export async function GET() {
   try {
     // 这里应该从数据库获取数据，现在使用mock数据

@@ -3,6 +3,11 @@ import Consultation from '../../../models/Consultation';
 import connectMongoDB from '../../../lib/mongodb';
 import { isAdminAuthenticated } from '../../../lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export async function POST(request: Request) {
   try {
     // 获取请求体数据

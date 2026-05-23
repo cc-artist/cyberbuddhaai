@@ -3,6 +3,11 @@ import { isAdminAuthenticated } from '../../../lib/auth';
 import APIKey from '../../../models/APIKey';
 import connectMongoDB from '../../../lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 // 检查API密钥状态（从环境变量）
 const apiStatus = {
   openai: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 10,

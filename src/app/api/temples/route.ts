@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import { getApiSession } from '../../../lib/auth';
 import { temples as mockTemples } from '../../../data/TempleData';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export async function GET() {
   // 检查管理员是否已登录
   const session = await getApiSession();

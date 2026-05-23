@@ -3,6 +3,11 @@ import { isAdminAuthenticated } from '../../../../lib/auth';
 import Payment from '../../../../models/Payment';
 import connectMongoDB from '../../../../lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export async function GET() {
   try {
     // 检查管理员是否已认证
