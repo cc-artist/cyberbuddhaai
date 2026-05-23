@@ -1,11 +1,13 @@
-import { NextResponse } from 'next/server';
-import Consultation from '../../../models/Consultation';
-import connectMongoDB from '../../../lib/mongodb';
-
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
+export const dynamicParams = true;
+export const generateStaticParams = () => [];
+
+import { NextResponse } from 'next/server';
+import Consultation from '../../../models/Consultation';
+import connectMongoDB from '../../../lib/mongodb';
 
 export async function POST(request: Request) {
   try {
