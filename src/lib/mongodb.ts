@@ -4,13 +4,6 @@ import mongoose from 'mongoose';
 let conn: mongoose.Connection | null = null;
 let isConnecting = false;
 
-// 数据库连接URL - 必须使用云数据库
-const MONGODB_URI = process.env.DATABASE_URL as string;
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the DATABASE_URL environment variable inside .env.local');
-}
-
 async function connectMongoDB() {
   // 如果已经连接，直接返回
   if (conn) {
@@ -29,6 +22,13 @@ async function connectMongoDB() {
       }, 100);
     });
     return conn!;
+  }
+
+  // 数据库连接URL - 在运行时检查
+  const MONGODB_URI = process.env.DATABASE_URL as string;
+  
+  if (!MONGODB_URI) {
+    throw new Error('Please define the DATABASE_URL environment variable inside .env.local');
   }
 
   try {
@@ -51,7 +51,7 @@ async function connectMongoDB() {
     console.error('MongoDB connection error:', error);
     isConnecting = false;
     // 强制抛出错误，不允许降级方案
-    throw new Error(`Database connection failed: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Database connection failed: ${error instanceof Error ? error.message : String(error)}');
   } finally {
     if (conn) {
       isConnecting = false;
