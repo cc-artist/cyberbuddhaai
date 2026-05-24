@@ -6,8 +6,8 @@ export const dynamicParams = true;
 export const generateStaticParams = () => [];
 
 import { NextResponse } from 'next/server';
-import connectMongoDB from '../../../../lib/mongodb';
 import Comment from '../../../../models/Comment';
+import connectMongoDB from '../../../../lib/mongodb';
 
 // 默认评论数据 - 提供足够的评论数据
 const defaultComments = [
@@ -107,18 +107,11 @@ export async function GET() {
     const comments = await Comment.find({ approved: true }).sort({ createdAt: -1 });
 
     console.log(`Found ${comments.length} comments in database`);
-
-    // 如果数据库有数据，返回数据库数据，否则返回默认数据
-    if (comments && comments.length > 0) {
-      return NextResponse.json(comments, { status: 200 });
-    } else {
-      console.log('No comments in database, returning default comments');
-      return NextResponse.json(defaultComments, { status: 200 });
-    }
+    return NextResponse.json(comments, { status: 200 });
   } catch (error) {
-    console.error('Error getting comments, using fallback data:', error);
-    // 返回默认评论，确保前端始终有数据显示
-    return NextResponse.json(defaultComments, { status: 200 });
+    console.error('Error getting comments:', error);
+    // 返回空数组，不使用模拟数据
+    return NextResponse.json([], { status: 200 });
   }
 }
 
