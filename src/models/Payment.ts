@@ -2,12 +2,19 @@ import mongoose, { Document } from 'mongoose';
 
 // 定义Payment文档类型
 interface PaymentDocument extends Document {
-  id: string;
+  id?: string;
+  orderNumber?: string;
   user: string;
+  userEmail?: string;
   amount: number;
   currency: string;
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  platformTransactionId?: string;
+  platformStatus?: string;
+  callbackData?: any;
+  serviceType?: string;
+  templeName?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,12 +22,20 @@ interface PaymentDocument extends Document {
 const PaymentSchema = new mongoose.Schema<PaymentDocument>({
   id: {
     type: String,
-    required: true,
-    unique: true
+    unique: true,
+    sparse: true
+  },
+  orderNumber: {
+    type: String,
+    unique: true,
+    sparse: true
   },
   user: {
     type: String,
     required: true
+  },
+  userEmail: {
+    type: String
   },
   amount: {
     type: Number,
@@ -41,6 +56,21 @@ const PaymentSchema = new mongoose.Schema<PaymentDocument>({
     type: String,
     enum: ['paypal', 'pingpong', 'unknown'],
     default: 'unknown'
+  },
+  platformTransactionId: {
+    type: String
+  },
+  platformStatus: {
+    type: String
+  },
+  callbackData: {
+    type: mongoose.Schema.Types.Mixed
+  },
+  serviceType: {
+    type: String
+  },
+  templeName: {
+    type: String
   },
   createdAt: {
     type: Date,
