@@ -1,18 +1,9 @@
 # Exclude unnecessary directories and files from Vercel build
-../
 temp-cyberbuddhaai/
-*.pdf
-*.txt
-!src/
-!public/
-!package.json
-!next.config.js
-!vercel.json
-!.env
-!.env.local
-!.gitignore
-!tailwind.config.js
-!postcss.config.js
-!eslint.config.mjs
-!next-env.d.ts
-!tsconfig.json
+cyber-buddha-blessing/
+backend/
+# Keep important text files but exclude non-essential ones
+node_modules/
+.next/
+.DS_Store
+*.log
