@@ -1,16 +1,21 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+export const dynamicParams = true;
+export const generateStaticParams = () => [];
+
 import { NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '../../../lib/auth';
 import APIKey from '../../../models/APIKey';
 import connectMongoDB from '../../../lib/mongodb';
 
-export const dynamic = 'force-dynamic';
-
-// 检查API密钥状态（从环境变量）
-const apiStatus = {
+// 检查API密钥状态（从环境变量）- 移到函数内部避免构建时执行
+const getApiStatus = () => ({
   openai: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 10,
   paypal: !!process.env.PAYPAL_API_KEY && process.env.PAYPAL_API_KEY.length > 10,
   pingpong: !!process.env.PINGPONG_API_KEY && process.env.PINGPONG_API_KEY.length > 10
-};
+});
 
 export async function GET() {
   try {
@@ -23,6 +28,9 @@ export async function GET() {
     // 连接到数据库
     await connectMongoDB();
 
+    // 获取API状态
+    const currentApiStatus = getApiStatus();
+
     // 从数据库获取API密钥
     let apiKeys = await APIKey.find();
 
@@ -33,21 +41,21 @@ export async function GET() {
           name: 'OpenAI API Key',
           type: 'openai',
           value: process.env.OPENAI_API_KEY ? 'sk-********************' : '未配置',
-          status: apiStatus.openai ? 'active' : 'inactive',
+          status: currentApiStatus.openai ? 'active' : 'inactive',
           lastChecked: new Date()
         },
         {
           name: 'PayPal API Key',
           type: 'paypal',
           value: process.env.PAYPAL_API_KEY ? '********************' : '未配置',
-          status: apiStatus.paypal ? 'active' : 'inactive',
+          status: currentApiStatus.paypal ? 'active' : 'inactive',
           lastChecked: new Date()
         },
         {
           name: 'PingPong API Key',
           type: 'pingpong',
           value: process.env.PINGPONG_API_KEY ? '********************' : '未配置',
-          status: apiStatus.pingpong ? 'active' : 'inactive',
+          status: currentApiStatus.pingpong ? 'active' : 'inactive',
           lastChecked: new Date()
         }
       ];
@@ -59,7 +67,7 @@ export async function GET() {
     // 更新状态并返回
     const keysWithStatus = apiKeys.map(key => ({
       ...key.toObject(),
-      status: (apiStatus as Record<string, boolean>)[key.type as string] ? 'active' : 'inactive',
+      status: (currentApiStatus as Record<string, boolean>)[key.type as string] ? 'active' : 'inactive',
       lastChecked: new Date()
     }));
 

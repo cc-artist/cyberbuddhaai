@@ -1,7 +1,12 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+export const dynamicParams = true;
+export const generateStaticParams = () => [];
+
 import { NextResponse } from 'next/server';
 import { getApiSession } from '../../../lib/auth';
-
-export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

@@ -1,8 +1,13 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+export const dynamicParams = true;
+export const generateStaticParams = () => [];
+
 import { NextResponse } from 'next/server';
 import Comment from '../../../../models/Comment';
 import connectMongoDB from '../../../../lib/mongodb';
-
-export const dynamic = 'force-dynamic';
 
 // 辅助函数：带超时的数据库操作
 async function withTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
