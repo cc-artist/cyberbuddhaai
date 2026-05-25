@@ -34,13 +34,13 @@ async function connectMongoDB() {
   
   if (!MONGODB_URI) {
     const errorMsg = 'DATABASE_URL environment variable is not defined';
-    console.warn(`[MongoDB] ERROR: 'Please define the DATABASE_URL environment variable to use database features');
+    console.warn('[MongoDB] ERROR: Please define the DATABASE_URL environment variable to use database features');
     throw new Error(errorMsg);
   }
 
   // 脱敏显示连接字符串（隐藏密码）
   let safeUri = MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@');
-  console.log(`[MongoDB] Connection URI: ${safeUri}`);
+  console.log('[MongoDB] Connection URI:', safeUri);
 
   try {
     isConnecting = true;
@@ -58,19 +58,19 @@ async function connectMongoDB() {
 
     conn = mongooseInstance.connection;
     console.log('[MongoDB] MongoDB connected successfully');
-    console.log(`[MongoDB] Connected to host: ${conn.host}`);
+    console.log('[MongoDB] Connected to host:', conn.host);
     return conn;
   } catch (error) {
     console.error('[MongoDB] Connection error details:');
     if (error instanceof Error) {
-      console.error(`[MongoDB] Error name: ${error.name}');
-      console.error(`[MongoDB] Error message: ${error.message}');
+      console.error('[MongoDB] Error name:', error.name);
+      console.error('[MongoDB] Error message:', error.message);
     }
     console.error('[MongoDB] Full error:', error);
     
     isConnecting = false;
     const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Database connection failed: ${errorMessage}`);
+    throw new Error('Database connection failed: ' + errorMessage);
   } finally {
     if (conn) {
       isConnecting = false;
