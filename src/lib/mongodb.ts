@@ -28,7 +28,8 @@ async function connectMongoDB() {
   const MONGODB_URI = process.env.DATABASE_URL as string;
   
   if (!MONGODB_URI) {
-    throw new Error('Please define the DATABASE_URL environment variable inside .env.local');
+    console.warn('DATABASE_URL environment variable is not defined. Database features will be unavailable.');
+    throw new Error('Please define the DATABASE_URL environment variable to use database features');
   }
 
   try {
