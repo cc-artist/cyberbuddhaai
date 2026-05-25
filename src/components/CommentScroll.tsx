@@ -65,7 +65,8 @@ const CommentScroll: React.FC = () => {
         const dbComments = await response.json();
         console.log('Database comments:', dbComments);
         
-        const formattedComments = dbComments.map((comment: any) => ({
+        const commentsArray = Array.isArray(dbComments) ? dbComments : [];
+        const formattedComments = commentsArray.map((comment: any) => ({
           ...comment,
           createdAt: new Date(comment.createdAt)
         }));

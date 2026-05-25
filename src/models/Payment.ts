@@ -5,6 +5,7 @@ interface PaymentDocument extends Document {
   id: string;
   user: string;
   amount: number;
+  currency: 'CNY' | 'USD' | 'EUR' | 'GBP' | 'JPY';
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
   createdAt: Date;
@@ -24,6 +25,11 @@ const PaymentSchema = new mongoose.Schema<PaymentDocument>({
   amount: {
     type: Number,
     required: true
+  },
+  currency: {
+    type: String,
+    enum: ['CNY', 'USD', 'EUR', 'GBP', 'JPY'],
+    default: 'CNY'
   },
   status: {
     type: String,

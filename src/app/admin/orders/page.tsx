@@ -6,7 +6,8 @@ interface OrderData {
   id: string;
   user: string;
   amount: number;
-  status: 'completed' | 'pending' | 'failed' | 'cancelled';
+  currency: 'CNY' | 'USD' | 'EUR' | 'GBP' | 'JPY';
+  status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
   createdAt: string;
   updatedAt: string;
@@ -76,6 +77,18 @@ const OrdersPage = () => {
       case 'pingpong': return 'PingPong';
       default: return '未知平台';
     }
+  };
+
+  const formatCurrency = (amount: number, currency: string) => {
+    const currencySymbols: Record<string, string> = {
+      CNY: '¥',
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      JPY: '¥'
+    };
+    const symbol = currencySymbols[currency] || '¥';
+    return `${symbol}${amount.toLocaleString()}`;
   };
 
   const totalOrders = orders.length;
@@ -167,7 +180,7 @@ const OrdersPage = () => {
                   <tr key={order.id} className="border-b border-[#48484A] hover:bg-[#3A3A3C]">
                     <td className="text-white py-4 px-6">{order.id}</td>
                     <td className="text-[#86868B] py-4 px-6">{order.user}</td>
-                    <td className="text-white font-medium py-4 px-6">¥{order.amount}</td>
+                    <td className="text-white font-medium py-4 px-6">{formatCurrency(order.amount, order.currency || 'CNY')}</td>
                     <td className="py-4 px-6">
                       <span className={`px-3 py-1 rounded-full text-xs ${order.paymentPlatform === 'paypal' ? 'bg-blue-500/30 text-blue-300' : order.paymentPlatform === 'pingpong' ? 'bg-green-500/30 text-green-300' : 'bg-gray-500/30 text-gray-300'}`}>
                         {getPlatformLabel(order.paymentPlatform)}
@@ -228,7 +241,7 @@ const OrdersPage = () => {
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">金额</label>
-                <p className="text-white text-xl font-bold">¥{selectedOrder.amount}</p>
+                <p className="text-white text-xl font-bold">{formatCurrency(selectedOrder.amount, selectedOrder.currency || 'CNY')}</p>
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">支付平台</label>

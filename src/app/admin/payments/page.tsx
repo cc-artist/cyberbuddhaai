@@ -6,7 +6,8 @@ interface PaymentData {
   id: string;
   user: string;
   amount: number;
-  status: 'completed' | 'pending' | 'failed' | 'cancelled';
+  currency: 'CNY' | 'USD' | 'EUR' | 'GBP' | 'JPY';
+  status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
   createdAt: string;
   updatedAt: string;
@@ -86,6 +87,18 @@ const PaymentsPage = () => {
     }
   };
 
+  const formatCurrency = (amount: number, currency: string) => {
+    const currencySymbols: Record<string, string> = {
+      CNY: '¥',
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      JPY: '¥'
+    };
+    const symbol = currencySymbols[currency] || '¥';
+    return `${symbol}${amount.toLocaleString()}`;
+  };
+
   const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
   const completedCount = payments.filter(p => p.status === 'completed').length;
   const pendingCount = payments.filter(p => p.status === 'pending').length;
@@ -99,7 +112,7 @@ const PaymentsPage = () => {
             <h3 className="text-[#86868B] text-sm">总收入</h3>
             <i className="fas fa-wallet text-[#8676B6]"></i>
           </div>
-          <div className="text-3xl font-bold text-white mt-2">¥{totalRevenue.toLocaleString()}</div>
+          <div className="text-3xl font-bold text-white mt-2">{formatCurrency(totalRevenue, 'CNY')}</div>
         </div>
         <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
           <div className="flex items-center justify-between">
@@ -182,7 +195,7 @@ const PaymentsPage = () => {
                   <tr key={payment.id} className="border-b border-[#48484A] hover:bg-[#3A3A3C]">
                     <td className="text-white py-4 px-6">{payment.id}</td>
                     <td className="text-[#86868B] py-4 px-6">{payment.user}</td>
-                    <td className="text-white font-medium py-4 px-6">¥{payment.amount}</td>
+                    <td className="text-white font-medium py-4 px-6">{formatCurrency(payment.amount, payment.currency || 'CNY')}</td>
                     <td className="py-4 px-6">
                       <span className={`px-3 py-1 rounded-full text-xs ${getPlatformColor(payment.paymentPlatform)}`}>
                         {getPlatformLabel(payment.paymentPlatform)}
@@ -243,7 +256,7 @@ const PaymentsPage = () => {
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">金额</label>
-                <p className="text-white text-xl font-bold">¥{selectedPayment.amount}</p>
+                <p className="text-white text-xl font-bold">{formatCurrency(selectedPayment.amount, selectedPayment.currency || 'CNY')}</p>
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">支付平台</label>

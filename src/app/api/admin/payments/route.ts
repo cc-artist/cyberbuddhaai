@@ -59,7 +59,7 @@ export async function POST(request: Request) {
 
     // 获取请求体
     const body = await request.json();
-    const { id, user, amount, status, paymentPlatform } = body;
+    const { id, user, amount, currency, status, paymentPlatform } = body;
 
     // 验证必填字段
     if (!id || !user || !amount) {
@@ -71,6 +71,7 @@ export async function POST(request: Request) {
       id,
       user,
       amount,
+      currency: currency || 'CNY',
       status: status || 'pending',
       paymentPlatform: paymentPlatform || 'unknown',
       createdAt: new Date(),
@@ -97,7 +98,7 @@ export async function PUT(request: Request) {
 
     // 获取请求体
     const body = await request.json();
-    const { id, status, amount, paymentPlatform } = body;
+    const { id, status, amount, currency, paymentPlatform } = body;
 
     // 验证必填字段
     if (!id) {
@@ -108,6 +109,7 @@ export async function PUT(request: Request) {
     const updateData: any = { updatedAt: new Date() };
     if (status !== undefined) updateData.status = status;
     if (amount !== undefined) updateData.amount = amount;
+    if (currency !== undefined) updateData.currency = currency;
     if (paymentPlatform !== undefined) updateData.paymentPlatform = paymentPlatform;
 
     const updatedPayment = await Payment.findOneAndUpdate(
