@@ -51,7 +51,7 @@ async function connectMongoDB() {
     console.error('MongoDB connection error:', error);
     isConnecting = false;
     // 强制抛出错误，不允许降级方案
-    throw new Error(`Database connection failed: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Database connection failed: ${error instanceof Error ? error.message : String(error)}');
   } finally {
     if (conn) {
       isConnecting = false;
