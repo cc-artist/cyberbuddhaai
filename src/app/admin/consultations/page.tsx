@@ -22,10 +22,25 @@ const ConsultationsPage = () => {
   const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchConsultations();
   }, [filterStatus]);
+
+  const normalizeStatus = (status: string): 'pending' | 'replied' | 'closed' => {
+    switch (status) {
+      case 'replied':
+      case 'resolved':
+        return 'replied';
+      case 'closed':
+        return 'closed';
+      case 'pending':
+      case 'processing':
+      default:
+        return 'pending';
+    }
+  };
 
   const fetchConsultations = async () => {
     try {
@@ -48,7 +63,7 @@ const ConsultationsPage = () => {
         subject: item.subject,
         message: item.message,
         templeName: item.templeName || '未知寺庙',
-        status: (item.status || 'pending') as 'pending' | 'replied' | 'closed',
+        status: normalizeStatus(item.status || 'pending'),
         createdAt: item.createdAt,
         updatedAt: item.updatedAt
       }));
@@ -85,6 +100,25 @@ const ConsultationsPage = () => {
       setNewStatus('');
     } catch (err) {
       alert('更新状态失败');
+    }
+  };
+
+  const handleDelete = async (consultationId: string) => {
+    try {
+      const response = await fetch(`/api/contact?id=${encodeURIComponent(consultationId)}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) throw new Error('删除咨询记录失败');
+
+      setConsultations(consultations.filter(c => c.id !== consultationId));
+      setConfirmDelete(null);
+      
+      if (selectedConsultation?.id === consultationId) {
+        setIsModalOpen(false);
+      }
+    } catch (err) {
+      alert('删除咨询记录失败');
     }
   };
 
@@ -204,17 +238,40 @@ const ConsultationsPage = () => {
                     <td className="text-[#86868B] py-4 px-6 text-sm">
                       {new Date(consultation.createdAt).toLocaleString('zh-CN')}
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-6 space-x-2">
                       <button
                         onClick={() => {
                           setSelectedConsultation(consultation);
                           setNewStatus(consultation.status);
                           setIsModalOpen(true);
                         }}
-                        className="text-[#86868B] hover:text-white text-sm mr-3"
+                        className="text-[#86868B] hover:text-white text-sm"
                       >
                         <i className="fas fa-eye mr-1"></i>查看
                       </button>
+                      {confirmDelete === consultation.id ? (
+                        <div className="inline-flex items-center space-x-2">
+                          <button
+                            onClick={() => handleDelete(consultation.id)}
+                            className="text-[#FF3B30] hover:text-red-400 text-sm"
+                          >
+                            确认
+                          </button>
+                          <button
+                            onClick={() => setConfirmDelete(null)}
+                            className="text-[#86868B] hover:text-white text-sm"
+                          >
+                            取消
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmDelete(consultation.id)}
+                          className="text-[#FF3B30] hover:text-red-400 text-sm"
+                        >
+                          <i className="fas fa-trash mr-1"></i>删除
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))

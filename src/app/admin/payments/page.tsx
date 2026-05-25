@@ -20,6 +20,11 @@ const PaymentsPage = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedPayment, setSelectedPayment] = useState<PaymentData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editAmount, setEditAmount] = useState('');
+  const [editCurrency, setEditCurrency] = useState<'CNY' | 'USD' | 'EUR' | 'GBP' | 'JPY'>('CNY');
+  const [editStatus, setEditStatus] = useState<'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded'>('pending');
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPayments();
@@ -48,6 +53,71 @@ const PaymentsPage = () => {
       setError(err instanceof Error ? err.message : '获取支付数据失败');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleViewDetails = (payment: PaymentData) => {
+    setSelectedPayment(payment);
+    setIsEditing(false);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (payment: PaymentData) => {
+    setSelectedPayment(payment);
+    setEditAmount(payment.amount.toString());
+    setEditCurrency(payment.currency || 'CNY');
+    setEditStatus(payment.status);
+    setIsEditing(true);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedPayment) return;
+    
+    try {
+      const response = await fetch('/api/admin/payments', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedPayment.id,
+          amount: parseFloat(editAmount),
+          currency: editCurrency,
+          status: editStatus
+        })
+      });
+
+      if (!response.ok) throw new Error('更新支付记录失败');
+
+      // 更新本地数据
+      setPayments(payments.map(p => 
+        p.id === selectedPayment.id 
+          ? { ...p, amount: parseFloat(editAmount), currency: editCurrency, status: editStatus }
+          : p
+      ));
+      
+      setIsModalOpen(false);
+      setIsEditing(false);
+    } catch (err) {
+      alert('更新支付记录失败');
+    }
+  };
+
+  const handleDelete = async (paymentId: string) => {
+    try {
+      const response = await fetch(`/api/admin/payments?id=${encodeURIComponent(paymentId)}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) throw new Error('删除支付记录失败');
+
+      setPayments(payments.filter(p => p.id !== paymentId));
+      setConfirmDelete(null);
+      
+      if (selectedPayment?.id === paymentId) {
+        setIsModalOpen(false);
+      }
+    } catch (err) {
+      alert('删除支付记录失败');
     }
   };
 
@@ -209,16 +279,42 @@ const PaymentsPage = () => {
                     <td className="text-[#86868B] py-4 px-6 text-sm">
                       {new Date(payment.createdAt).toLocaleString('zh-CN')}
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-6 space-x-2">
                       <button
-                        onClick={() => {
-                          setSelectedPayment(payment);
-                          setIsModalOpen(true);
-                        }}
+                        onClick={() => handleViewDetails(payment)}
                         className="text-[#86868B] hover:text-white text-sm"
                       >
-                        <i className="fas fa-eye mr-1"></i>查看详情
+                        <i className="fas fa-eye mr-1"></i>查看
                       </button>
+                      <button
+                        onClick={() => handleEdit(payment)}
+                        className="text-[#8676B6] hover:text-[#7a68a6] text-sm"
+                      >
+                        <i className="fas fa-edit mr-1"></i>编辑
+                      </button>
+                      {confirmDelete === payment.id ? (
+                        <div className="inline-flex items-center space-x-2">
+                          <button
+                            onClick={() => handleDelete(payment.id)}
+                            className="text-[#FF3B30] hover:text-red-400 text-sm"
+                          >
+                            确认
+                          </button>
+                          <button
+                            onClick={() => setConfirmDelete(null)}
+                            className="text-[#86868B] hover:text-white text-sm"
+                          >
+                            取消
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmDelete(payment.id)}
+                          className="text-[#FF3B30] hover:text-red-400 text-sm"
+                        >
+                          <i className="fas fa-trash mr-1"></i>删除
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -233,11 +329,14 @@ const PaymentsPage = () => {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-[#2C2C2E] rounded-xl p-6 max-w-lg w-full border border-[#48484A]">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">支付详情</h3>
+              <h3 className="text-xl font-bold text-white">
+                {isEditing ? '编辑支付记录' : '支付详情'}
+              </h3>
               <button
                 onClick={() => {
                   setIsModalOpen(false);
                   setSelectedPayment(null);
+                  setIsEditing(false);
                 }}
                 className="text-[#86868B] hover:text-white"
               >
@@ -256,7 +355,29 @@ const PaymentsPage = () => {
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">金额</label>
-                <p className="text-white text-xl font-bold">{formatCurrency(selectedPayment.amount, selectedPayment.currency || 'CNY')}</p>
+                {isEditing ? (
+                  <div className="flex space-x-2">
+                    <input
+                      type="number"
+                      value={editAmount}
+                      onChange={(e) => setEditAmount(e.target.value)}
+                      className="flex-1 bg-[#1D1D1F] border border-[#48484A] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#8676B6]"
+                    />
+                    <select
+                      value={editCurrency}
+                      onChange={(e) => setEditCurrency(e.target.value as any)}
+                      className="bg-[#1D1D1F] border border-[#48484A] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#8676B6]"
+                    >
+                      <option value="CNY">CNY (¥)</option>
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="JPY">JPY (¥)</option>
+                    </select>
+                  </div>
+                ) : (
+                  <p className="text-white text-xl font-bold">{formatCurrency(selectedPayment.amount, selectedPayment.currency || 'CNY')}</p>
+                )}
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">支付平台</label>
@@ -266,9 +387,23 @@ const PaymentsPage = () => {
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">状态</label>
-                <span className={`px-3 py-1 rounded-full text-xs ${getStatusColor(selectedPayment.status)}`}>
-                  {getStatusLabel(selectedPayment.status)}
-                </span>
+                {isEditing ? (
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value as any)}
+                    className="w-full bg-[#1D1D1F] border border-[#48484A] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#8676B6]"
+                  >
+                    <option value="pending">待处理</option>
+                    <option value="completed">已完成</option>
+                    <option value="failed">失败</option>
+                    <option value="cancelled">已取消</option>
+                    <option value="refunded">已退款</option>
+                  </select>
+                ) : (
+                  <span className={`px-3 py-1 rounded-full text-xs ${getStatusColor(selectedPayment.status)}`}>
+                    {getStatusLabel(selectedPayment.status)}
+                  </span>
+                )}
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">创建时间</label>
@@ -276,16 +411,35 @@ const PaymentsPage = () => {
               </div>
             </div>
 
-            <div className="mt-6">
-              <button
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setSelectedPayment(null);
-                }}
-                className="w-full bg-[#8676B6] hover:bg-[#8676B6]/90 text-white py-2 rounded-lg transition-colors"
-              >
-                关闭
-              </button>
+            <div className="mt-6 flex gap-3">
+              {isEditing ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setIsEditing(false);
+                    }}
+                    className="flex-1 bg-[#3A3A3C] hover:bg-[#48484A] text-white py-2 rounded-lg transition-colors"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    className="flex-1 bg-[#8676B6] hover:bg-[#8676B6]/90 text-white py-2 rounded-lg transition-colors"
+                  >
+                    保存
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setSelectedPayment(null);
+                  }}
+                  className="flex-1 bg-[#8676B6] hover:bg-[#8676B6]/90 text-white py-2 rounded-lg transition-colors"
+                >
+                  关闭
+                </button>
+              )}
             </div>
           </div>
         </div>
