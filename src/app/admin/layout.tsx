@@ -1,37 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { SessionProvider } from 'next-auth/react';
 
 // 使用SessionProvider包装的组件
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
   const { data: session, status } = useSession();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // 登录页面不显示侧边栏
-  const isLoginPage = pathname === '/admin/login';
-
-  useEffect(() => {
-    // 如果是登录页面，不检查认证
-    if (isLoginPage) {
-      return;
-    }
-
-    // 如果认证状态是未登录，跳转到登录页
-    if (status === 'unauthenticated') {
-      router.push('/admin/login');
-    }
-  }, [pathname, isLoginPage, router, status]);
-
-  if (isLoginPage) {
-    return children;
-  }
-
+  // 由于中间件已经保护了路由，这里只需要处理加载状态
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-[#1D1D1F] flex items-center justify-center">
@@ -40,6 +21,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // 中间件确保这里一定有session
   if (!session?.user) {
     return null;
   }

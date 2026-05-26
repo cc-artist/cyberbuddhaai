@@ -18,7 +18,7 @@ const SimpleLoginPage = () => {
 
     try {
       const result = await signIn('credentials', {
-        email: username, // 使用 username 作为 email 字段传递
+        email: username,
         password,
         redirect: false,
       });
