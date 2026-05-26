@@ -20,7 +20,7 @@ interface PaymentRecord {
   amount: number;
   currency: 'CNY' | 'USD' | 'EUR' | 'GBP' | 'JPY';
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
-  paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  paymentPlatform: 'paypal' | 'unknown';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,6 +52,7 @@ const DashboardPage = () => {
   const [consultations, setConsultations] = useState<ConsultationRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
     fetchStats();
@@ -83,7 +84,6 @@ const DashboardPage = () => {
   const formatPlatform = (platform: string) => {
     const platformMap: Record<string, string> = {
       paypal: 'PayPal',
-      pingpong: 'PingPong',
       unknown: '未知'
     };
     return platformMap[platform] || platform;
@@ -165,6 +165,31 @@ const DashboardPage = () => {
       setError(err instanceof Error ? err.message : '获取统计数据失败');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleClearData = async () => {
+    if (!confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+      return;
+    }
+
+    try {
+      setClearing(true);
+      const response = await fetch('/api/admin/clear-data', {
+        method: 'POST'
+      });
+
+      if (response.ok) {
+        alert('数据已清空');
+        // 重新加载数据
+        fetchStats();
+      } else {
+        alert('清空数据失败');
+      }
+    } catch (err) {
+      alert('清空数据失败');
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -282,7 +307,17 @@ const DashboardPage = () => {
 
       {/* 快捷操作 */}
       <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
-        <h3 className="text-lg font-semibold text-white mb-4">快捷操作</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-white">快捷操作</h3>
+          <button
+            onClick={handleClearData}
+            disabled={clearing}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white rounded-lg text-sm transition-colors"
+          >
+            <i className="fas fa-trash"></i>
+            {clearing ? '清空中...' : '清空所有数据'}
+          </button>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Link href="/admin/consultations" className="flex flex-col items-center p-4 rounded-xl bg-[#1D1D1F]/50 hover:bg-[#3A3A3C] hover:border-[#8676B6]/50 border border-transparent transition-all duration-300 cursor-pointer">
             <i className="fas fa-comments text-2xl text-[#8676B6] mb-2"></i>

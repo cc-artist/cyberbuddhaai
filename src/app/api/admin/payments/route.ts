@@ -66,6 +66,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'id, user and amount are required' }, { status: 400 });
     }
 
+    // 验证支付平台
+    const validPlatforms = ['paypal', 'unknown'];
+    const platform = paymentPlatform && validPlatforms.includes(paymentPlatform) 
+      ? paymentPlatform 
+      : 'unknown';
+
     // 创建新的支付记录
     const payment = await Payment.create({
       id,
@@ -73,7 +79,7 @@ export async function POST(request: Request) {
       amount,
       currency: currency || 'CNY',
       status: status || 'pending',
-      paymentPlatform: paymentPlatform || 'unknown',
+      paymentPlatform: platform,
       createdAt: new Date(),
       updatedAt: new Date()
     });
@@ -110,7 +116,13 @@ export async function PUT(request: Request) {
     if (status !== undefined) updateData.status = status;
     if (amount !== undefined) updateData.amount = amount;
     if (currency !== undefined) updateData.currency = currency;
-    if (paymentPlatform !== undefined) updateData.paymentPlatform = paymentPlatform;
+    if (paymentPlatform !== undefined) {
+      // 验证支付平台
+      const validPlatforms = ['paypal', 'unknown'];
+      updateData.paymentPlatform = validPlatforms.includes(paymentPlatform) 
+        ? paymentPlatform 
+        : 'unknown';
+    }
 
     const updatedPayment = await Payment.findOneAndUpdate(
       { id },

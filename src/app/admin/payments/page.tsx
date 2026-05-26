@@ -8,7 +8,7 @@ interface PaymentData {
   amount: number;
   currency: 'CNY' | 'USD' | 'EUR' | 'GBP' | 'JPY';
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
-  paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  paymentPlatform: 'paypal' | 'unknown';
   createdAt: string;
   updatedAt: string;
 }
@@ -144,7 +144,6 @@ const PaymentsPage = () => {
   const getPlatformLabel = (platform: string) => {
     switch (platform) {
       case 'paypal': return 'PayPal';
-      case 'pingpong': return 'PingPong';
       default: return '未知平台';
     }
   };
@@ -152,7 +151,6 @@ const PaymentsPage = () => {
   const getPlatformColor = (platform: string) => {
     switch (platform) {
       case 'paypal': return 'bg-blue-500/30 text-blue-300';
-      case 'pingpong': return 'bg-green-500/30 text-green-300';
       default: return 'bg-gray-500/30 text-gray-300';
     }
   };

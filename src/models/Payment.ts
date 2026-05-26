@@ -7,7 +7,7 @@ interface PaymentDocument extends Document {
   amount: number;
   currency: 'CNY' | 'USD' | 'EUR' | 'GBP' | 'JPY';
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
-  paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  paymentPlatform: 'paypal' | 'unknown';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,7 +39,7 @@ const PaymentSchema = new mongoose.Schema<PaymentDocument>({
   },
   paymentPlatform: {
     type: String,
-    enum: ['paypal', 'pingpong', 'unknown'],
+    enum: ['paypal', 'unknown'],
     default: 'unknown'
   },
   createdAt: {

@@ -8,7 +8,7 @@ interface OrderData {
   amount: number;
   currency: 'CNY' | 'USD' | 'EUR' | 'GBP' | 'JPY';
   status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
-  paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  paymentPlatform: 'paypal' | 'unknown';
   createdAt: string;
   updatedAt: string;
 }
@@ -74,7 +74,6 @@ const OrdersPage = () => {
   const getPlatformLabel = (platform: string) => {
     switch (platform) {
       case 'paypal': return 'PayPal';
-      case 'pingpong': return 'PingPong';
       default: return '未知平台';
     }
   };
@@ -182,7 +181,7 @@ const OrdersPage = () => {
                     <td className="text-[#86868B] py-4 px-6">{order.user}</td>
                     <td className="text-white font-medium py-4 px-6">{formatCurrency(order.amount, order.currency || 'CNY')}</td>
                     <td className="py-4 px-6">
-                      <span className={`px-3 py-1 rounded-full text-xs ${order.paymentPlatform === 'paypal' ? 'bg-blue-500/30 text-blue-300' : order.paymentPlatform === 'pingpong' ? 'bg-green-500/30 text-green-300' : 'bg-gray-500/30 text-gray-300'}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs ${order.paymentPlatform === 'paypal' ? 'bg-blue-500/30 text-blue-300' : 'bg-gray-500/30 text-gray-300'}`}>
                         {getPlatformLabel(order.paymentPlatform)}
                       </span>
                     </td>
@@ -245,7 +244,7 @@ const OrdersPage = () => {
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">支付平台</label>
-                <span className={`px-3 py-1 rounded-full text-xs ${selectedOrder.paymentPlatform === 'paypal' ? 'bg-blue-500/30 text-blue-300' : selectedOrder.paymentPlatform === 'pingpong' ? 'bg-green-500/30 text-green-300' : 'bg-gray-500/30 text-gray-300'}`}>
+                <span className={`px-3 py-1 rounded-full text-xs ${selectedOrder.paymentPlatform === 'paypal' ? 'bg-blue-500/30 text-blue-300' : 'bg-gray-500/30 text-gray-300'}`}>
                   {getPlatformLabel(selectedOrder.paymentPlatform)}
                 </span>
               </div>
