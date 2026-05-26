@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
+import { SessionProvider } from 'next-auth/react';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+// 使用SessionProvider包装的组件
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<{ email: string } | null>(null);
 
   // 登录页面不显示侧边栏
   const isLoginPage = pathname === '/admin/login';
@@ -18,38 +19,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     // 如果是登录页面，不检查认证
     if (isLoginPage) {
-      setIsLoading(false);
       return;
     }
 
-    // 检查认证状态
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/auth/session');
-        const data = await response.json();
-        
-        if (!data.user) {
-          router.push('/admin/login');
-          return;
-        }
-        
-        setUser(data.user);
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        router.push('/admin/login');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [pathname, isLoginPage, router]);
+    // 如果认证状态是未登录，跳转到登录页
+    if (status === 'unauthenticated') {
+      router.push('/admin/login');
+    }
+  }, [pathname, isLoginPage, router, status]);
 
   if (isLoginPage) {
     return children;
   }
 
-  if (isLoading) {
+  if (status === 'loading') {
     return (
       <div className="min-h-screen bg-[#1D1D1F] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-[#8676B6]/30 border-t-[#8676B6] rounded-full animate-spin"></div>
@@ -57,7 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!user) {
+  if (!session?.user) {
     return null;
   }
 
@@ -120,7 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             {isSidebarOpen && (
               <div className="ml-3">
-                <p className="text-white text-sm font-medium">{user.email}</p>
+                <p className="text-white text-sm font-medium">{session.user.email}</p>
                 <p className="text-[#86868B] text-xs">管理员</p>
               </div>
             )}
@@ -173,5 +156,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </main>
     </div>
+  );
+}
+
+// 主导出组件，使用SessionProvider包装
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </SessionProvider>
   );
 }
