@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface Stats {
   totalRevenue: number;
@@ -99,56 +100,64 @@ const DashboardPage = () => {
       value: `¥${stats.totalRevenue.toLocaleString()}`,
       icon: 'fas fa-wallet',
       color: '#8676B6',
-      bgColor: 'bg-[#8676B6]/30'
+      bgColor: 'bg-[#8676B6]/30',
+      link: '/admin/payments'
     },
     {
       title: '总订单数',
       value: stats.totalPayments,
       icon: 'fas fa-file-invoice',
       color: '#8676B6',
-      bgColor: 'bg-[#8676B6]/30'
+      bgColor: 'bg-[#8676B6]/30',
+      link: '/admin/orders'
     },
     {
       title: '已完成订单',
       value: stats.completedPayments,
       icon: 'fas fa-check-circle',
       color: '#34C759',
-      bgColor: 'bg-[#34C759]/30'
+      bgColor: 'bg-[#34C759]/30',
+      link: '/admin/orders'
     },
     {
       title: '待处理订单',
       value: stats.pendingPayments,
       icon: 'fas fa-clock',
       color: '#FFD700',
-      bgColor: 'bg-[#FFD700]/30'
+      bgColor: 'bg-[#FFD700]/30',
+      link: '/admin/orders'
     },
     {
       title: '总咨询数',
       value: stats.totalConsultations,
       icon: 'fas fa-comments',
       color: '#8676B6',
-      bgColor: 'bg-[#8676B6]/30'
+      bgColor: 'bg-[#8676B6]/30',
+      link: '/admin/consultations'
     },
     {
       title: '待处理咨询',
       value: stats.pendingConsultations,
       icon: 'fas fa-comment-dots',
       color: '#FFD700',
-      bgColor: 'bg-[#FFD700]/30'
+      bgColor: 'bg-[#FFD700]/30',
+      link: '/admin/consultations'
     },
     {
       title: '总评论数',
       value: stats.totalComments,
       icon: 'fas fa-message-circle',
       color: '#8676B6',
-      bgColor: 'bg-[#8676B6]/30'
+      bgColor: 'bg-[#8676B6]/30',
+      link: '/admin/comments'
     },
     {
       title: '已审核评论',
       value: stats.approvedComments,
       icon: 'fas fa-thumbs-up',
       color: '#34C759',
-      bgColor: 'bg-[#34C759]/30'
+      bgColor: 'bg-[#34C759]/30',
+      link: '/admin/comments'
     }
   ];
 
@@ -163,7 +172,7 @@ const DashboardPage = () => {
       {/* 统计卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, index) => (
-          <div key={index} className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A] hover:shadow-lg transition-shadow">
+          <Link key={index} href={card.link} className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A] hover:shadow-lg hover:border-[#8676B6]/50 transition-all cursor-pointer">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[#86868B] text-sm">{card.title}</h3>
               <div className={`${card.bgColor} rounded-full p-2`}>
@@ -171,16 +180,19 @@ const DashboardPage = () => {
               </div>
             </div>
             <div className="text-3xl font-bold text-white">{card.value}</div>
-          </div>
+          </Link>
         ))}
       </div>
 
       {/* 最近活动 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
-          <h3 className="text-lg font-semibold text-white mb-4">最近支付</h3>
+        <Link href="/admin/payments" className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A] hover:border-[#8676B6]/50 transition-all">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            最近支付
+            <i className="fas fa-arrow-right ml-2 text-[#8676B6] text-sm"></i>
+          </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
                   <i className="fas fa-user-circle text-[#8676B6]"></i>
@@ -192,7 +204,7 @@ const DashboardPage = () => {
               </div>
               <span className="text-[#34C759] text-xs">已完成</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
                   <i className="fas fa-user-circle text-[#8676B6]"></i>
@@ -204,7 +216,7 @@ const DashboardPage = () => {
               </div>
               <span className="text-[#FFD700] text-xs">待处理</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
                   <i className="fas fa-user-circle text-[#8676B6]"></i>
@@ -217,12 +229,15 @@ const DashboardPage = () => {
               <span className="text-[#34C759] text-xs">已完成</span>
             </div>
           </div>
-        </div>
+        </Link>
 
-        <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
-          <h3 className="text-lg font-semibold text-white mb-4">最近咨询</h3>
+        <Link href="/admin/consultations" className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A] hover:border-[#8676B6]/50 transition-all">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            最近咨询
+            <i className="fas fa-arrow-right ml-2 text-[#8676B6] text-sm"></i>
+          </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
                   <i className="fas fa-user-circle text-[#8676B6]"></i>
@@ -234,7 +249,7 @@ const DashboardPage = () => {
               </div>
               <span className="text-[#FFD700] text-xs">待处理</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
                   <i className="fas fa-user-circle text-[#8676B6]"></i>
@@ -246,7 +261,7 @@ const DashboardPage = () => {
               </div>
               <span className="text-[#34C759] text-xs">已回复</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
                   <i className="fas fa-user-circle text-[#8676B6]"></i>
@@ -259,7 +274,7 @@ const DashboardPage = () => {
               <span className="text-[#86868B] text-xs">已关闭</span>
             </div>
           </div>
-        </div>
+        </Link>
       </div>
     </div>
   );
