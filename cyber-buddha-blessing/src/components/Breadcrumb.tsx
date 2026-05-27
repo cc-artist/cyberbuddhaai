@@ -1,15 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface BreadcrumbProps {
   currentPage?: string;
 }
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ currentPage }) => {
-  // Get current pathname
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const [isMounted, setIsMounted] = useState(false);
+  const pathname = usePathname();
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
+  // Wait for client-side mounting to avoid hydration mismatch
+  if (!isMounted) {
+    return null;
+  }
+  
   const pathSegments = pathname.split('/').filter(segment => segment);
   
   // Generate breadcrumb items
