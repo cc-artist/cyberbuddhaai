@@ -175,29 +175,6 @@ const DashboardPage = () => {
         ))}
       </div>
 
-      {/* 快捷操作 */}
-      <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
-        <h3 className="text-lg font-semibold text-white mb-4">快捷操作</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button className="flex flex-col items-center p-4 rounded-xl bg-[#1D1D1F]/50 hover:bg-[#3A3A3C] transition-colors">
-            <i className="fas fa-comments text-2xl text-[#8676B6] mb-2"></i>
-            <span className="text-[#86868B] text-sm">咨询管理</span>
-          </button>
-          <button className="flex flex-col items-center p-4 rounded-xl bg-[#1D1D1F]/50 hover:bg-[#3A3A3C] transition-colors">
-            <i className="fas fa-credit-card text-2xl text-[#8676B6] mb-2"></i>
-            <span className="text-[#86868B] text-sm">支付管理</span>
-          </button>
-          <button className="flex flex-col items-center p-4 rounded-xl bg-[#1D1D1F]/50 hover:bg-[#3A3A3C] transition-colors">
-            <i className="fas fa-comment-dots text-2xl text-[#8676B6] mb-2"></i>
-            <span className="text-[#86868B] text-sm">评论管理</span>
-          </button>
-          <button className="flex flex-col items-center p-4 rounded-xl bg-[#1D1D1F]/50 hover:bg-[#3A3A3C] transition-colors">
-            <i className="fas fa-file-invoice text-2xl text-[#8676B6] mb-2"></i>
-            <span className="text-[#86868B] text-sm">账单管理</span>
-          </button>
-        </div>
-      </div>
-
       {/* 最近活动 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
