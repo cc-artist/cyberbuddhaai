@@ -45,13 +45,6 @@ const SimpleLoginPage = () => {
       <div className="w-full max-w-md bg-gray-800 rounded-lg p-8">
         <h1 className="text-2xl font-bold text-white mb-6 text-center">后台管理登录</h1>
         
-        {/* 登录提示 */}
-        <div className="bg-blue-900/30 border border-blue-500 text-blue-300 rounded-lg p-4 mb-6">
-          <h3 className="font-medium mb-2">默认登录凭证：</h3>
-          <p className="text-sm">用户名: admin@cyberbuddha.ai</p>
-          <p className="text-sm">密码: admin123</p>
-        </div>
-        
         {error && (
           <div className="bg-red-900/30 border border-red-500 text-red-400 rounded-lg p-3 mb-4">
             {error}
@@ -68,7 +61,7 @@ const SimpleLoginPage = () => {
               type="text"
               required
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="admin@cyberbuddha.ai"
+              placeholder=""
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -83,7 +76,7 @@ const SimpleLoginPage = () => {
               type="password"
               required
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="admin123"
+              placeholder=""
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
