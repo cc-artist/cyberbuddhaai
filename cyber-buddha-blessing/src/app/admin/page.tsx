@@ -14,6 +14,23 @@ interface Stats {
   approvedComments: number;
 }
 
+interface Payment {
+  id: string;
+  user: string;
+  amount: number;
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
+  paymentPlatform: string;
+  createdAt: string;
+}
+
+interface Consultation {
+  id: string;
+  name: string;
+  subject: string;
+  status: 'pending' | 'replied' | 'closed';
+  createdAt: string;
+}
+
 const DashboardPage = () => {
   const [stats, setStats] = useState<Stats>({
     totalRevenue: 0,
@@ -25,6 +42,8 @@ const DashboardPage = () => {
     totalComments: 0,
     approvedComments: 0
   });
+  const [recentPayments, setRecentPayments] = useState<Payment[]>([]);
+  const [recentConsultations, setRecentConsultations] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -37,19 +56,38 @@ const DashboardPage = () => {
       setLoading(true);
       setError('');
 
-      // 获取支付统计
+      // 获取支付统计和最近支付
       const paymentResponse = await fetch('/api/admin/payments');
       const paymentData = paymentResponse.ok ? await paymentResponse.json() : { payments: [] };
       const payments = paymentData.payments || [];
       
-      const totalRevenue = payments.reduce((sum: number, p: any) => sum + p.amount, 0);
-      const completedPayments = payments.filter((p: any) => p.status === 'completed').length;
-      const pendingPayments = payments.filter((p: any) => p.status === 'pending').length;
+      // 映射支付数据，确保 id 字段正确
+      const mappedPayments = payments.map((p: any) => ({
+        ...p,
+        id: p.id || p._id
+      }));
+      
+      const totalRevenue = mappedPayments.reduce((sum: number, p: any) => sum + p.amount, 0);
+      const completedPayments = mappedPayments.filter((p: any) => p.status === 'completed').length;
+      const pendingPayments = mappedPayments.filter((p: any) => p.status === 'pending').length;
+      
+      // 设置最近支付（取前3条）
+      setRecentPayments(mappedPayments.slice(0, 3));
 
-      // 获取咨询统计
+      // 获取咨询统计和最近咨询
       const consultationResponse = await fetch('/api/contact');
       const consultations = consultationResponse.ok ? await consultationResponse.json() : [];
-      const pendingConsultations = consultations.filter((c: any) => c.status === 'pending').length;
+      
+      // 映射咨询数据，确保 id 字段正确
+      const mappedConsultations = consultations.map((c: any) => ({
+        ...c,
+        id: c.id || c._id
+      }));
+      
+      const pendingConsultations = mappedConsultations.filter((c: any) => c.status === 'pending').length;
+      
+      // 设置最近咨询（取前3条）
+      setRecentConsultations(mappedConsultations.slice(0, 3));
 
       // 获取评论统计
       const commentResponse = await fetch('/api/admin/comments');
@@ -59,10 +97,10 @@ const DashboardPage = () => {
 
       setStats({
         totalRevenue,
-        totalPayments: payments.length,
+        totalPayments: mappedPayments.length,
         completedPayments,
         pendingPayments,
-        totalConsultations: consultations.length,
+        totalConsultations: mappedConsultations.length,
         pendingConsultations,
         totalComments: comments.length,
         approvedComments
@@ -192,42 +230,75 @@ const DashboardPage = () => {
             <i className="fas fa-arrow-right ml-2 text-[#8676B6] text-sm"></i>
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
-                  <i className="fas fa-user-circle text-[#8676B6]"></i>
-                </div>
-                <div>
-                  <p className="text-white text-sm">张三</p>
-                  <p className="text-[#86868B] text-xs">¥100 · PayPal</p>
-                </div>
+            {recentPayments.length > 0 ? (
+              recentPayments.map((payment) => {
+                const getStatusColor = (status: string) => {
+                  const colorMap: Record<string, string> = {
+                    completed: '#34C759',
+                    pending: '#FFD700',
+                    failed: '#FF3B30',
+                    cancelled: '#86868B',
+                    refunded: '#FF9500'
+                  };
+                  return colorMap[status] || '#86868B';
+                };
+                
+                const formatStatus = (status: string) => {
+                  const statusMap: Record<string, string> = {
+                    completed: '已完成',
+                    pending: '待处理',
+                    failed: '失败',
+                    cancelled: '已取消',
+                    refunded: '已退款'
+                  };
+                  return statusMap[status] || status;
+                };
+                
+                const formatCurrency = (amount: number, currency: string = 'CNY') => {
+                  const currencySymbols: Record<string, string> = {
+                    CNY: '¥',
+                    USD: '$',
+                    EUR: '€',
+                    GBP: '£',
+                    JPY: '¥'
+                  };
+                  const symbol = currencySymbols[currency] || '¥';
+                  return `${symbol}${amount.toLocaleString()}`;
+                };
+                
+                const formatPlatform = (platform: string) => {
+                  const platformMap: Record<string, string> = {
+                    paypal: 'PayPal',
+                    pingpong: 'PingPong',
+                    unknown: '未知'
+                  };
+                  return platformMap[platform] || platform;
+                };
+                
+                return (
+                  <div key={payment.id} className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
+                        <i className="fas fa-user-circle text-[#8676B6]"></i>
+                      </div>
+                      <div>
+                        <p className="text-white text-sm">{payment.user}</p>
+                        <p className="text-[#86868B] text-xs">
+                          {formatCurrency(payment.amount, (payment as any).currency)} · {formatPlatform(payment.paymentPlatform)}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs" style={{ color: getStatusColor(payment.status) }}>
+                      {formatStatus(payment.status)}
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-[#86868B]">暂无支付记录</p>
               </div>
-              <span className="text-[#34C759] text-xs">已完成</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
-                  <i className="fas fa-user-circle text-[#8676B6]"></i>
-                </div>
-                <div>
-                  <p className="text-white text-sm">李四</p>
-                  <p className="text-[#86868B] text-xs">¥200 · PayPal</p>
-                </div>
-              </div>
-              <span className="text-[#FFD700] text-xs">待处理</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
-                  <i className="fas fa-user-circle text-[#8676B6]"></i>
-                </div>
-                <div>
-                  <p className="text-white text-sm">王五</p>
-                  <p className="text-[#86868B] text-xs">¥150 · PingPong</p>
-                </div>
-              </div>
-              <span className="text-[#34C759] text-xs">已完成</span>
-            </div>
+            )}
           </div>
         </Link>
 
@@ -237,42 +308,48 @@ const DashboardPage = () => {
             <i className="fas fa-arrow-right ml-2 text-[#8676B6] text-sm"></i>
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
-                  <i className="fas fa-user-circle text-[#8676B6]"></i>
-                </div>
-                <div>
-                  <p className="text-white text-sm">赵六</p>
-                  <p className="text-[#86868B] text-xs">关于寺庙预约...</p>
-                </div>
+            {recentConsultations.length > 0 ? (
+              recentConsultations.map((consultation) => {
+                const getStatusColor = (status: string) => {
+                  const colorMap: Record<string, string> = {
+                    pending: '#FFD700',
+                    replied: '#34C759',
+                    closed: '#86868B'
+                  };
+                  return colorMap[status] || '#86868B';
+                };
+                
+                const formatStatus = (status: string) => {
+                  const statusMap: Record<string, string> = {
+                    pending: '待处理',
+                    replied: '已回复',
+                    closed: '已关闭'
+                  };
+                  return statusMap[status] || status;
+                };
+                
+                return (
+                  <div key={consultation.id} className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
+                        <i className="fas fa-user-circle text-[#8676B6]"></i>
+                      </div>
+                      <div>
+                        <p className="text-white text-sm">{consultation.name}</p>
+                        <p className="text-[#86868B] text-xs">{consultation.subject}</p>
+                      </div>
+                    </div>
+                    <span className="text-xs" style={{ color: getStatusColor(consultation.status) }}>
+                      {formatStatus(consultation.status)}
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-[#86868B]">暂无咨询记录</p>
               </div>
-              <span className="text-[#FFD700] text-xs">待处理</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
-                  <i className="fas fa-user-circle text-[#8676B6]"></i>
-                </div>
-                <div>
-                  <p className="text-white text-sm">孙七</p>
-                  <p className="text-[#86868B] text-xs">关于开光服务...</p>
-                </div>
-              </div>
-              <span className="text-[#34C759] text-xs">已回复</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-[#1D1D1F]/50 rounded-lg hover:bg-[#1D1D1F]/80 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-[#8676B6]/30 flex items-center justify-center mr-3">
-                  <i className="fas fa-user-circle text-[#8676B6]"></i>
-                </div>
-                <div>
-                  <p className="text-white text-sm">周八</p>
-                  <p className="text-[#86868B] text-xs">关于账单问题...</p>
-                </div>
-              </div>
-              <span className="text-[#86868B] text-xs">已关闭</span>
-            </div>
+            )}
           </div>
         </Link>
       </div>

@@ -26,6 +26,15 @@ export const authOptions: NextAuthOptions = {
         }
       },
       async authorize(credentials) {
+        // 添加调试日志
+        console.log('=== 登录调试信息 ===');
+        console.log('传入的email:', credentials?.email);
+        console.log('传入的password:', credentials?.password ? '***已提供***' : '***未提供***');
+        console.log('配置的ADMIN_EMAIL:', ADMIN_EMAIL);
+        console.log('配置的ADMIN_PASSWORD:', ADMIN_PASSWORD ? '***已配置***' : '***未配置***');
+        console.log('是否匹配:', credentials?.email === ADMIN_EMAIL && credentials?.password === ADMIN_PASSWORD);
+        console.log('====================');
+        
         // 简单的密码验证，实际项目中应该使用数据库查询和密码哈希验证
         if (
           credentials?.email === ADMIN_EMAIL &&

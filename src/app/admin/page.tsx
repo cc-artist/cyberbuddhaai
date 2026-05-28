@@ -128,12 +128,18 @@ const DashboardPage = () => {
       const paymentData = paymentResponse.ok ? await paymentResponse.json() : { payments: [] };
       const allPayments = paymentData.payments || [];
       
-      const totalRevenue = allPayments.reduce((sum: number, p: any) => sum + p.amount, 0);
-      const completedPayments = allPayments.filter((p: any) => p.status === 'completed').length;
-      const pendingPayments = allPayments.filter((p: any) => p.status === 'pending').length;
+      // 映射支付数据，确保 id 字段正确
+      const mappedPayments = allPayments.map((p: any) => ({
+        ...p,
+        id: p.id || p._id
+      }));
+      
+      const totalRevenue = mappedPayments.reduce((sum: number, p: any) => sum + p.amount, 0);
+      const completedPayments = mappedPayments.filter((p: any) => p.status === 'completed').length;
+      const pendingPayments = mappedPayments.filter((p: any) => p.status === 'pending').length;
 
       // 获取最近3条支付记录
-      const recentPayments = allPayments.slice(0, 3);
+      const recentPayments = mappedPayments.slice(0, 3);
       setPayments(recentPayments);
 
       // 获取咨询统计
