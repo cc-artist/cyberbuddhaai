@@ -17,18 +17,23 @@ const SimpleLoginPage = () => {
     setIsLoading(true);
 
     try {
+      console.log('Attempting login with:', { email: username });
+      
       const result = await signIn('credentials', {
         email: username, // 使用 username 作为 email 字段传递
         password,
         redirect: false,
       });
 
+      console.log('Login result:', result);
+
       if (result?.error) {
-        setError('用户名或密码错误');
+        setError('用户名或密码错误，请检查您的登录凭证');
       } else {
         router.push('/admin');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('发生了意外错误');
     } finally {
       setIsLoading(false);
@@ -46,10 +51,6 @@ const SimpleLoginPage = () => {
           </div>
         )}
 
-        <div className="bg-blue-900/30 border border-blue-500 text-blue-300 rounded-lg p-3 mb-4 text-sm">
-          默认账号: admin / 密码: password
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
@@ -60,7 +61,7 @@ const SimpleLoginPage = () => {
               type="text"
               required
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="请输入用户名"
+              placeholder=""
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -75,7 +76,7 @@ const SimpleLoginPage = () => {
               type="password"
               required
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="请输入密码"
+              placeholder=""
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

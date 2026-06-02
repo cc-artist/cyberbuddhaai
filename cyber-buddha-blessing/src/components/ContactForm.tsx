@@ -129,11 +129,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#1D1D1F]/80 backdrop-blur-sm">
-      <div className="relative w-full max-w-2xl bg-[#1D1D1F] border border-[#8676B6]/30 rounded-2xl overflow-hidden shadow-2xl z-[9999]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1D1D1F]/80 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl bg-[#1D1D1F] border border-[#8676B6]/30 rounded-2xl overflow-hidden shadow-2xl">
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 bg-[#8676B6]/20 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-[#8676B6]/30 transition-colors duration-300 z-[10000] focus:outline-none focus:ring-2 focus:ring-[#8676B6]"
+          className="absolute top-4 right-4 bg-[#8676B6]/20 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-[#8676B6]/30 transition-colors duration-300 z-10 focus:outline-none focus:ring-2 focus:ring-[#8676B6]"
           onClick={onClose}
           aria-label="Close contact form"
           type="button"

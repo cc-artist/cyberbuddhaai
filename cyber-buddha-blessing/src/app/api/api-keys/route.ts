@@ -35,9 +35,9 @@ export async function GET() {
           lastChecked: new Date()
         },
         {
-          name: 'PayPal API Key',
+          name: 'PayPal Client ID',
           type: 'paypal',
-          value: process.env.PAYPAL_API_KEY ? '********************' : '未配置',
+          value: process.env.PAYPAL_CLIENT_ID ? '********************' : '未配置',
           status: apiStatus.paypal ? 'active' : 'inactive',
           lastChecked: new Date()
         },

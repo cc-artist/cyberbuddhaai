@@ -5,6 +5,9 @@ import { isAdminAuthenticated } from '../../../lib/auth';
 
 export async function POST(request: Request) {
   try {
+    // 连接到数据库
+    await connectMongoDB();
+
     // 获取请求体数据
     const { name, email, subject, message, templeName } = await request.json();
 
@@ -16,48 +19,30 @@ export async function POST(request: Request) {
       );
     }
 
-    // 尝试保存到数据库（如果失败则返回成功响应）
-    try {
-      // 连接到数据库
-      await connectMongoDB();
+    // 创建新的咨询记录
+    const consultation = await Consultation.create({
+      name,
+      email,
+      subject,
+      message,
+      templeName,
+      status: 'pending'
+    });
 
-      // 创建新的咨询记录
-      const consultation = await Consultation.create({
-        name,
-        email,
-        subject,
-        message,
-        templeName,
-        status: 'pending'
-      });
-
-      // 返回成功响应
-      return NextResponse.json(
-        { 
-          success: true, 
-          message: 'Message sent successfully',
-          consultation 
-        },
-        { status: 201 }
-      );
-    } catch (dbError) {
-      // 数据库连接失败时，返回成功响应（fallback方案
-      console.warn('Database connection failed, returning success anyway:', dbError);
-      // 仍然返回成功响应给用户，保持用户体验
-      return NextResponse.json(
-        { 
-          success: true, 
-          message: 'Message sent successfully'
-        },
-        { status: 200 }
-      );
-    }
-  } catch (error) {
-    console.error('Error processing contact form:', error);
-    // 即使出错也返回成功响应
+    // 返回成功响应
     return NextResponse.json(
-      { success: true, message: 'Message sent successfully' },
-      { status: 200 }
+      { 
+        success: true, 
+        message: 'Message sent successfully',
+        consultation 
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Error saving consultation:', error);
+    return NextResponse.json(
+      { error: 'Database connection failed' },
+      { status: 500 }
     );
   }
 }

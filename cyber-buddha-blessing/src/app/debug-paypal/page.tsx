@@ -91,7 +91,7 @@ const DebugPayPalPage = () => {
       
       {/* PayPal SDK Script */}
       <Script
-        src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&locale=en_US"
+        src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"
         strategy="afterInteractive"
         onReady={() => {
           console.log('📦 PayPal SDK script loaded via onReady');
