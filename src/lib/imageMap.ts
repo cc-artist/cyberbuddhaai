@@ -30,6 +30,7 @@ export const imageMap: ImageMap = {
   '/temple-images/金山寺.webp': '/temple-images/金山寺.webp',
   '/temple-images/金顶华藏寺.jpg': '/temple-images/金顶华藏寺.jpg',
   '/temple-images/隆兴寺.webp': '/temple-images/隆兴寺.webp',
+  '/temple-images/莫高窟.jpg': '/temple-images/莫高窟.jpg',
 };
 
 /**
