@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ImageWithFallback from './ImageWithFallback';
 
 interface Comment {
-  id: string;
+  _id: string;
+  id?: string;
   imageUrl: string;
   title: string;
   description: string;
@@ -21,46 +22,76 @@ const CommentScroll: React.FC = () => {
   const commentWidth = 180;
   const gap = 12;
   const totalItemWidth = commentWidth + gap;
-  const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
   const lastTimestampRef = useRef<number>(0);
+  const mountedRef = useRef(true);
 
-  const loadComments = async () => {
+  // 优化评论加载 - 添加缓存机制
+  const loadComments = useCallback(async () => {
     try {
-      const response = await fetch('/api/public/comments', { cache: 'no-store' });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch('/api/public/comments', { 
+        cache: 'force-cache',
+        next: { revalidate: 60 }, // 60秒缓存
+        signal: controller.signal
+      });
       
-      if (response.ok) {
+      clearTimeout(timeoutId);
+      
+      if (response.ok && mountedRef.current) {
         const dbComments = await response.json();
         const formattedComments = dbComments.map((comment: any) => ({
           ...comment,
+          id: comment._id || comment.id,
           createdAt: new Date(comment.createdAt)
         }));
         
-        setComments(formattedComments);
+        // 去重 - 确保没有重复评论
+        const uniqueComments = formattedComments.filter((comment: Comment, index: number, self: Comment[]) =>
+          index === self.findIndex((c) => (c._id || c.id) === (comment._id || comment.id))
+        );
+        
+        setComments(uniqueComments);
       }
     } catch (error) {
-      setComments([]);
+      if (mountedRef.current) {
+        console.error('Failed to load comments:', error);
+      }
     }
-  };
+  }, []);
   
   useEffect(() => {
+    mountedRef.current = true;
     loadComments();
     
+    // 延长刷新间隔到2分钟，减少API调用
     const interval = setInterval(() => {
-      loadComments();
-    }, 30000);
+      if (mountedRef.current) {
+        loadComments();
+      }
+    }, 120000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      mountedRef.current = false;
+      clearInterval(interval);
+    };
+  }, [loadComments]);
 
-  const displayComments = comments;
-  const displayCount = 7;
-
-  // 获取要显示的评论（复制两份以实现无缝循环）
+  // 使用所有可用的评论，如果没有评论则显示空状态
+  const displayComments = comments.length > 0 ? comments : [];
+  
+  // 无缝滚动实现
   const getDisplayComments = () => {
+    if (displayComments.length === 0) return [];
+    
+    // 需要显示的数量 - 至少显示3个，最多显示10个
+    const targetCount = Math.max(3, Math.min(10, displayComments.length));
+    
+    // 复制多份以实现无缝循环
     const result = [];
-    // 显示双倍数量的评论以实现无缝循环
-    for (let i = 0; i < displayCount * 2; i++) {
+    for (let i = 0; i < targetCount * 3; i++) {
       const index = i % displayComments.length;
       result.push({
         comment: displayComments[index],
@@ -72,23 +103,25 @@ const CommentScroll: React.FC = () => {
 
   // 平滑滚动动画
   useEffect(() => {
-    if (displayComments.length < 2) return;
+    if (displayComments.length < 1) return;
 
     const animate = (timestamp: number) => {
+      if (!mountedRef.current) return;
+      
       if (!lastTimestampRef.current) {
         lastTimestampRef.current = timestamp;
       }
       
       const elapsed = timestamp - lastTimestampRef.current;
-      // 调整滚动速度（像素/毫秒）
-      const speed = 0.05;
+      // 优化滚动速度
+      const speed = 0.03;
       const delta = elapsed * speed;
       
       setScrollPosition(prev => {
         const newPosition = prev + delta;
-        const totalScrollWidth = displayCount * totalItemWidth;
+        const totalScrollWidth = displayComments.length * totalItemWidth;
         
-        // 当滚动到一半时重置位置，实现无缝循环
+        // 当滚动到超过一半时，重置位置实现无缝循环
         if (newPosition >= totalScrollWidth) {
           return 0;
         }
@@ -129,7 +162,7 @@ const CommentScroll: React.FC = () => {
           }}
         />
         
-        {displayComments.length > 0 && (
+        {displayComments.length > 0 ? (
           <div 
             className="flex gap-3 absolute"
             style={{ 
@@ -139,7 +172,7 @@ const CommentScroll: React.FC = () => {
           >
             {getDisplayComments().map(({ comment, originalIndex }, i) => (
               <div 
-                key={`${comment.id}-${i}`}
+                key={`${comment._id || comment.id}-${i}`}
                 className="bg-[#1D1D1F]/50 border border-[#8676B6]/30 rounded-lg p-3 flex-shrink-0 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-[#8676B6]/60"
                 style={{ 
                   width: `${commentWidth}px`,
@@ -151,6 +184,7 @@ const CommentScroll: React.FC = () => {
                     src={comment.imageUrl}
                     alt={comment.title}
                     className="absolute inset-0 w-full h-full object-contain"
+                    loading="lazy" // 懒加载图片
                   />
                   {/* 微光效果 */}
                   <div 
@@ -164,7 +198,8 @@ const CommentScroll: React.FC = () => {
                       <ImageWithFallback 
                         src={comment.userAvatar} 
                         alt={comment.userName} 
-                        className="absolute inset-0 w-full h-full object-cover" 
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loading="lazy" // 懒加载图片
                       />
                     </div>
                     <div className="flex items-center gap-1 min-w-0">
@@ -188,14 +223,15 @@ const CommentScroll: React.FC = () => {
               </div>
             ))}
           </div>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <i className="fas fa-comments text-4xl text-[#8676B6]/50 mb-2"></i>
+              <p className="text-[#F5F5F7]/70 text-sm">No comments yet. Be the first to share!</p>
+            </div>
+          </div>
         )}
       </div>
-      
-      {displayComments.length === 0 && (
-        <div className="mt-4 text-center">
-          <p className="text-[#F5F5F7]/70 text-sm">No comments yet. Be the first to share!</p>
-        </div>
-      )}
     </div>
   );
 };

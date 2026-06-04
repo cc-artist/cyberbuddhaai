@@ -1,49 +1,70 @@
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const revalidate = 0;
-export const fetchCache = 'force-no-store';
-export const dynamicParams = true;
-export const generateStaticParams = () => [];
 
 import { NextResponse } from 'next/server';
 import Comment from '../../../../models/Comment';
 import connectMongoDB from '../../../../lib/mongodb';
 
+// 优化GET请求 - 添加缓存和字段选择
 export async function GET() {
   try {
-    console.log('[API] /api/public/comments - Fetching comments from database...');
+    console.log('[API] /api/public/comments - Fetching comments...');
+    
     // 连接到数据库
     await connectMongoDB();
 
-    // 从数据库获取已批准的评论
-    const comments = await Comment.find({ approved: true }).sort({ createdAt: -1 });
+    // 优化查询：只选择需要的字段，限制数量，添加索引提示
+    const comments = await Comment.find(
+      { approved: true },
+      {
+        imageUrl: 1,
+        title: 1,
+        description: 1,
+        pageUrl: 1,
+        createdAt: 1,
+        userName: 1,
+        userComment: 1,
+        userAvatar: 1,
+        _id: 1
+      }
+    )
+      .sort({ createdAt: -1 })
+      .limit(20) // 限制返回数量
+      .lean(); // 使用lean()返回纯JavaScript对象，提升性能
 
-    console.log(`[API] /api/public/comments - Found ${comments.length} comments in database`);
-    return NextResponse.json(comments, { status: 200 });
+    console.log(`[API] /api/public/comments - Found ${comments.length} comments`);
+    
+    // 设置缓存头
+    const response = NextResponse.json(comments, { status: 200 });
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    
+    return response;
   } catch (error) {
-    console.error('[API] /api/public/comments - Error getting comments:', error);
-    // 返回空数组，不使用模拟数据
-    return NextResponse.json([], { status: 200 });
+    console.error('[API] /api/public/comments - Error:', error);
+    return NextResponse.json([], { 
+      status: 200,
+      headers: { 'Cache-Control': 'public, s-maxage=60' }
+    });
   }
 }
 
+// 优化POST请求 - 快速响应
 export async function POST(request: Request) {
   try {
-    console.log('[API] /api/public/comments - Creating new comment...');
-    // 连接到数据库
-    await connectMongoDB();
-
-    // 获取请求体
+    console.log('[API] /api/public/comments - Creating comment...');
+    
     const body = await request.json();
     const { imageUrl, title, description, pageUrl, userName, userComment, userAvatar } = body;
 
-    // 验证必填字段
+    // 快速验证
     if (!imageUrl || !title || !description || !pageUrl || !userName || !userComment || !userAvatar) {
-      console.warn('[API] /api/public/comments - Missing required fields');
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 创建新评论
+    // 连接到数据库
+    await connectMongoDB();
+
+    // 创建评论
     const newComment = await Comment.create({
       imageUrl,
       title,
@@ -52,14 +73,16 @@ export async function POST(request: Request) {
       userName,
       userComment,
       userAvatar,
-      approved: true // 默认批准评论
+      approved: true
     });
 
-    console.log('[API] /api/public/comments - Comment created successfully');
+    console.log('[API] /api/public/comments - Comment created');
     return NextResponse.json(newComment, { status: 201 });
   } catch (error) {
-    console.error('[API] /api/public/comments - Error saving comment:', error);
-    // 返回友好的错误信息
-    return NextResponse.json({ error: 'Failed to save comment. Please try again later.' }, { status: 500 });
+    console.error('[API] /api/public/comments - Error saving:', error);
+    return NextResponse.json(
+      { error: 'Failed to save comment' }, 
+      { status: 500 }
+    );
   }
 }

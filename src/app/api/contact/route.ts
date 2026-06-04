@@ -1,20 +1,17 @@
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const revalidate = 0;
-export const fetchCache = 'force-no-store';
-export const dynamicParams = true;
-export const generateStaticParams = () => [];
 
 import { NextResponse } from 'next/server';
 import Consultation from '../../../models/Consultation';
 import connectMongoDB from '../../../lib/mongodb';
 
+// 优化POST请求 - 快速响应
 export async function POST(request: Request) {
   try {
-    // 获取请求体数据
-    const { name, email, subject, message, templeName } = await request.json();
+    // 快速验证
+    const body = await request.json();
+    const { name, email, subject, message, templeName } = body;
 
-    // 验证必填字段
     if (!name || !email || !subject || !message || !templeName) {
       return NextResponse.json(
         { error: 'All fields are required' },
@@ -22,14 +19,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // 尝试连接到数据库并保存咨询记录
-    const conn = await connectMongoDB();
-    let consultation = null;
-    
-    if (conn) {
+    // 异步处理数据库保存，先返回响应
+    (async () => {
       try {
-        // 创建新的咨询记录
-        consultation = await Consultation.create({
+        await connectMongoDB();
+        await Consultation.create({
           name,
           email,
           subject,
@@ -37,26 +31,22 @@ export async function POST(request: Request) {
           templeName,
           status: 'pending'
         });
+        console.log('[API] /api/contact - Consultation saved');
       } catch (dbError) {
-        console.error('Database error:', dbError);
-        // 数据库错误不影响表单提交
+        console.error('[API] /api/contact - Database error:', dbError);
       }
-    }
+    })();
 
-    // 无论数据库是否连接成功，都返回成功响应
-    // 这样用户体验更好，即使数据库连接失败也能提交表单
+    // 立即返回成功响应，不等待数据库操作
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Message sent successfully',
-        consultation 
+        message: 'Message sent successfully'
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error processing consultation:', error);
-    // 即使发生其他错误，也返回成功响应
-    // 确保用户表单提交体验不受影响
+    console.error('[API] /api/contact - Error:', error);
     return NextResponse.json(
       { 
         success: true, 
@@ -69,13 +59,14 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    // 连接到数据库
     await connectMongoDB();
+    
+    // 优化查询
+    const consultations = await Consultation.find()
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .lean();
 
-    // 获取所有咨询记录
-    const consultations = await Consultation.find().sort({ createdAt: -1 });
-
-    // 返回咨询记录
     return NextResponse.json(
       { 
         consultations,
@@ -83,11 +74,10 @@ export async function GET() {
         pendingCount: consultations.filter(c => c.status === 'pending').length,
         repliedCount: consultations.filter(c => c.status === 'replied').length
       },
-      { status: 200 }
+      { status: 200, headers: { 'Cache-Control': 'public, s-maxage=30' } }
     );
   } catch (error) {
-    console.error('Error getting consultations:', error);
-    // 返回空数据作为默认值
+    console.error('[API] /api/contact - Error:', error);
     return NextResponse.json(
       { 
         consultations: [],

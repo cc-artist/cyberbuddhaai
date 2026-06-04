@@ -143,149 +143,108 @@ const AdminDashboard = async () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1D1D1F] text-[#F5F5F7]">
-      {/* 导航栏 */}
-      <header className="bg-[#2C2C2E] border-b border-[#48484A] sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+    <div className="space-y-8">
+      {/* 数据库错误提示 */}
+      {error && (
+        <div className="bg-[#FF3B30]/10 border border-[#FF3B30]/30 rounded-xl p-4">
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-white">赛博佛祖管理后台</h1>
-            <span className="ml-3 text-sm text-[#86868B]">Production Environment</span>
+            <i className="fas fa-exclamation-circle text-[#FF3B30] text-xl mr-3"></i>
+            <div>
+              <h3 className="text-[#FF3B30] font-medium">数据库连接失败</h3>
+              <p className="text-[#86868B] text-sm">{error}</p>
+            </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-[#86868B]">
-              <i className="fas fa-user-circle mr-2"></i>
-              {session.user.email || '管理员'}
-            </span>
-            <Link
-              href="/api/auth/signout"
-              className="bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 text-[#FF3B30] px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300"
-            >
-              <i className="fas fa-sign-out-alt mr-2"></i> 退出登录
+        </div>
+      )}
+
+      {/* 统计卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* 总收入 - 按货币显示 */}
+        <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">总收入</h3>
+            <div className="bg-[#8676B6]/30 rounded-full p-3">
+              <i className="fas fa-wallet text-[#8676B6] text-xl"></i>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="text-2xl font-bold text-white">
+              {paymentsData ? Object.entries(paymentsData.totalRevenueByCurrency).map(([currency, amount]) => (
+                <div key={currency}>{formatCurrency(amount, currency)}</div>
+              )) : '0'}
+            </div>
+            <div className="text-sm text-[#86868B]">
+              总订单数: {paymentsData?.totalCount || 0}
+            </div>
+          </div>
+        </div>
+
+        {/* 已完成订单 */}
+        <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">已完成订单</h3>
+            <div className="bg-[#34C759]/30 rounded-full p-3">
+              <i className="fas fa-check-circle text-[#34C759] text-xl"></i>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="text-3xl font-bold text-white">
+              {paymentsData?.completedCount || 0}
+            </div>
+            <div className="text-sm text-[#86868B]">
+              完成率: {(paymentsData && paymentsData.totalCount > 0 ? Math.round((paymentsData.completedCount / paymentsData.totalCount) * 100) : 0)}%
+            </div>
+          </div>
+        </div>
+
+        {/* 待处理订单 */}
+        <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">待处理订单</h3>
+            <div className="bg-[#FFCC00]/30 rounded-full p-3">
+              <i className="fas fa-clock text-[#FFCC00] text-xl"></i>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="text-3xl font-bold text-white">
+              {paymentsData?.payments.filter(p => p.status === 'pending').length || 0}
+            </div>
+            <div className="text-sm text-[#86868B]">
+              等待处理的订单
+            </div>
+          </div>
+        </div>
+
+        {/* 待处理咨询 */}
+        <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">待处理咨询</h3>
+            <div className="bg-[#FFD700]/30 rounded-full p-3">
+              <i className="fas fa-comment-dots text-[#FFD700] text-xl"></i>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="text-3xl font-bold text-white">
+              {consultationsData?.pendingCount || 0}
+            </div>
+            <div className="text-sm text-[#86868B]">
+              等待回复的咨询
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 最近记录 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 最近支付 */}
+        <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-white">最近支付</h2>
+            <Link href="/admin/payments" className="text-[#8676B6] hover:text-[#8676B6]/80 text-sm">
+              查看全部 <i className="fas fa-arrow-right ml-1"></i>
             </Link>
           </div>
-        </div>
-      </header>
 
-      {/* 主内容 */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* 数据库错误提示 */}
-        {error && (
-          <div className="bg-[#FF3B30]/10 border border-[#FF3B30]/30 rounded-xl p-4 mb-8">
-            <div className="flex items-center">
-              <i className="fas fa-exclamation-circle text-[#FF3B30] text-xl mr-3"></i>
-              <div>
-                <h3 className="text-[#FF3B30] font-medium">数据库连接失败</h3>
-                <p className="text-[#86868B] text-sm">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 统计卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* 总收入 - 按货币显示 */}
-          <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">总收入</h3>
-              <div className="bg-[#8676B6]/30 rounded-full p-3">
-                <i className="fas fa-wallet text-[#8676B6] text-xl"></i>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-2xl font-bold text-white">
-                {paymentsData ? Object.entries(paymentsData.totalRevenueByCurrency).map(([currency, amount]) => (
-                  <div key={currency}>{formatCurrency(amount, currency)}</div>
-                )) : '0'}
-              </div>
-              <div className="text-sm text-[#86868B]">
-                总订单数: {paymentsData?.totalCount || 0}
-              </div>
-            </div>
-          </div>
-
-          {/* 已完成订单 */}
-          <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">已完成订单</h3>
-              <div className="bg-[#34C759]/30 rounded-full p-3">
-                <i className="fas fa-check-circle text-[#34C759] text-xl"></i>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-white">
-                {paymentsData?.completedCount || 0}
-              </div>
-              <div className="text-sm text-[#86868B]">
-                完成率: {(paymentsData && paymentsData.totalCount > 0 ? Math.round((paymentsData.completedCount / paymentsData.totalCount) * 100) : 0)}%
-              </div>
-            </div>
-          </div>
-
-          {/* 待处理订单 */}
-          <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">待处理订单</h3>
-              <div className="bg-[#FFCC00]/30 rounded-full p-3">
-                <i className="fas fa-clock text-[#FFCC00] text-xl"></i>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-white">
-                {paymentsData?.payments.filter(p => p.status === 'pending').length || 0}
-              </div>
-              <div className="text-sm text-[#86868B]">
-                等待处理的订单
-              </div>
-            </div>
-          </div>
-
-          {/* 失败订单 */}
-          <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">失败订单</h3>
-              <div className="bg-[#FF3B30]/30 rounded-full p-3">
-                <i className="fas fa-times-circle text-[#FF3B30] text-xl"></i>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-white">
-                {paymentsData?.payments.filter(p => p.status === 'failed').length || 0}
-              </div>
-              <div className="text-sm text-[#86868B]">
-                支付失败的订单
-              </div>
-            </div>
-          </div>
-          
-          {/* 待处理咨询 */}
-          <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">待处理咨询</h3>
-              <div className="bg-[#FFD700]/30 rounded-full p-3">
-                <i className="fas fa-comment-dots text-[#FFD700] text-xl"></i>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-white">
-                {consultationsData?.pendingCount || 0}
-              </div>
-              <div className="text-sm text-[#86868B]">
-                等待回复的咨询
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 支付管理部分 */}
-        <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A] mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-white">支付管理</h2>
-            <div className="bg-[#8676B6]/30 rounded-full p-2">
-              <i className="fas fa-credit-card text-[#8676B6] text-xl"></i>
-            </div>
-          </div>
-
-          {/* 支付表格 */}
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -293,62 +252,27 @@ const AdminDashboard = async () => {
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">订单号</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">用户</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">金额</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">货币</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">支付平台</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">寺庙</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">状态</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">创建时间</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">操作</th>
                 </tr>
               </thead>
               <tbody>
                 {paymentsData && paymentsData.payments.length > 0 ? (
-                  paymentsData.payments.slice(0, 10).map((payment) => (
+                  paymentsData.payments.slice(0, 5).map((payment) => (
                     <tr key={payment._id} className="border-b border-[#48484A] hover:bg-[#3A3A3C] transition-colors">
-                      <td className="text-white py-4 px-4">{payment.orderNumber || payment._id.slice(-8)}</td>
-                      <td className="text-[#86868B] py-4 px-4">
-                        <div>{payment.user}</div>
-                        {payment.userEmail && <div className="text-xs opacity-70">{payment.userEmail}</div>}
-                      </td>
-                      <td className="text-white font-medium py-4 px-4">{formatCurrency(payment.amount, payment.currency)}</td>
-                      <td className="text-[#86868B] py-4 px-4">{payment.currency}</td>
+                      <td className="text-white py-4 px-4 text-sm">{payment.orderNumber || payment._id.slice(-8)}</td>
+                      <td className="text-[#86868B] py-4 px-4 text-sm">{payment.user}</td>
+                      <td className="text-white font-medium py-4 px-4 text-sm">{formatCurrency(payment.amount, payment.currency)}</td>
                       <td className="py-4 px-4">
-                        <span className={`px-3 py-1 rounded-full text-xs ${payment.paymentPlatform === 'paypal' ? 'bg-blue-500/30 text-blue-300' : payment.paymentPlatform === 'pingpong' ? 'bg-green-500/30 text-green-300' : 'bg-gray-500/30 text-gray-300'}`}>
-                          {payment.paymentPlatform === 'paypal' ? 'PayPal' : payment.paymentPlatform === 'pingpong' ? 'PingPong' : '未知平台'}
+                        <span className={`px-3 py-1 rounded-full text-xs ${payment.status === 'completed' ? 'bg-green-500/30 text-green-300' : payment.status === 'pending' ? 'bg-yellow-500/30 text-yellow-300' : 'bg-red-500/30 text-red-300'}`}>
+                          {payment.status === 'completed' ? '已完成' : payment.status === 'pending' ? '待处理' : '失败'}
                         </span>
-                      </td>
-                      <td className="text-[#86868B] py-4 px-4">{payment.templeName || '-'}</td>
-                      <td className="py-4 px-4">
-                        <span className={`px-3 py-1 rounded-full text-xs ${payment.status === 'completed' ? 'bg-green-500/30 text-green-300' : payment.status === 'pending' ? 'bg-yellow-500/30 text-yellow-300' : payment.status === 'failed' ? 'bg-red-500/30 text-red-300' : 'bg-gray-500/30 text-gray-300'}`}>
-                          {payment.status === 'completed' ? '已完成' : payment.status === 'pending' ? '待处理' : payment.status === 'failed' ? '失败' : payment.status === 'refunded' ? '已退款' : '已取消'}
-                        </span>
-                      </td>
-                      <td className="text-[#86868B] py-4 px-4 text-sm">{new Date(payment.createdAt).toLocaleString('zh-CN')}</td>
-                      <td className="py-4 px-4">
-                        <button className="text-[#86868B] hover:text-white text-sm mr-3">
-                          <i className="fas fa-eye mr-1"></i> 查看
-                        </button>
-                        <button className="text-[#86868B] hover:text-white text-sm">
-                          <i className="fas fa-edit mr-1"></i> 编辑
-                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={9} className="text-[#86868B] py-8 text-center">
-                      {error ? (
-                        <div>
-                          <i className="fas fa-exclamation-circle text-4xl mb-2 text-[#FF3B30]"></i>
-                          <p className="mb-1">获取数据失败</p>
-                          <p className="text-sm opacity-70">{error}</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <i className="fas fa-inbox text-4xl mb-2 opacity-50"></i>
-                          <p>暂无支付记录</p>
-                        </div>
-                      )}
+                    <td colSpan={4} className="text-[#86868B] py-8 text-center">
+                      暂无支付记录
                     </td>
                   </tr>
                 )}
@@ -357,68 +281,41 @@ const AdminDashboard = async () => {
           </div>
         </div>
 
-        {/* 咨询管理部分 */}
-        <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A] mb-8">
+        {/* 最近咨询 */}
+        <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-white">用户咨询管理</h2>
-            <div className="bg-[#8676B6]/30 rounded-full p-2">
-              <i className="fas fa-comments text-[#8676B6] text-xl"></i>
-            </div>
+            <h2 className="text-xl font-semibold text-white">最近咨询</h2>
+            <Link href="/admin/consultations" className="text-[#8676B6] hover:text-[#8676B6]/80 text-sm">
+              查看全部 <i className="fas fa-arrow-right ml-1"></i>
+            </Link>
           </div>
 
-          {/* 咨询表格 */}
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-[#48484A]">
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">姓名</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">邮箱</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">主题</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">寺庙</th>
                   <th className="text-[#86868B] py-3 px-4 text-sm font-medium">状态</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">创建时间</th>
-                  <th className="text-[#86868B] py-3 px-4 text-sm font-medium">操作</th>
                 </tr>
               </thead>
               <tbody>
                 {consultationsData && consultationsData.consultations.length > 0 ? (
-                  consultationsData.consultations.slice(0, 10).map((consultation) => (
+                  consultationsData.consultations.slice(0, 5).map((consultation) => (
                     <tr key={consultation._id} className="border-b border-[#48484A] hover:bg-[#3A3A3C] transition-colors">
-                      <td className="text-white py-4 px-4">{consultation.name}</td>
-                      <td className="text-[#86868B] py-4 px-4">{consultation.email}</td>
+                      <td className="text-white py-4 px-4 text-sm">{consultation.name}</td>
                       <td className="text-[#86868B] py-4 px-4 text-sm max-w-[200px] truncate">{consultation.subject}</td>
-                      <td className="text-[#86868B] py-4 px-4">{consultation.templeName}</td>
                       <td className="py-4 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs ${consultation.status === 'pending' ? 'bg-yellow-500/30 text-yellow-300' : consultation.status === 'replied' ? 'bg-green-500/30 text-green-300' : 'bg-gray-500/30 text-gray-300'}`}>
-                          {consultation.status === 'pending' ? '待处理' : consultation.status === 'replied' ? '已回复' : '已关闭'}
+                          {consultation.status === 'pending' ? '待处理' : '已回复'}
                         </span>
-                      </td>
-                      <td className="text-[#86868B] py-4 px-4 text-sm">{new Date(consultation.createdAt).toLocaleString('zh-CN')}</td>
-                      <td className="py-4 px-4">
-                        <button className="text-[#86868B] hover:text-white text-sm mr-3">
-                          <i className="fas fa-eye mr-1"></i> 查看
-                        </button>
-                        <button className="text-[#86868B] hover:text-white text-sm">
-                          <i className="fas fa-edit mr-1"></i> 编辑
-                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="text-[#86868B] py-8 text-center">
-                      {error ? (
-                        <div>
-                          <i className="fas fa-exclamation-circle text-4xl mb-2 text-[#FF3B30]"></i>
-                          <p className="mb-1">获取数据失败</p>
-                          <p className="text-sm opacity-70">{error}</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <i className="fas fa-inbox text-4xl mb-2 opacity-50"></i>
-                          <p>暂无咨询记录</p>
-                        </div>
-                      )}
+                    <td colSpan={3} className="text-[#86868B] py-8 text-center">
+                      暂无咨询记录
                     </td>
                   </tr>
                 )}
@@ -426,27 +323,7 @@ const AdminDashboard = async () => {
             </table>
           </div>
         </div>
-
-        {/* API信息 */}
-        <div className="bg-[#2C2C2E] rounded-2xl shadow-xl p-6 border border-[#48484A]">
-          <h2 className="text-xl font-semibold text-white mb-4">API信息</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[#1D1D1F]/50 rounded-xl p-4">
-              <h3 className="text-[#86868B] text-sm mb-1">支付API</h3>
-              <p className="text-white font-mono text-sm">/api/admin/payments</p>
-            </div>
-            <div className="bg-[#1D1D1F]/50 rounded-xl p-4">
-              <h3 className="text-[#86868B] text-sm mb-1">状态</h3>
-              <p className="text-white">{paymentsData ? '正常' : '异常'}</p>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* 页脚 */}
-      <footer className="mt-12 text-center text-[#86868B] text-sm py-6 border-t border-[#48484A]">
-        <p>&copy; 2026 赛博佛祖在线加持服务 | Cyber Buddha Online Blessing Service</p>
-      </footer>
+      </div>
     </div>
   );
 };
