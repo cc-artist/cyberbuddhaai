@@ -271,5 +271,39 @@ export const temples: Temple[] = [
       "Spectacular Zen Grand View lighting show",
       "Five-story underground palace with stunning design"
     ]
+  },
+  {
+    id: 9,
+    name: "Mogao Caves",
+    location: "25 kilometers southeast of Dunhuang City, Gansu Province, at the western end of the Hexi Corridor",
+    title: "Oriental Louvre, World Cultural Heritage Monument on the Silk Road",
+    description: "Mogao Caves — known as the 'Oriental Louvre' — boasts 735 caves, 45,000 square meters of murals, and over 2,400 painted sculptures. It stands as a monument of civilization along the Silk Road. This exclusive tour specially arranges access to special caves not open to regular tourists, including Cave 45 whose Tang Dynasty painted sculptures are praised as 'the most beautiful sculptural group in Mogao Caves', and Cave 57 whose 'Beauty Bodhisattva' is world-renowned for its elegant and dignified charm.",
+    image: "/temple-images/莫高窟.jpg",
+    features: [
+      "Exclusive private tour of Mogao Caves 'Secret Special Caves'",
+      "Desert starry sky private banquet",
+      "Top luxury Oriental aesthetic accommodation",
+      "Intangible cultural heritage handcraft inheritance",
+      "VIP exclusive service throughout the journey"
+    ],
+    route: {
+      transport: "International flight to Dunhuang, with exclusive Mercedes-Benz business vehicle transfer throughout",
+      itinerary: "Day 1: Arrive in Dunhuang, check in at Dongyi Dunhuang Hotel (SLH member), welcome dinner; Day 2: Exclusive tour of 2 special caves + 6 regular caves with Dunhuang Academy scholar, evening desert starry sky private banquet at Mingsha Mountain; Day 3: Intangible cultural heritage workshop at Dunhuang Academy, complete clay painting creation under guidance of mural restorer; Day 4: Free time or optional activities, departure.",
+      combination: "Can be combined with Mingsha Mountain Crescent Spring, Yumen Pass, Yangguan, and other Silk Road attractions"
+    },
+    culture: [
+      "Witness to the convergence of four major civilizations",
+      "1,600 years of continuous Buddhist art",
+      "Deep interpretation of artistic fusion from Persia, India, and China",
+      "Understanding the evolution of artistic styles across dynasties",
+      "Learning the stories of 'Dunhuang Guardians'"
+    ],
+    highlights: [
+      "Mogao Caves 'Secret Special Caves' exclusive tour with Dunhuang Academy scholar",
+      "Desert starry sky private banquet with Michelin-star chef customized Silk Road menu",
+      "Two consecutive nights at Dongyi Dunhuang Hotel (SLH Global Luxury Boutique member)",
+      "Exclusive intangible cultural heritage workshop at Dunhuang Academy",
+      "2:1 service ratio with exclusive butler and cultural ambassador"
+    ]
   }
 ];
