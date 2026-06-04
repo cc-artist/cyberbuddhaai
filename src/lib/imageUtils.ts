@@ -1,3 +1,5 @@
+import { getMappedImageUrl } from './imageMap';
+
 // 图片路径处理工具函数
 
 /**
@@ -8,8 +10,11 @@
 export const getImageUrl = (path: string): string => {
   if (!path) return '';
   
+  // 先尝试通过映射表获取路径
+  const mappedPath = getMappedImageUrl(path);
+  
   // 移除前后空白字符
-  const trimmedPath = path.trim();
+  const trimmedPath = mappedPath.trim();
   
   // 如果是完整URL或data URL，直接返回
   if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://') || trimmedPath.startsWith('data:image/')) {
@@ -33,8 +38,6 @@ export const getImageUrl = (path: string): string => {
     processedPath = `/${processedPath}`;
   }
   
-  // 直接返回处理后的路径，避免使用映射表
-  // 这样可以确保图片请求直接访问静态资源
   return processedPath;
 };
 
