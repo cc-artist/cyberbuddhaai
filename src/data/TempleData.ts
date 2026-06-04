@@ -287,7 +287,7 @@ export const temples: Temple[] = [
     location: "25 kilometers southeast of Dunhuang City, Gansu Province, at the western end of the Hexi Corridor",
     title: "Oriental Louvre, World Cultural Heritage Monument on the Silk Road",
     description: "Mogao Caves — known as the 'Oriental Louvre' — boasts 735 caves, 45,000 square meters of murals, and over 2,400 painted sculptures. It stands as a monument of civilization along the Silk Road. This exclusive tour specially arranges access to special caves not open to regular tourists, including Cave 45 whose Tang Dynasty painted sculptures are praised as 'the most beautiful sculptural group in Mogao Caves', and Cave 57 whose 'Beauty Bodhisattva' is world-renowned for its elegant and dignified charm.",
-    image: "/temple-images/mogao-caves.jpg",
+    image: "/temple-images/少林寺.webp",
     features: [
       "Exclusive private tour of Mogao Caves 'Secret Special Caves'",
       "Desert starry sky private banquet",

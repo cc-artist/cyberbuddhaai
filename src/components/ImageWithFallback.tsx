@@ -15,46 +15,33 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src,
   alt,
   className = '',
-  fallbackSrc = '/temple-images/fHPlMoqxg.jpg',
+  fallbackSrc,
   onError,
   ...props
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string>(src);
-  const [errorCount, setErrorCount] = useState<number>(0);
+  const [hasError, setHasError] = useState<boolean>(false);
 
   // 当src变化时，重置状态
   useEffect(() => {
     setCurrentSrc(src);
-    setErrorCount(0);
+    setHasError(false);
   }, [src]);
 
   const handleError = () => {
-    setErrorCount(prevErrorCount => {
-      const newErrorCount = prevErrorCount + 1;
-      
-      if (prevErrorCount === 0 && fallbackSrc) {
-        // 主图片加载失败，尝试使用fallback图片
-        setCurrentSrc(fallbackSrc);
-        if (onError) {
-          onError();
-        }
-      } else if (prevErrorCount >= 1) {
-        // fallback图片也加载失败，显示占位符
-        setCurrentSrc('');
+    // 只在有提供fallbackSrc时才回退
+    if (fallbackSrc && !hasError) {
+      setHasError(true);
+      setCurrentSrc(fallbackSrc);
+      if (onError) {
+        onError();
       }
-      
-      return newErrorCount;
-    });
+    } else {
+      // 如果没有fallback或者已经尝试过fallback，就不做任何回退
+      // 保持显示原始src，让浏览器处理错误显示
+      setHasError(true);
+    }
   };
-
-  // 如果所有图片都加载失败，显示一个占位符
-  if (!currentSrc) {
-    return (
-      <div className={`${className} flex items-center justify-center bg-[#1D1D1F]`} style={{ minHeight: '200px' }}>
-        <div className="text-[#8676B6] text-sm">Image not available</div>
-      </div>
-    );
-  }
 
   return (
     <img
