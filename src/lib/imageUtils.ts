@@ -1,5 +1,3 @@
-import { getMappedImageUrl } from './imageMap';
-
 // 图片路径处理工具函数
 
 /**
@@ -10,11 +8,8 @@ import { getMappedImageUrl } from './imageMap';
 export const getImageUrl = (path: string): string => {
   if (!path) return '';
   
-  // 先尝试通过映射表获取路径
-  const mappedPath = getMappedImageUrl(path);
-  
   // 移除前后空白字符
-  const trimmedPath = mappedPath.trim();
+  const trimmedPath = path.trim();
   
   // 如果是完整URL或data URL，直接返回
   if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://') || trimmedPath.startsWith('data:image/')) {
