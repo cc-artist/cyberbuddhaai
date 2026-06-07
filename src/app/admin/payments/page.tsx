@@ -3,12 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import RequireAuth from '../../../components/RequireAuth';
 
+// 货币符号映射
+const currencySymbols: Record<string, string> = {
+  'USD': '$',
+  'EUR': '€',
+  'GBP': '£',
+  'CNY': '¥',
+  'JPY': '¥'
+};
+
+// 格式化金额
+const formatCurrency = (amount: number, currency: string = 'USD') => {
+  const symbol = currencySymbols[currency] || currency + ' ';
+  return `${symbol}${amount.toLocaleString()}`;
+};
+
 interface PaymentData {
   id: string;
+  _id?: string;
   user: string;
+  userEmail?: string;
   amount: number;
-  status: 'completed' | 'pending' | 'failed' | 'cancelled';
+  currency?: string;
+  status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  platformTransactionId?: string;
+  serviceType?: string;
+  templeName?: string;
+  orderNumber?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -92,7 +114,17 @@ const PaymentsPage = () => {
     }
   };
 
-  const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
+  // 计算按货币分类的总收入
+  const totalRevenueByCurrency: Record<string, number> = {};
+  payments.forEach(payment => {
+    const currency = payment.currency || 'USD';
+    if (!totalRevenueByCurrency[currency]) {
+      totalRevenueByCurrency[currency] = 0;
+    }
+    if (payment.status === 'completed') {
+      totalRevenueByCurrency[currency] += payment.amount;
+    }
+  });
   const completedCount = payments.filter(p => p.status === 'completed').length;
   const pendingCount = payments.filter(p => p.status === 'pending').length;
 
@@ -105,7 +137,12 @@ const PaymentsPage = () => {
             <h3 className="text-[#86868B] text-sm">总收入</h3>
             <i className="fas fa-wallet text-[#8676B6]"></i>
           </div>
-          <div className="text-3xl font-bold text-white mt-2">¥{totalRevenue.toLocaleString()}</div>
+          <div className="text-xl font-bold text-white mt-2 space-y-1">
+            {Object.entries(totalRevenueByCurrency).map(([currency, amount]) => (
+              <div key={currency}>{formatCurrency(amount, currency)}</div>
+            ))}
+            {Object.keys(totalRevenueByCurrency).length === 0 && '0'}
+          </div>
         </div>
         <div className="bg-[#2C2C2E] rounded-xl p-6 border border-[#48484A]">
           <div className="flex items-center justify-between">
@@ -186,9 +223,9 @@ const PaymentsPage = () => {
               ) : (
                 payments.map((payment) => (
                   <tr key={payment.id} className="border-b border-[#48484A] hover:bg-[#3A3A3C]">
-                    <td className="text-white py-4 px-6">{payment.id}</td>
+                    <td className="text-white py-4 px-6">{payment.orderNumber || payment.id.slice(-8)}</td>
                     <td className="text-[#86868B] py-4 px-6">{payment.user}</td>
-                    <td className="text-white font-medium py-4 px-6">¥{payment.amount}</td>
+                    <td className="text-white font-medium py-4 px-6">{formatCurrency(payment.amount, payment.currency)}</td>
                     <td className="py-4 px-6">
                       <span className={`px-3 py-1 rounded-full text-xs ${getPlatformColor(payment.paymentPlatform)}`}>
                         {getPlatformLabel(payment.paymentPlatform)}
@@ -241,7 +278,7 @@ const PaymentsPage = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">订单号</label>
-                <p className="text-white font-mono">{selectedPayment.id}</p>
+                <p className="text-white font-mono">{selectedPayment.orderNumber || selectedPayment.id.slice(-8)}</p>
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">用户</label>
@@ -249,7 +286,7 @@ const PaymentsPage = () => {
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">金额</label>
-                <p className="text-white text-xl font-bold">¥{selectedPayment.amount}</p>
+                <p className="text-white text-xl font-bold">{formatCurrency(selectedPayment.amount, selectedPayment.currency)}</p>
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">支付平台</label>

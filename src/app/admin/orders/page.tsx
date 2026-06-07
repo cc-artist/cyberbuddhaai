@@ -3,12 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import RequireAuth from '../../../components/RequireAuth';
 
+// 货币符号映射
+const currencySymbols: Record<string, string> = {
+  'USD': '$',
+  'EUR': '€',
+  'GBP': '£',
+  'CNY': '¥',
+  'JPY': '¥'
+};
+
+// 格式化金额
+const formatCurrency = (amount: number, currency: string = 'USD') => {
+  const symbol = currencySymbols[currency] || currency + ' ';
+  return `${symbol}${amount.toLocaleString()}`;
+};
+
 interface OrderData {
   id: string;
+  _id?: string;
   user: string;
+  userEmail?: string;
   amount: number;
-  status: 'completed' | 'pending' | 'failed' | 'cancelled';
+  currency?: string;
+  status: 'completed' | 'pending' | 'failed' | 'cancelled' | 'refunded';
   paymentPlatform: 'paypal' | 'pingpong' | 'unknown';
+  platformTransactionId?: string;
+  serviceType?: string;
+  templeName?: string;
+  orderNumber?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -171,9 +193,9 @@ const OrdersPage = () => {
               ) : (
                 orders.map((order) => (
                   <tr key={order.id} className="border-b border-[#48484A] hover:bg-[#3A3A3C]">
-                    <td className="text-white py-4 px-6">{order.id}</td>
+                    <td className="text-white py-4 px-6">{order.orderNumber || order.id.slice(-8)}</td>
                     <td className="text-[#86868B] py-4 px-6">{order.user}</td>
-                    <td className="text-white font-medium py-4 px-6">¥{order.amount}</td>
+                    <td className="text-white font-medium py-4 px-6">{formatCurrency(order.amount, order.currency)}</td>
                     <td className="py-4 px-6">
                       <span className={`px-3 py-1 rounded-full text-xs ${order.paymentPlatform === 'paypal' ? 'bg-blue-500/30 text-blue-300' : order.paymentPlatform === 'pingpong' ? 'bg-green-500/30 text-green-300' : 'bg-gray-500/30 text-gray-300'}`}>
                         {getPlatformLabel(order.paymentPlatform)}
@@ -226,7 +248,7 @@ const OrdersPage = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">订单号</label>
-                <p className="text-white font-mono">{selectedOrder.id}</p>
+                <p className="text-white font-mono">{selectedOrder.orderNumber || selectedOrder.id.slice(-8)}</p>
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">用户</label>
@@ -234,7 +256,7 @@ const OrdersPage = () => {
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">金额</label>
-                <p className="text-white text-xl font-bold">¥{selectedOrder.amount}</p>
+                <p className="text-white text-xl font-bold">{formatCurrency(selectedOrder.amount, selectedOrder.currency)}</p>
               </div>
               <div>
                 <label className="block text-[#86868B] text-sm mb-1">支付平台</label>
