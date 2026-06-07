@@ -33,8 +33,7 @@ const CommentScroll: React.FC = () => {
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
       const response = await fetch('/api/public/comments', { 
-        cache: 'force-cache',
-        next: { revalidate: 60 }, // 60秒缓存
+        cache: 'no-store', // 禁用缓存，每次都获取最新数据
         signal: controller.signal
       });
       

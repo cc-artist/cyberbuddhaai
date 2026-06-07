@@ -34,16 +34,22 @@ export async function GET() {
 
     console.log(`[API] /api/public/comments - Found ${comments.length} comments`);
     
-    // 设置缓存头
+    // 禁用缓存，确保评论数据实时更新
     const response = NextResponse.json(comments, { status: 200 });
-    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
     
     return response;
   } catch (error) {
     console.error('[API] /api/public/comments - Error:', error);
     return NextResponse.json([], { 
       status: 200,
-      headers: { 'Cache-Control': 'public, s-maxage=60' }
+      headers: { 
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     });
   }
 }
