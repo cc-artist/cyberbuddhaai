@@ -17,7 +17,6 @@ const navItems: NavItem[] = [
   { name: '订单管理', href: '/admin/orders', icon: 'fa-file-invoice-dollar' },
   { name: '咨询管理', href: '/admin/consultations', icon: 'fa-headset' },
   { name: 'API密钥', href: '/admin/api-keys', icon: 'fa-key' },
-  { name: '账单管理', href: '/admin/billing', icon: 'fa-receipt' },
 ];
 
 const AdminClientLayout = ({ children }: { children: React.ReactNode }) => {

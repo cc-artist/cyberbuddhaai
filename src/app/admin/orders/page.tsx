@@ -37,7 +37,12 @@ const OrdersPage = () => {
       }
       
       const data = await response.json();
-      const filteredData = data.payments || [];
+      const rawData = data.payments || [];
+      // 将 MongoDB 的 _id 映射到 id 字段
+      const filteredData = rawData.map((o: any) => ({
+        ...o,
+        id: o._id || o.id
+      }));
 
       if (filterStatus !== 'all') {
         setOrders(filteredData.filter((o: OrderData) => o.status === filterStatus));

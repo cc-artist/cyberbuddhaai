@@ -37,7 +37,12 @@ const PaymentsPage = () => {
       }
       
       const data = await response.json();
-      const filteredData = data.payments || [];
+      const rawData = data.payments || [];
+      // 将 MongoDB 的 _id 映射到 id 字段
+      const filteredData = rawData.map((p: any) => ({
+        ...p,
+        id: p._id || p.id
+      }));
 
       if (filterStatus !== 'all') {
         setPayments(filteredData.filter((p: PaymentData) => p.status === filterStatus));
