@@ -4,6 +4,7 @@ export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import Consultation from '../../../models/Consultation';
 import connectMongoDB from '../../../lib/mongodb';
+import { isAdminAuthenticated } from '../../../lib/auth';
 
 // 优化POST请求 - 快速响应
 export async function POST(request: Request) {
@@ -86,6 +87,71 @@ export async function GET() {
         repliedCount: 0
       },
       { status: 200 }
+    );
+  }
+}
+
+// PUT 方法：更新咨询状态（需要管理员权限）
+export async function PUT(request: Request) {
+  try {
+    // 检查管理员权限
+    const isAuthenticated = await isAdminAuthenticated();
+    if (!isAuthenticated) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    await connectMongoDB();
+    const body = await request.json();
+    const { id, status } = body;
+
+    if (!id || !status) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // 验证状态值
+    const validStatuses = ['pending', 'replied', 'closed'];
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json(
+        { error: 'Invalid status' },
+        { status: 400 }
+      );
+    }
+
+    // 更新数据库
+    const updatedConsultation = await Consultation.findByIdAndUpdate(
+      id,
+      { 
+        status,
+        updatedAt: new Date()
+      },
+      { new: true }
+    );
+
+    if (!updatedConsultation) {
+      return NextResponse.json(
+        { error: 'Consultation not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { 
+        success: true, 
+        consultation: updatedConsultation 
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('[API] /api/contact PUT - Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update consultation' },
+      { status: 500 }
     );
   }
 }

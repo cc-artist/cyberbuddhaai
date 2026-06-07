@@ -40,9 +40,9 @@ const ConsultationsPage = () => {
       }
       
       const data = await response.json();
-      const filteredData = data || [];
+      const rawData = data.consultations || data || [];
 
-      const formattedData: ConsultationData[] = filteredData.map((item: any) => ({
+      const formattedData: ConsultationData[] = rawData.map((item: any) => ({
         id: item._id || item.id,
         name: item.name,
         email: item.email,
