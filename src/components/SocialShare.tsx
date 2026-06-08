@@ -384,14 +384,6 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
         alert('Please generate and download the DIGITAL BLESSING result first before sharing the complete DIGITAL BLESSING result image');
         return;
       }
-      
-      // 检查是否为完整的合成图（包含背景图）
-      // 简单判断：如果finalImageUrl是data URL且长度较短，可能只是物品图，不是完整合成图
-      if (finalImageUrl.startsWith('data:image/') && finalImageUrl.length < 10000) {
-        console.log('Image URL appears to be just the item image, not the complete合成图');
-        alert('Please click "Download Result" button first to generate the complete result with Cyber Buddha background, then share for the best effect!');
-        return;
-      }
 
       console.log('Creating new comment:', {
         userName: userName.trim(),
@@ -577,7 +569,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
                   <img 
                     src={previewImageUrl} 
                     alt="Preview" 
-                    className="absolute inset-0 w-full h-full object-cover" 
+                    className="absolute inset-0 w-full h-full object-contain bg-[#1D1D1F]" 
                   />
                 ) : (
                   // 使用默认的赛博佛祖背景图作为后备

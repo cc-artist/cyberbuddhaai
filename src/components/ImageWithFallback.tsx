@@ -24,11 +24,18 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 
   // 当src变化时，重置状态
   useEffect(() => {
+    // data URL 不需要任何处理，直接使用
     setCurrentSrc(src);
     setHasError(false);
   }, [src]);
 
   const handleError = () => {
+    // 如果是 data URL，不尝试回退，直接显示错误状态
+    if (src.startsWith('data:')) {
+      setHasError(true);
+      return;
+    }
+    
     // 只在有提供fallbackSrc时才回退
     if (fallbackSrc && !hasError) {
       setHasError(true);

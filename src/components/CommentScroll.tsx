@@ -178,7 +178,7 @@ const CommentScroll: React.FC = () => {
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)'
                 }}
               >
-                <div className="relative w-full h-32 overflow-hidden rounded-md border border-[#8676B6]/30 mb-3">
+                <div className="relative w-full h-32 overflow-hidden rounded-md border border-[#8676B6]/30 mb-3 bg-[#1D1D1F]">
                   <ImageWithFallback
                     src={comment.imageUrl}
                     alt={comment.title}
