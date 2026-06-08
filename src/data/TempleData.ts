@@ -314,5 +314,40 @@ export const temples: Temple[] = [
       "Exclusive intangible cultural heritage workshop at Dunhuang Academy",
       "2:1 service ratio with exclusive butler and cultural ambassador"
     ]
+  },
+  {
+    id: 10,
+    name: "Black Myth: Wukong - Shanxi Ancient Architecture Cluster",
+    location: "Shanxi Province, China (Xiaoxitian, Guangsheng Temple, Shuanglin Temple, Zhenguo Temple, Tiefo Temple, Lingyan Temple)",
+    title: "Journey to the West in Reality - Black Myth Wukong Filming Locations",
+    description: "Shanxi Ancient Architecture Cluster - The domestically produced AAA game 'Black Myth: Wukong' selected 36 filming locations across China, 27 of which are in Shanxi. This itinerary focuses on the core game scenes: Xiaoxitian in Xi County is known as the 'Masterpiece of Chinese Suspended Sculpture Art' with thousands of suspended sculptures covering the ceiling; Feihong Pagoda at Guangsheng Temple in Hongtong is the most complete existing glazed pagoda in China, with Ming Dynasty craftsmen outlining the Journey to the West story with peacock blue glaze; Shuanglin Temple in Pingyao has over 2,000 painted sculptures with various forms, and the Weituo statue is known as the 'Best Weituo in the World' with its 'flexibility within rigidity'; Zhenguo Temple's Ten-Thousand-Buddha Hall is a legacy of the Five Dynasties and one of the oldest wooden structures in China; Twenty-Four Devas painted sculptures at Tiefo Temple in Gaoping show the majesty of Buddhist guardian deities with exaggerated body language; Lingyan Temple's Pagoda Forest in Jinan is the ashram of Tang Dynasty eminent monks, praised by Liang Qichao as the 'Best Painted Sculptures in China'.",
+    image: "/temple-images/fHPlMoqxg.jpg",
+    features: [
+      "Black Myth: Wukong 'filming locations' special tour",
+      "Accompanied by scholars from Shanxi Ancient Architecture Research Institute",
+      "In-depth decryption of the correspondence between game scenes and real cultural relics",
+      "Visiting mural restoration sites and painted sculpture archives not open to ordinary groups",
+      "Private ancient architecture art class",
+      "Intangible cultural heritage handcraft - mural copying and Wukong-themed painted sculpture creation"
+    ],
+    route: {
+      transport: "High-speed train to Taiyuan, with exclusive luxury business vehicle transfer throughout",
+      itinerary: "Day 1: Arrive in Taiyuan, check in at Yunjincheng Mansion (Qing Dynasty ticket office transformed, national cultural heritage site), welcome dinner with Shanxi merchant culture experience; Day 2: Exclusive tour of Xiaoxitian with Shanxi Ancient Architecture Research Institute scholar, visit mural restoration site; Day 3: Visit Guangsheng Temple Feihong Pagoda, touch Ming Dynasty glaze with colored glaze fragment specimen; Day 4: Private class at Shuanglin Temple Thousand-Buddha Hall, cultural relic restorer explains the dynamic aesthetic code of Weituo statue; Day 5: Visit Zhenguo Temple, experiencing Five Dynasties wooden architecture; Day 6: Intangible cultural heritage workshop at Tiefo Temple, complete Wukong-themed painted sculpture under guidance of ancient architecture painting inheritor; Day 7: One night at Lingyan Temple Zen Meditation Courtyard, experiencing 'Wukong cultivation' atmosphere with morning bells and evening drums; Day 8: Free time or optional activities, departure.",
+      combination: "Can be combined with Pingyao Ancient City, Yungang Grottoes, Wutai Mountain and other attractions"
+    },
+    culture: [
+      "Game and ancient architecture 'double narrative' experience",
+      "Suspended sculpture art 'full hall glory' interpretation",
+      "Journey to the West code on the glazed pagoda",
+      "Intangible cultural heritage handcraft inheritance",
+      "Zen meditation experience"
+    ],
+    highlights: [
+      "Black Myth: Wukong 'filming locations' special tour with Shanxi Ancient Architecture Research Institute scholar accompaniment",
+      "Ancient architecture art private class: Shuanglin Temple Weituo statue dynamic aesthetics, Guangsheng Temple Feihong Pagoda Ming Dynasty glaze",
+      "Oriental aesthetics top luxury accommodation: 3 consecutive nights at Pingyao Ancient City Yunjincheng Mansion, 1 night at Lingyan Temple Zen Meditation Courtyard",
+      "Intangible cultural heritage handcraft: Wukong-themed painted sculpture creation at Tiefo Temple Jincheng Intangible Cultural Heritage Workshop",
+      "2:1 service ratio, full VIP privileges, all-inclusive price with zero hidden consumption"
+    ]
   }
 ];
