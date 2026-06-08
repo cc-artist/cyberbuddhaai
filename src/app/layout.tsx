@@ -109,98 +109,8 @@ const websiteJsonLd = {
   }
 };
 
-// Helper function to generate dynamic structured data based on page type
-const generateDynamicJsonLd = () => {
-  // Get current pathname
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-  
-  // Generate structured data based on path
-  if (pathname.startsWith('/temple/')) {
-    // Temple page structured data
-    const templeId = pathname.split('/').pop();
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'PlaceOfWorship',
-      name: `Cyber Buddha Temple - ${templeId}`,
-      description: 'A famous Buddhist temple in China with custom meditation tours',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'China',
-        addressCountry: 'CN'
-      },
-      url: `https://bc-drab.vercel.app${pathname}`,
-      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg',
-      sameAs: [
-        'https://twitter.com/cyberbuddha',
-        'https://facebook.com/cyberbuddha',
-        'https://instagram.com/cyberbuddha'
-      ]
-    };
-  } else if (pathname === '/admin') {
-    // Admin page - no specific structured data needed
-    return null;
-  } else if (pathname.startsWith('/api/')) {
-    // API endpoints - no structured data needed
-    return null;
-  } else if (pathname === '/blessing' || pathname === '/dharma' || pathname === '/lamp') {
-    // Service pages structured data
-    const serviceName = pathname === '/blessing' ? 'Digital Blessing' : 
-                        pathname === '/dharma' ? 'Dharma Form' : 'Lamp Blessing';
-    
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'Service',
-      name: `Cyber Buddha ${serviceName}`,
-      description: `Cyber Buddha ${serviceName} service - experience digital spiritual blessing`,
-      provider: {
-        '@type': 'Organization',
-        name: 'Cyber Buddha'
-      },
-      url: `https://bc-drab.vercel.app${pathname}`,
-      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.png'
-    };
-  } else {
-    // Home page and other pages - add general content structured data
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: 'Cyber Buddha - Digital Blessing Service',
-      description: 'Cyber Buddha Consecration · Dharma Form · Lamp Blessing · Custom Tours of Famous Chinese Temples',
-      url: 'https://bc-drab.vercel.app/',
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': 'https://bc-drab.vercel.app/'
-      },
-      author: {
-        '@type': 'Organization',
-        name: 'Cyber Buddha Team',
-        url: 'https://bc-drab.vercel.app/'
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Cyber Buddha',
-        logo: {
-          '@type': 'ImageObject',
-          url: 'https://bc-drab.vercel.app/favicon.ico'
-        }
-      },
-      datePublished: '2023-01-01',
-      dateModified: new Date().toISOString().split('T')[0],
-      image: 'https://bc-drab.vercel.app/temple-images/赛博佛祖背景图.jpg',
-      breadcrumb: {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: 'https://bc-drab.vercel.app/'
-          }
-        ]
-      }
-    };
-  }
-};
+// 移除了需要window访问的动态JSON-LD，使用静态数据避免服务器渲染错误
+// 如需动态JSON-LD，应创建独立的客户端组件处理
 
 export default function RootLayout({
   children,
@@ -229,16 +139,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        {/* Dynamic structured data based on page type */}
-        {(() => {
-          const dynamicJsonLd = generateDynamicJsonLd();
-          return dynamicJsonLd ? (
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(dynamicJsonLd) }}
-            />
-          ) : null;
-        })()}
       </head>
       <body className="antialiased">
         <SessionProviderClient>
