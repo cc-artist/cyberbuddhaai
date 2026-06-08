@@ -321,7 +321,7 @@ export const temples: Temple[] = [
     location: "Shanxi Province, China (Xiaoxitian, Guangsheng Temple, Shuanglin Temple, Zhenguo Temple, Tiefo Temple, Lingyan Temple)",
     title: "Journey to the West in Reality - Black Myth Wukong Filming Locations",
     description: "Shanxi Ancient Architecture Cluster - The domestically produced AAA game 'Black Myth: Wukong' selected 36 filming locations across China, 27 of which are in Shanxi. This itinerary focuses on the core game scenes: Xiaoxitian in Xi County is known as the 'Masterpiece of Chinese Suspended Sculpture Art' with thousands of suspended sculptures covering the ceiling; Feihong Pagoda at Guangsheng Temple in Hongtong is the most complete existing glazed pagoda in China, with Ming Dynasty craftsmen outlining the Journey to the West story with peacock blue glaze; Shuanglin Temple in Pingyao has over 2,000 painted sculptures with various forms, and the Weituo statue is known as the 'Best Weituo in the World' with its 'flexibility within rigidity'; Zhenguo Temple's Ten-Thousand-Buddha Hall is a legacy of the Five Dynasties and one of the oldest wooden structures in China; Twenty-Four Devas painted sculptures at Tiefo Temple in Gaoping show the majesty of Buddhist guardian deities with exaggerated body language; Lingyan Temple's Pagoda Forest in Jinan is the ashram of Tang Dynasty eminent monks, praised by Liang Qichao as the 'Best Painted Sculptures in China'.",
-    image: "/temple-images/fHPvQoQPv.jpg",
+    image: "/temple-images/black-myth-wukong-shanxi.jpg",
     features: [
       "Black Myth: Wukong 'filming locations' special tour",
       "Accompanied by scholars from Shanxi Ancient Architecture Research Institute",
