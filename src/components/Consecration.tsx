@@ -61,7 +61,7 @@ const Consecration: React.FC = () => {
       };
 
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.jpg', true);
+      await loadImage(bgImage, '/temple-images/fHPlMoqxg.jpg', true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -263,7 +263,7 @@ const Consecration: React.FC = () => {
       setDownloadStatus('正在加载图像...');
       
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.jpg', true);
+      await loadImage(bgImage, '/temple-images/fHPlMoqxg.jpg', true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;

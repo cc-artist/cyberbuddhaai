@@ -36,7 +36,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
   const [isGeneratingPreview, setIsGeneratingPreview] = React.useState(false);
   
   // 默认预览图（赛博佛祖风格）
-  const defaultPreviewUrl = '/temple-images/赛博佛祖背景图.jpg';
+  const defaultPreviewUrl = '/temple-images/fHPlMoqxg.jpg';
 
   // 监听 props 变化，自动更新预览图
   React.useEffect(() => {
@@ -186,7 +186,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
 
       const bgImage = new Image();
       const itemImg = new Image();
-      const bgSrc = backgroundImageUrl || '/temple-images/赛博佛祖背景图.jpg';
+      const bgSrc = backgroundImageUrl || '/temple-images/fHPlMoqxg.jpg';
       console.log('Loading background image:', bgSrc);
 
       const loadImage = (image: HTMLImageElement, src: string, isBackground: boolean = false): Promise<void> => {
@@ -362,13 +362,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
         return;
       }
       
-      // 检查是否为完整的合成图（包含背景图）
-      // 简单判断：如果finalImageUrl是data URL且长度较短，可能只是物品图，不是完整合成图
-      if (finalImageUrl.startsWith('data:image/') && finalImageUrl.length < 10000) {
-        console.log('Image URL appears to be just the item image, not the complete合成图');
-        alert('Please click "Download Result" button first to generate the complete result with Cyber Buddha background, then share for the best effect!');
-        return;
-      }
+      // 只要有有效的图片 URL 就可以分享
 
       console.log('Creating new comment:', {
         userName: userName.trim(),
@@ -534,7 +528,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
             {/* 可滚动内容区域 */}
             <div className="overflow-y-auto flex-1 pr-2">
               {/* 预览图片 */}
-              <div className="border border-[#8676B6]/30 rounded-lg overflow-hidden mb-4 relative w-full h-48">
+              <div className="border border-[#8676B6]/30 rounded-lg overflow-hidden mb-4 relative w-full h-48 bg-[#1D1D1F]">
                 {isGeneratingPreview ? (
                   <div className="absolute inset-0 flex items-center justify-center bg-[#1D1D1F]/50">
                     <div className="w-8 h-8 border-2 border-[#8676B6]/30 border-t-[#8676B6] rounded-full animate-spin"></div>
@@ -544,7 +538,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
                   <img 
                     src={previewImageUrl} 
                     alt="Preview" 
-                    className="absolute inset-0 w-full h-full object-cover" 
+                    className="absolute inset-0 w-full h-full object-contain" 
                   />
                 ) : (
                   // 使用默认的赛博佛祖背景图作为后备
