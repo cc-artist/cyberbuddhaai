@@ -36,7 +36,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
   const [isGeneratingPreview, setIsGeneratingPreview] = React.useState(false);
   
   // 默认预览图（赛博佛祖风格）
-  const defaultPreviewUrl = '/temple-images/赛博佛祖背景图.jpg';
+  const defaultPreviewUrl = '/temple-images/fHPlMoqxg.jpg';
 
   // 监听 props 变化，自动更新预览图
   React.useEffect(() => {
@@ -186,7 +186,7 @@ const SocialShare: React.FC<SocialShareProps> = ({ imageUrl, title, description,
 
       const bgImage = new Image();
       const itemImg = new Image();
-      const bgSrc = backgroundImageUrl || '/temple-images/赛博佛祖背景图.jpg';
+      const bgSrc = backgroundImageUrl || '/temple-images/fHPlMoqxg.jpg';
       console.log('Loading background image:', bgSrc);
 
       const loadImage = (image: HTMLImageElement, src: string, isBackground: boolean = false): Promise<void> => {

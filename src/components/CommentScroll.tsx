@@ -26,32 +26,68 @@ const CommentScroll: React.FC = () => {
   const lastTimestampRef = useRef<number>(0);
   const mountedRef = useRef(true);
 
-  // 优化评论加载 - 添加缓存机制
+  // 优化评论加载 - 添加缓存机制，合并 API 和 localStorage
   const loadComments = useCallback(async () => {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      let dbComments: any[] = [];
+      
+      // 从 API 加载评论
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const response = await fetch('/api/public/comments', { 
-        cache: 'no-store', // 禁用缓存，每次都获取最新数据
-        signal: controller.signal
-      });
+        const response = await fetch('/api/public/comments', { 
+          cache: 'no-store', // 禁用缓存，每次都获取最新数据
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok && mountedRef.current) {
+          dbComments = await response.json();
+        }
+      } catch (apiError) {
+        console.error('Failed to load comments from API:', apiError);
+      }
       
-      clearTimeout(timeoutId);
+      // 从 localStorage 加载评论
+      let localComments: any[] = [];
+      try {
+        const testKey = 'test_' + Date.now();
+        localStorage.setItem(testKey, 'test');
+        localStorage.removeItem(testKey);
+        
+        const savedLocalComments = localStorage.getItem('cyberBuddhaComments');
+        if (savedLocalComments) {
+          localComments = JSON.parse(savedLocalComments);
+        }
+      } catch (localError) {
+        console.error('Failed to load comments from localStorage:', localError);
+      }
       
-      if (response.ok && mountedRef.current) {
-        const dbComments = await response.json();
-        const formattedComments = dbComments.map((comment: any) => ({
+      // 格式化所有评论
+      const formattedComments = [
+        ...dbComments.map((comment: any) => ({
           ...comment,
           id: comment._id || comment.id,
           createdAt: new Date(comment.createdAt)
-        }));
-        
-        // 去重 - 确保没有重复评论
-        const uniqueComments = formattedComments.filter((comment: Comment, index: number, self: Comment[]) =>
-          index === self.findIndex((c) => (c._id || c.id) === (comment._id || comment.id))
-        );
-        
+        })),
+        ...localComments.map((comment: any) => ({
+          ...comment,
+          id: comment.id || comment._id,
+          createdAt: new Date(comment.createdAt)
+        }))
+      ];
+      
+      // 去重 - 确保没有重复评论（按 id 去重）
+      const uniqueComments = formattedComments.filter((comment: Comment, index: number, self: Comment[]) =>
+        index === self.findIndex((c) => (c._id || c.id) === (comment._id || comment.id))
+      );
+      
+      // 按创建时间排序（最新在前）
+      uniqueComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
+      if (mountedRef.current) {
         setComments(uniqueComments);
       }
     } catch (error) {
@@ -65,6 +101,20 @@ const CommentScroll: React.FC = () => {
     mountedRef.current = true;
     loadComments();
     
+    // 监听 commentAdded 事件，立即刷新评论
+    const handleCommentAdded = () => {
+      console.log('Comment added event received, reloading comments');
+      loadComments();
+    };
+    
+    // 监听 storage 事件，在其他标签页添加评论时刷新
+    const handleStorageChange = () => {
+      loadComments();
+    };
+    
+    window.addEventListener('commentAdded', handleCommentAdded);
+    window.addEventListener('storage', handleStorageChange);
+    
     // 延长刷新间隔到2分钟，减少API调用
     const interval = setInterval(() => {
       if (mountedRef.current) {
@@ -74,6 +124,8 @@ const CommentScroll: React.FC = () => {
 
     return () => {
       mountedRef.current = false;
+      window.removeEventListener('commentAdded', handleCommentAdded);
+      window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
   }, [loadComments]);

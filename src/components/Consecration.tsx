@@ -25,8 +25,7 @@ const Consecration: React.FC = () => {
 
 
   // 生成完整合成图的功能
-  const generateCompleteResult = async (): Promise<string | null> => {
-    if (!resultUrl) return null;
+  const generateCompleteResult = async (itemImageUrl: string): Promise<string | null> => {
 
     try {
       // 创建canvas元素用于合成图像
@@ -61,7 +60,7 @@ const Consecration: React.FC = () => {
       };
 
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.jpg', true);
+      await loadImage(bgImage, '/temple-images/fHPlMoqxg.jpg', true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -81,7 +80,7 @@ const Consecration: React.FC = () => {
       canvas.height = height;
       
       // 然后加载物品图
-      await loadImage(itemImage, resultUrl);
+      await loadImage(itemImage, itemImageUrl);
 
       // 绘制合成图
       // 1. 先填充画布背景色，确保整体视觉完整
@@ -263,7 +262,7 @@ const Consecration: React.FC = () => {
       setDownloadStatus('正在加载图像...');
       
       // 先加载背景图以确定画布尺寸
-      await loadImage(bgImage, '/temple-images/赛博佛祖背景图.jpg', true);
+      await loadImage(bgImage, '/temple-images/fHPlMoqxg.jpg', true);
       
       // 设置画布尺寸以匹配背景图的原始宽高比
       let width, height;
@@ -283,7 +282,7 @@ const Consecration: React.FC = () => {
       canvas.height = height;
       
       // 然后加载物品图
-      await loadImage(itemImage, resultUrl);
+      await loadImage(itemImage, resultUrl!);
 
       // 绘制合成图
       setDownloadStatus('正在生成合成图...');
@@ -509,7 +508,7 @@ const Consecration: React.FC = () => {
       
       // 立即生成完整合成图，确保分享时能显示完整的赛博佛祖背景图
       console.log('Generating complete result for sharing...');
-      const completeImage = await generateCompleteResult();
+      const completeImage = await generateCompleteResult(previewUrl!);
       if (completeImage) {
         setCompleteResultUrl(completeImage);
         console.log('Complete result generated successfully for sharing');
